@@ -1,0 +1,16 @@
+https://github.com/f-secure-foundry/tamago-example
+Copyright (c) F-Secure Corporation
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation under version 3 of the License.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+The license does not apply to the following 3rd party bundled code (see
+individual file headers for their copyright and license notices):
+
+  btcd.go
+  ecdsa.go
