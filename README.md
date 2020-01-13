@@ -27,7 +27,9 @@ components.
 This example Go application illustrates use of the
 [usbarmory](https://github.com/f-secure-foundry/tamago/tree/master/usbarmory) package
 part of [TamaGo](https://github.com/f-secure-foundry/tamago), to execute bare metal Go code on the
-[USB armory](https://github.com/f-secure-foundry/usbarmory/wiki) Single Board Computer.
+[USB armory Mk II](https://github.com/f-secure-foundry/usbarmory/wiki).
+
+<img src="https://github.com/f-secure-foundry/usbarmory/wiki/images/armory-mark-two-bottom.png" width="350"> <img src="https://github.com/f-secure-foundry/usbarmory/wiki/images/armory-mark-two-top.png" width="350">
 
 Documentation
 =============
