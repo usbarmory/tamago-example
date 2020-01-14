@@ -10,33 +10,33 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
-	"fmt"
+	"log"
 	"time"
 )
 
 func testSignAndVerify(c elliptic.Curve, tag string) {
 	start := time.Now()
-	fmt.Printf("ECDSA sign and verify with p%d ... ", c.Params().BitSize)
+	log.Printf("ECDSA sign and verify with p%d ... ", c.Params().BitSize)
 
 	priv, _ := ecdsa.GenerateKey(c, rand.Reader)
 
 	hashed := []byte("testing")
 	r, s, err := ecdsa.Sign(rand.Reader, priv, hashed)
 	if err != nil {
-		fmt.Printf("%s: error signing: %s", tag, err)
+		log.Printf("%s: error signing: %s", tag, err)
 		return
 	}
 
 	if !ecdsa.Verify(&priv.PublicKey, hashed, r, s) {
-		fmt.Printf("%s: Verify failed", tag)
+		log.Printf("%s: Verify failed", tag)
 	}
 
 	hashed[0] ^= 0xff
 	if ecdsa.Verify(&priv.PublicKey, hashed, r, s) {
-		fmt.Printf("%s: Verify always works!", tag)
+		log.Printf("%s: Verify always works!", tag)
 	}
 
-	fmt.Printf("done (%s)\n", time.Since(start))
+	log.Printf("ECDSA sign and verify with p%d took %s", c.Params().BitSize, time.Since(start))
 }
 
 func TestSignAndVerify() {

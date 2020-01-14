@@ -64,16 +64,28 @@ Once all tests are completed, and only on non-emulated hardware, the following
 network services are started on Ethernet over USB (ECM protocol, only supported
 on Linux hosts).
 
-  * UDP echo server on 10.0.0.1:1234
+  * SSH server on 10.0.0.1:22
   * HTTP server on 10.0.0.1:80
   * HTTPS server on 10.0.0.1:443
 
-The HTTP/HTTPS servers expose the following routes:
+The web servers expose the following routes:
 
   * `/`: a welcome message
   * `/dir`: in-memory filesystem
   * `/debug/pprof`: Go runtime profiling data through [pprof](https://golang.org/pkg/net/http/pprof/)
   * `/debug/charts`: Go runtime profiling data through [debugcharts](https://github.com/mkevac/debugcharts)
+
+The SSH server expose a basic shell with the following commands:
+
+```
+  exit, quit            # close session
+  example               # launch example test code
+  help                  # this help
+  rand                  # gather 32 bytes from TRNG via crypto/rand
+  stack                 # stack trace of current goroutine
+  stackall              # stack trace of all goroutines
+  version               # Go runtime version
+```
 
 Compiling
 =========

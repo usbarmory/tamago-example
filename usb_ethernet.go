@@ -14,13 +14,11 @@ import (
 	"encoding/binary"
 	"log"
 	"net"
-	"runtime"
 	"strings"
 
 	"github.com/f-secure-foundry/tamago/imx6/usb"
 
 	"gvisor.dev/gvisor/pkg/tcpip"
-	"gvisor.dev/gvisor/pkg/tcpip/adapters/gonet"
 	"gvisor.dev/gvisor/pkg/tcpip/buffer"
 	"gvisor.dev/gvisor/pkg/tcpip/link/channel"
 	"gvisor.dev/gvisor/pkg/tcpip/link/sniffer"
@@ -29,7 +27,6 @@ import (
 	"gvisor.dev/gvisor/pkg/tcpip/stack"
 	"gvisor.dev/gvisor/pkg/tcpip/transport/icmp"
 	"gvisor.dev/gvisor/pkg/tcpip/transport/tcp"
-	"gvisor.dev/gvisor/pkg/tcpip/transport/udp"
 	"gvisor.dev/gvisor/pkg/waiter"
 )
 
@@ -181,7 +178,6 @@ func configureNetworkStack(addr tcpip.Address, nic tcpip.NICID, sniff bool) (s *
 			arp.NewProtocol()},
 		TransportProtocols: []stack.TransportProtocol{
 			tcp.NewProtocol(),
-			udp.NewProtocol(),
 			icmp.NewProtocol4()},
 	})
 
@@ -236,41 +232,6 @@ func startICMPEndpoint(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpi
 
 	if err := ep.Bind(fullAddr); err != nil {
 		log.Fatal("bind error (icmp endpoint): ", err)
-	}
-}
-
-func startUDPListener(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpip.NICID) (conn *gonet.PacketConn) {
-	var err error
-
-	fullAddr := tcpip.FullAddress{Addr: addr, Port: port, NIC: nic}
-	conn, err = gonet.DialUDP(s, &fullAddr, nil, ipv4.ProtocolNumber)
-
-	if err != nil {
-		log.Fatal("listener error: ", err)
-	}
-
-	return
-}
-
-func startEchoServer(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpip.NICID) {
-	c := startUDPListener(s, addr, port, nic)
-
-	for {
-		runtime.Gosched()
-
-		buf := make([]byte, 1024)
-		n, addr, err := c.ReadFrom(buf)
-
-		if err != nil {
-			log.Printf("udp recv error, %v\n", err)
-			continue
-		}
-
-		_, err = c.WriteTo(buf[0:n], addr)
-
-		if err != nil {
-			log.Printf("udp send error, %v\n", err)
-		}
 	}
 }
 
@@ -336,7 +297,7 @@ func ECMRx(out []byte, lastErr error) (_ []byte, err error) {
 }
 
 // StartUSBEthernet starts an emulated Ethernet over USB device (ECM protocol,
-// only supported on Linux hosts) with a test UDP echo service on port 1234.
+// only supported on Linux hosts) with test SSH and HTTP services.
 func StartUSBEthernet() {
 	addr := tcpip.Address(net.ParseIP(IP)).To4()
 
@@ -345,22 +306,22 @@ func StartUSBEthernet() {
 	// handle pings
 	startICMPEndpoint(s, addr, 0, 1)
 
-	go func() {
-		// UDP echo server
-		startEchoServer(s, addr, 1234, 1)
-	}()
-
-	// create index.html in in-memory filesystem
+	// create index.html
 	setupStaticWebAssets()
 
+	// HTTP web server (see web_server.go)
 	go func() {
-		// HTTP web server (see web_server.go)
 		startWebServer(s, addr, 80, 1, false)
 	}()
 
+	// HTTPS web server (see web_server.go)
 	go func() {
-		// HTTPS web server (see web_server.go)
 		startWebServer(s, addr, 443, 1, true)
+	}()
+
+	// SSH server (see ssh_server.go)
+	go func() {
+		startSSHServer(s, addr, 22, 1)
 	}()
 
 	device := &usb.Device{}

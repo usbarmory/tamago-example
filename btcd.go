@@ -7,7 +7,7 @@ package main
 
 import (
 	"encoding/hex"
-	"fmt"
+	"log"
 
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcd/chaincfg"
@@ -28,24 +28,24 @@ func ExamplePayToAddrScript() {
 	addressStr := "12gpXQVcCL2qhTNQgyLVdCFG2Qs2px98nV"
 	address, err := btcutil.DecodeAddress(addressStr, &chaincfg.MainNetParams)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
 	// Create a public key script that pays to the address.
 	script, err := txscript.PayToAddrScript(address)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
-	fmt.Printf("Script Hex: %x\n", script)
+	log.Printf("Script Hex: %x\n", script)
 
 	disasm, err := txscript.DisasmString(script)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
-	fmt.Println("Script Disassembly:", disasm)
+	log.Println("Script Disassembly:", disasm)
 
 	// Output:
 	// Script Hex: 76a914128004ff2fcaf13b2b91eb654b1dc2b674f7ec6188ac
@@ -59,7 +59,7 @@ func ExampleExtractPkScriptAddrs() {
 	scriptHex := "76a914128004ff2fcaf13b2b91eb654b1dc2b674f7ec6188ac"
 	script, err := hex.DecodeString(scriptHex)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
@@ -67,12 +67,12 @@ func ExampleExtractPkScriptAddrs() {
 	scriptClass, addresses, reqSigs, err := txscript.ExtractPkScriptAddrs(
 		script, &chaincfg.MainNetParams)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
-	fmt.Println("Script Class:", scriptClass)
-	fmt.Println("Addresses:", addresses)
-	fmt.Println("Required Signatures:", reqSigs)
+	log.Println("Script Class:", scriptClass)
+	log.Println("Addresses:", addresses)
+	log.Println("Required Signatures:", reqSigs)
 
 	// Output:
 	// Script Class: pubkeyhash
@@ -87,7 +87,7 @@ func ExampleSignTxOutput() {
 	privKeyBytes, err := hex.DecodeString("22a47fa09a223f2aa079edf85a7c2" +
 		"d4f8720ee63e502ee2869afab7de234b80c")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	privKey, pubKey := btcec.PrivKeyFromBytes(btcec.S256(), privKeyBytes)
@@ -95,7 +95,7 @@ func ExampleSignTxOutput() {
 	addr, err := btcutil.NewAddressPubKeyHash(pubKeyHash,
 		&chaincfg.MainNetParams)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
@@ -108,7 +108,7 @@ func ExampleSignTxOutput() {
 	originTx.AddTxIn(txIn)
 	pkScript, err := txscript.PayToAddrScript(addr)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	txOut := wire.NewTxOut(100000000, pkScript)
@@ -156,7 +156,7 @@ func ExampleSignTxOutput() {
 		redeemTx, 0, originTx.TxOut[0].PkScript, txscript.SigHashAll,
 		txscript.KeyClosure(lookupKey), nil, nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	redeemTx.TxIn[0].SignatureScript = sigScript
@@ -169,14 +169,14 @@ func ExampleSignTxOutput() {
 	vm, err := txscript.NewEngine(originTx.TxOut[0].PkScript, redeemTx, 0,
 		flags, nil, nil, -1)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	if err := vm.Execute(); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
-	fmt.Println("Transaction successfully signed")
+	log.Println("Transaction successfully signed")
 
 	// Output:
 	// Transaction successfully signed

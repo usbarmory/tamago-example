@@ -92,7 +92,7 @@ func generateTLSCerts(address net.IP) ([]byte, []byte, error) {
 }
 
 func setupStaticWebAssets() {
-	file, err := os.OpenFile("/index.html", os.O_WRONLY|os.O_CREATE|os.O_EXCL|os.O_TRUNC, 0600)
+	file, err := os.OpenFile("/index.html", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 
 	if err != nil {
 		panic(err)

@@ -11,8 +11,8 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,7 +23,7 @@ func TestFile() {
 
 	defer func() {
 		if err != nil {
-			fmt.Printf("TestFile error: %v\n", err)
+			log.Printf("TestFile error: %v\n", err)
 		}
 	}()
 
@@ -31,7 +31,7 @@ func TestFile() {
 	fileName := "tamago.txt"
 	path := filepath.Join(dirPath, fileName)
 
-	fmt.Printf("writing %d bytes to %s\n", len(banner), path)
+	log.Printf("writing %d bytes to %s\n", len(banner), path)
 
 	err = os.MkdirAll(dirPath, 0700)
 
@@ -39,7 +39,7 @@ func TestFile() {
 		return
 	}
 
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL|os.O_TRUNC, 0600)
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 
 	if err != nil {
 		panic(err)
@@ -59,16 +59,16 @@ func TestFile() {
 	}
 
 	if strings.Compare(banner, string(read)) != 0 {
-		fmt.Println("TestFile: comparison fail")
+		log.Println("TestFile: comparison fail")
 	} else {
-		fmt.Printf("read %s (%d bytes)\n", path, len(read))
+		log.Printf("read %s (%d bytes)\n", path, len(read))
 	}
 }
 
 func TestDir() {
 	dirPath := "/dir"
 
-	fmt.Printf("listing directory %s\n", dirPath)
+	log.Printf("listing directory %s\n", dirPath)
 
 	f, err := os.Open(dirPath)
 
@@ -93,6 +93,6 @@ func TestDir() {
 	}
 
 	for _, i := range files {
-		fmt.Printf("%s/%s (%d bytes)\n", dirPath, i.Name(), i.Size())
+		log.Printf("%s/%s (%d bytes)\n", dirPath, i.Name(), i.Size())
 	}
 }

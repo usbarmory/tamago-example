@@ -11,7 +11,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"runtime"
 )
 
@@ -31,16 +31,13 @@ func testAlloc(runs int, chunks int, chunkSize int) {
 	//debug.SetGCPercent(gcpercent)
 
 	for run := 1; run <= runs; run++ {
-		fmt.Printf("allocating %d * %d MB chunks (%d/%d) ", chunks, chunkSize/(1024*1024), run, runs)
+		log.Printf("allocating %d * %d MB chunks (%d/%d)", chunks, chunkSize/(1024*1024), run, runs)
 
 		mem := make([][]byte, chunks)
 
 		for i := 0; i <= chunks-1; i++ {
-			fmt.Printf(".")
 			mem[i] = make([]byte, chunkSize)
 		}
-
-		fmt.Printf("\n")
 
 		// When getting close to the end of available RAM, the next GC
 		// target might be set beyond it. Therfore in this specific
@@ -54,6 +51,6 @@ func testAlloc(runs int, chunks int, chunkSize int) {
 
 	runtime.ReadMemStats(&memstats)
 	totalAllocated := uint64(runs) * uint64(chunks) * uint64(chunkSize)
-	fmt.Printf("%d MB allocated (Mallocs: %d Frees: %d HeapSys: %d NumGC:%d)\n",
+	log.Printf("%d MB allocated (Mallocs: %d Frees: %d HeapSys: %d NumGC:%d)\n",
 		totalAllocated/(1024*1024), memstats.Mallocs, memstats.Frees, memstats.HeapSys, memstats.NumGC)
 }

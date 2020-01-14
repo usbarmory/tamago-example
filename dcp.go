@@ -13,6 +13,7 @@ package main
 import (
 	"crypto/aes"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/f-secure-foundry/tamago/imx6"
@@ -37,7 +38,7 @@ func testKeyDerivation() (err error) {
 
 		// if the SoC is secure booted we can only print the result
 		if imx6.DCP.SNVS() {
-			fmt.Printf("imx6_dcp: derived SNVS key %x\n", key)
+			log.Printf("imx6_dcp: derived SNVS key %x\n", key)
 			return
 		}
 
@@ -45,7 +46,7 @@ func testKeyDerivation() (err error) {
 			err = fmt.Errorf("derivedKey:%x != testVector:%x\n", key, testVector)
 			return
 		} else {
-			fmt.Printf("imx6_dcp: derived test key %x\n", key)
+			log.Printf("imx6_dcp: derived test key %x\n", key)
 		}
 	}
 
@@ -56,6 +57,6 @@ func TestDCP() {
 	imx6.DCP.Init()
 
 	if err := testKeyDerivation(); err != nil {
-		fmt.Printf("imx6_dcp: error, %v\n", err)
+		log.Printf("imx6_dcp: error, %v\n", err)
 	}
 }
