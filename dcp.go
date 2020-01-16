@@ -32,21 +32,21 @@ func testKeyDerivation() (err error) {
 		return
 	} else {
 		if strings.Compare(string(key), zeroVector) == 0 {
-			err = fmt.Errorf("derivedKey all zeros!\n")
+			err = fmt.Errorf("derivedKey all zeros!")
 			return
 		}
 
 		// if the SoC is secure booted we can only print the result
 		if imx6.DCP.SNVS() {
-			log.Printf("imx6_dcp: derived SNVS key %x\n", key)
+			log.Printf("imx6_dcp: derived SNVS key %x", key)
 			return
 		}
 
 		if strings.Compare(string(key), testVector) != 0 {
-			err = fmt.Errorf("derivedKey:%x != testVector:%x\n", key, testVector)
+			err = fmt.Errorf("derivedKey:%x != testVector:%x", key, testVector)
 			return
 		} else {
-			log.Printf("imx6_dcp: derived test key %x\n", key)
+			log.Printf("imx6_dcp: derived test key %x", key)
 		}
 	}
 
@@ -55,6 +55,12 @@ func testKeyDerivation() (err error) {
 
 func TestDCP() {
 	imx6.DCP.Init()
+
+	// derive twice to ensure consistency across repeated operations
+
+	if err := testKeyDerivation(); err != nil {
+		log.Printf("imx6_dcp: error, %v\n", err)
+	}
 
 	if err := testKeyDerivation(); err != nil {
 		log.Printf("imx6_dcp: error, %v\n", err)
