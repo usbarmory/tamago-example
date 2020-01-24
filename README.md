@@ -41,6 +41,8 @@ For more information about TamaGo see its
 Operation
 =========
 
+![Example screenshot](https://github.com/f-secure-foundry/tamago/wiki/images/ssh.png)
+
 The example application performs a variety of simple test procedures, each in
 its separate goroutine:
 
