@@ -27,8 +27,11 @@ import (
 	_ "github.com/f-secure-foundry/tamago/usbarmory/mark-two"
 )
 
-const banner = "Hello from tamago/arm!"
-const verbose = true
+var Build string
+var Revision string
+var banner = "Hello from tamago/arm (" + Revision + " - " + Build + ")"
+
+var verbose = true
 
 var exit chan bool
 
@@ -180,7 +183,7 @@ func example() {
 func main() {
 	start := time.Now()
 
-	log.Printf("%s (epoch %d)\n", banner, start.UnixNano())
+	log.Println(banner)
 
 	example()
 
