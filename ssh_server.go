@@ -15,13 +15,17 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"regexp"
 	"runtime"
 	"runtime/debug"
 	"runtime/pprof"
+	"strconv"
+	"unsafe"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
@@ -35,14 +39,63 @@ import (
 )
 
 const help = `
-  exit, quit		# close session
-  example		# launch example test code
-  help			# this help
-  rand			# gather 32 bytes from TRNG via crypto/rand
-  stack			# stack trace of current goroutine
-  stackall		# stack trace of all goroutines
-  version		# Go runtime version
+  exit, quit			# close session
+  example			# launch example test code
+  help				# this help
+  md <hex offset> <size>	# memory display (use with caution)
+  mw <hex offset> <hex data>	# memory write   (use with caution)
+  rand				# gather 32 bytes from TRNG via crypto/rand
+  stack				# stack trace of current goroutine
+  stackall			# stack trace of all goroutines
+  version			# Go runtime version
 `
+
+var memoryCommandPattern = regexp.MustCompile(`(md|mw) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
+
+func memoryCommand(op string, arg1 string, arg2 string) (res string) {
+	addr, err := strconv.ParseUint(arg1, 16, 32)
+
+	if err != nil {
+		return fmt.Sprintf("invalid address: %v", err)
+	}
+
+	switch op {
+	case "md":
+		size, err := strconv.ParseUint(arg2, 10, 32)
+
+		if err != nil {
+			return fmt.Sprintf("invalid size: %v", err)
+		}
+
+		if size > 4096 {
+			return "please use size argument <= 4096"
+		}
+
+		data := make([]byte, size)
+
+		for i := 0; i < int(size); i++ {
+			data[i] = *(*byte)(unsafe.Pointer(uintptr(addr + uint64(i))))
+		}
+
+		res = hex.Dump(data)
+	case "mw":
+		data, err := hex.DecodeString(arg2)
+
+		if err != nil {
+			return fmt.Sprintf("invalid data: %v", err)
+		}
+
+		if len(data) > 4 {
+			return "please use data size <= 32 bits"
+		}
+
+		for i := 0; i < len(data); i++ {
+			*(*byte)(unsafe.Pointer(uintptr(addr + uint64(i)))) = data[i]
+		}
+	}
+
+	return
+}
 
 func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 	var res string
@@ -68,7 +121,14 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 	case "version":
 		res = runtime.Version()
 	default:
-		res = "unknown command, type `help`"
+		m := memoryCommandPattern.FindStringSubmatch(cmd)
+
+		if len(m) == 4 {
+			res = memoryCommand(m[1], m[2], m[3])
+			break
+		} else {
+			res = "unknown command, type `help`"
+		}
 	}
 
 	fmt.Fprintln(term, res)
