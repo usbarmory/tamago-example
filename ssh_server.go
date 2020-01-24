@@ -155,7 +155,8 @@ func handleChannel(newChannel ssh.NewChannel) {
 	go func() {
 		defer conn.Close()
 
-		fmt.Fprintf(term, "%s (%s %d MHz)\n", banner, imx6.Model(), imx6.ARMFreq()/1000000)
+		fmt.Fprintf(term, "%s\n", banner)
+		fmt.Fprintf(term, "Running on %s @ %d MHz\n", imx6.Model(), imx6.ARMFreq()/1000000)
 		fmt.Fprintf(term, "%s\n", string(term.Escape.Cyan)+help+string(term.Escape.Reset))
 
 		for {

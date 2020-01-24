@@ -56,7 +56,7 @@ func init() {
 		fmt.Printf("WARNING: error setting ARM frequency: %v\n", err)
 	}
 
-	fmt.Printf("imx6_soc: %#s (%#x, %d.%d) @ freq:%d MHz - native:%v\n",
+	fmt.Printf("imx6_soc: %s (%#x, %d.%d) @ %d MHz - native:%v\n",
 		model, family, revMajor, revMinor, imx6.ARMFreq()/1000000, imx6.Native)
 }
 
