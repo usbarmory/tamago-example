@@ -38,6 +38,8 @@ import (
 	"github.com/f-secure-foundry/tamago/imx6"
 )
 
+const WDOG1 uint32 = 0x020bc000
+
 const help = `
   exit, quit			# close session
   example			# launch example test code
@@ -45,6 +47,7 @@ const help = `
   md <hex offset> <size>	# memory display (use with caution)
   mw <hex offset> <hex data>	# memory write   (use with caution)
   rand				# gather 32 bytes from TRNG via crypto/rand
+  reboot			# reset watchdog timer
   stack				# stack trace of current goroutine
   stackall			# stack trace of all goroutines
   version			# Go runtime version
@@ -114,6 +117,9 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 		buf := make([]byte, 32)
 		rand.Read(buf)
 		res = string(term.Escape.Cyan) + fmt.Sprintf("%x", buf) + string(term.Escape.Reset)
+	case "reboot":
+		reg := (*uint16)(unsafe.Pointer(uintptr(WDOG1)))
+		*reg = 0x0000
 	case "stack":
 		res = string(debug.Stack())
 	case "stackall":

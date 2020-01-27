@@ -86,6 +86,7 @@ The SSH server expose a basic shell with the following commands:
   md <hex offset> <size>        # memory display (use with caution)
   mw <hex offset> <hex data>    # memory write   (use with caution)
   rand                          # gather 32 bytes from TRNG via crypto/rand
+  reboot                        # reset watchdog timer
   stack                         # stack trace of current goroutine
   stackall                      # stack trace of all goroutines
   version                       # Go runtime version
