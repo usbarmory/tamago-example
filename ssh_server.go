@@ -108,8 +108,6 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 		res = "logout"
 		err = io.EOF
 	case "example":
-		log.SetOutput(term)
-		defer log.SetOutput(os.Stdout)
 		example()
 	case "help":
 		res = string(term.Escape.Cyan) + help + string(term.Escape.Reset)
@@ -160,6 +158,9 @@ func handleChannel(newChannel ssh.NewChannel) {
 
 	go func() {
 		defer conn.Close()
+
+		log.SetOutput(io.MultiWriter(os.Stdout, term))
+		defer log.SetOutput(os.Stdout)
 
 		fmt.Fprintf(term, "%s\n", banner)
 		fmt.Fprintf(term, "Running on %s @ %d MHz\n", imx6.Model(), imx6.ARMFreq()/1000000)
