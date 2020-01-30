@@ -11,6 +11,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -121,7 +122,9 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 	case "stack":
 		res = string(debug.Stack())
 	case "stackall":
-		pprof.Lookup("goroutine").WriteTo(term, 1)
+		buf := new(bytes.Buffer)
+		pprof.Lookup("goroutine").WriteTo(buf, 1)
+		res = buf.String()
 	case "version":
 		res = runtime.Version()
 	default:
