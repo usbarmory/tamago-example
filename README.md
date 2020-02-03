@@ -89,7 +89,6 @@ The SSH server expose a basic shell with the following commands:
   reboot                        # reset watchdog timer
   stack                         # stack trace of current goroutine
   stackall                      # stack trace of all goroutines
-  version                       # Go runtime version
 ```
 
 Compiling
