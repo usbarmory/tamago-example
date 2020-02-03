@@ -21,6 +21,7 @@ import (
 	"math/big"
 	mathrand "math/rand"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/f-secure-foundry/tamago/imx6"
@@ -29,13 +30,15 @@ import (
 
 var Build string
 var Revision string
-var banner = "Hello from tamago/arm (" + Revision + " - " + Build + ")"
+var banner string
 
 var verbose = true
 
 var exit chan bool
 
 func init() {
+	banner = fmt.Sprintf("Hello from %s/%s (%s - %s)", runtime.GOOS, runtime.GOARCH, Revision, Build)
+
 	log.SetFlags(0)
 
 	// imx6 package debugging

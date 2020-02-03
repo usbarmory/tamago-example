@@ -276,7 +276,7 @@ func ECMRx(out []byte, lastErr error) (_ []byte, err error) {
 	rx = append(rx, out...)
 
 	// more data expected or zero length packet
-	if len(out) == 512 {
+	if len(out) == maxPacketSize {
 		return
 	}
 
