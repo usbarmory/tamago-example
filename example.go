@@ -37,7 +37,9 @@ var verbose = true
 var exit chan bool
 
 func init() {
-	banner = fmt.Sprintf("Hello from %s/%s (%s - %s)", runtime.GOOS, runtime.GOARCH, Revision, Build)
+	banner = fmt.Sprintf("%s/%s (%s) • %s %s",
+		runtime.GOOS, runtime.GOARCH, runtime.Version(),
+		Revision, Build)
 
 	log.SetFlags(0)
 
@@ -52,12 +54,15 @@ func init() {
 	_, family, revMajor, revMinor := imx6.SiliconVersion()
 
 	if !imx6.Native {
+		banner += fmt.Sprintf(" • %s %d MHz (emulated)", imx6.Model(), imx6.ARMFreq()/1000000)
 		return
 	}
 
 	if err := imx6.SetARMFreq(900000000); err != nil {
 		fmt.Printf("WARNING: error setting ARM frequency: %v\n", err)
 	}
+
+	banner += fmt.Sprintf(" • %s %d MHz", imx6.Model(), imx6.ARMFreq()/1000000)
 
 	fmt.Printf("imx6_soc: %s (%#x, %d.%d) @ %d MHz - native:%v\n",
 		model, family, revMajor, revMinor, imx6.ARMFreq()/1000000, imx6.Native)

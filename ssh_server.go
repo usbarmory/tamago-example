@@ -22,7 +22,6 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"runtime"
 	"runtime/debug"
 	"runtime/pprof"
 	"strconv"
@@ -35,8 +34,6 @@ import (
 	"gvisor.dev/gvisor/pkg/tcpip/adapters/gonet"
 	"gvisor.dev/gvisor/pkg/tcpip/network/ipv4"
 	"gvisor.dev/gvisor/pkg/tcpip/stack"
-
-	"github.com/f-secure-foundry/tamago/imx6"
 )
 
 const WDOG1 uint32 = 0x020bc000
@@ -51,7 +48,6 @@ const help = `
   reboot			# reset watchdog timer
   stack				# stack trace of current goroutine
   stackall			# stack trace of all goroutines
-  version			# Go runtime version
 `
 
 var memoryCommandPattern = regexp.MustCompile(`(md|mw) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
@@ -125,8 +121,6 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 		buf := new(bytes.Buffer)
 		pprof.Lookup("goroutine").WriteTo(buf, 1)
 		res = buf.String()
-	case "version":
-		res = runtime.Version()
 	default:
 		m := memoryCommandPattern.FindStringSubmatch(cmd)
 
@@ -166,7 +160,6 @@ func handleChannel(newChannel ssh.NewChannel) {
 		defer log.SetOutput(os.Stdout)
 
 		fmt.Fprintf(term, "%s\n", banner)
-		fmt.Fprintf(term, "Running on %s @ %d MHz\n", imx6.Model(), imx6.ARMFreq()/1000000)
 		fmt.Fprintf(term, "%s\n", string(term.Escape.Cyan)+help+string(term.Escape.Reset))
 
 		for {
