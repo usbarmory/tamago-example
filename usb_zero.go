@@ -27,7 +27,6 @@ func configureZeroDevice(device *usb.Device) {
 	device.Descriptor.VendorId = 0x0525
 	device.Descriptor.ProductId = 0xa4a0
 	device.Descriptor.Device = 0x0001
-	device.Descriptor.NumConfigurations = 2
 
 	iManufacturer, _ := device.AddString(`TamaGo`)
 	device.Descriptor.Manufacturer = iManufacturer
@@ -38,26 +37,32 @@ func configureZeroDevice(device *usb.Device) {
 	iSerial, _ := device.AddString(`0.1`)
 	device.Descriptor.SerialNumber = iSerial
 
-	// device qualifier
-	device.Qualifier = &usb.DeviceQualifierDescriptor{}
-	device.Qualifier.SetDefaults()
-	device.Qualifier.DeviceClass = 0xff
-	device.Qualifier.NumConfigurations = 2
-}
-
-func configureSourceSink(device *usb.Device) {
-	// source and sink configuration
 	conf := &usb.ConfigurationDescriptor{}
 	conf.SetDefaults()
-	conf.TotalLength = 32
-	conf.NumInterfaces = 1
 	conf.ConfigurationValue = 3
 
 	iConfiguration, _ := device.AddString(`source and sink data`)
 	conf.Configuration = iConfiguration
 
-	device.Configurations = append(device.Configurations, conf)
+	device.AddConfiguration(conf)
 
+	conf = &usb.ConfigurationDescriptor{}
+	conf.SetDefaults()
+	conf.ConfigurationValue = 2
+
+	iConfiguration, _ = device.AddString(`loop input to output`)
+	conf.Configuration = iConfiguration
+
+	device.AddConfiguration(conf)
+
+	// device qualifier
+	device.Qualifier = &usb.DeviceQualifierDescriptor{}
+	device.Qualifier.SetDefaults()
+	device.Qualifier.DeviceClass = 0xff
+	device.Qualifier.NumConfigurations = uint8(len(device.Configurations))
+}
+
+func configureSourceSink(device *usb.Device, configurationIndex int) {
 	// source and sink interface
 	iface := &usb.InterfaceDescriptor{}
 	iface.SetDefaults()
@@ -65,14 +70,12 @@ func configureSourceSink(device *usb.Device) {
 	iface.InterfaceClass = 0xff
 	iface.Interface = 0
 
-	conf.Interfaces = append(conf.Interfaces, iface)
-
 	// source EP1 IN endpoint (bulk)
 	ep1IN := &usb.EndpointDescriptor{}
 	ep1IN.SetDefaults()
 	ep1IN.EndpointAddress = 0x81
 	ep1IN.Attributes = 2
-	ep1IN.MaxPacketSize = 512
+	ep1IN.MaxPacketSize = maxPacketSize
 	ep1IN.Function = source
 
 	iface.Endpoints = append(iface.Endpoints, ep1IN)
@@ -82,27 +85,17 @@ func configureSourceSink(device *usb.Device) {
 	ep1OUT.SetDefaults()
 	ep1OUT.EndpointAddress = 0x01
 	ep1OUT.Attributes = 2
-	ep1OUT.MaxPacketSize = 512
+	ep1OUT.MaxPacketSize = maxPacketSize
 	ep1OUT.Function = sink
 
 	iface.Endpoints = append(iface.Endpoints, ep1OUT)
+
+	device.Configurations[configurationIndex].AddInterface(iface)
 }
 
 // Linux tools/usb/testusb.c does not seem to test loopback functionality at
 // all, for now we leave endpoint functions undefined.
-func configureLoopback(device *usb.Device) {
-	// loopback configuration
-	conf := &usb.ConfigurationDescriptor{}
-	conf.SetDefaults()
-	conf.TotalLength = 0x0020
-	conf.NumInterfaces = 1
-	conf.ConfigurationValue = 2
-
-	iConfiguration, _ := device.AddString(`loop input to output`)
-	conf.Configuration = iConfiguration
-
-	device.Configurations = append(device.Configurations, conf)
-
+func configureLoopback(device *usb.Device, configurationIndex int) {
 	// loopback interface
 	iface := &usb.InterfaceDescriptor{}
 	iface.SetDefaults()
@@ -112,14 +105,12 @@ func configureLoopback(device *usb.Device) {
 	iInterface, _ := device.AddString(`loop input to output`)
 	iface.Interface = iInterface
 
-	conf.Interfaces = append(conf.Interfaces, iface)
-
 	// loopback EP1 IN endpoint (bulk)
 	ep1IN := &usb.EndpointDescriptor{}
 	ep1IN.SetDefaults()
 	ep1IN.EndpointAddress = 0x81
 	ep1IN.Attributes = 2
-	ep1IN.MaxPacketSize = 512
+	ep1IN.MaxPacketSize = maxPacketSize
 
 	iface.Endpoints = append(iface.Endpoints, ep1IN)
 
@@ -128,18 +119,20 @@ func configureLoopback(device *usb.Device) {
 	ep1OUT.SetDefaults()
 	ep1OUT.EndpointAddress = 0x01
 	ep1OUT.Attributes = 2
-	ep1OUT.MaxPacketSize = 512
+	ep1OUT.MaxPacketSize = maxPacketSize
 
 	iface.Endpoints = append(iface.Endpoints, ep1OUT)
+
+	device.Configurations[configurationIndex].AddInterface(iface)
 }
 
 // source implements the IN endpoint data source, to be used `modprobe usbtest
 // pattern=1 mod_pattern=1`.
 func source(_ []byte, lastErr error) (in []byte, err error) {
-	in = make([]byte, 512*10)
+	in = make([]byte, maxPacketSize*10)
 
 	for i := 0; i < len(in); i++ {
-		in[i] = byte((i % 512) % 63)
+		in[i] = byte((i % maxPacketSize) % 63)
 	}
 
 	return
@@ -154,7 +147,7 @@ func sink(out []byte, lastErr error) (_ []byte, err error) {
 	}
 
 	for i := 0; i < len(out); i++ {
-		if out[i] != byte((i%512)%63) {
+		if out[i] != byte((i%maxPacketSize)%63) {
 			return nil, fmt.Errorf("imx6_usb: EP1.0 function error, buffer mismatch (out[%d] == %x)", i, out[i])
 		}
 	}
@@ -191,8 +184,8 @@ func StartUSBGadgetZero() {
 	device := &usb.Device{}
 
 	configureZeroDevice(device)
-	configureSourceSink(device)
-	configureLoopback(device)
+	configureSourceSink(device, 0)
+	configureLoopback(device, 0)
 
 	usb.USB1.Init()
 	usb.USB1.DeviceMode()

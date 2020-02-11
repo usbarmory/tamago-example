@@ -12,8 +12,6 @@ package main
 
 import (
 	"encoding/binary"
-	"log"
-	"net"
 	"strings"
 
 	"github.com/f-secure-foundry/tamago/imx6/usb"
@@ -21,20 +19,10 @@ import (
 	"gvisor.dev/gvisor/pkg/tcpip"
 	"gvisor.dev/gvisor/pkg/tcpip/buffer"
 	"gvisor.dev/gvisor/pkg/tcpip/link/channel"
-	"gvisor.dev/gvisor/pkg/tcpip/link/sniffer"
-	"gvisor.dev/gvisor/pkg/tcpip/network/arp"
-	"gvisor.dev/gvisor/pkg/tcpip/network/ipv4"
-	"gvisor.dev/gvisor/pkg/tcpip/stack"
-	"gvisor.dev/gvisor/pkg/tcpip/transport/icmp"
-	"gvisor.dev/gvisor/pkg/tcpip/transport/tcp"
-	"gvisor.dev/gvisor/pkg/waiter"
 )
 
-const maxPacketSize = 512
 const hostMAC = "1a:55:89:a2:69:42"
 const deviceMAC = "1a:55:89:a2:69:41"
-const IP = "10.0.0.1"
-const MTU = 1500
 
 // set to true to enable packet sniffing
 const sniff = false
@@ -47,54 +35,29 @@ var link *channel.Endpoint
 // Ethernet frame buffers
 var rx []byte
 
-func configureEthernetDevice(device *usb.Device) {
-	// Supported Language Code Zero: English
-	device.SetLanguageCodes([]uint16{0x0409})
-
-	// device descriptor
-	device.Descriptor = &usb.DeviceDescriptor{}
-	device.Descriptor.SetDefaults()
-	device.Descriptor.DeviceClass = 0x2
-	device.Descriptor.VendorId = 0x0525
-	device.Descriptor.ProductId = 0xa4a2
-	device.Descriptor.Device = 0x0001
-	device.Descriptor.NumConfigurations = 1
-
-	iManufacturer, _ := device.AddString(`TamaGo`)
-	device.Descriptor.Manufacturer = iManufacturer
-
-	iProduct, _ := device.AddString(`RNDIS/Ethernet Gadget`)
-	device.Descriptor.Product = iProduct
-
-	iSerial, _ := device.AddString(`0.1`)
-	device.Descriptor.SerialNumber = iSerial
-
-	// device qualifier
-	device.Qualifier = &usb.DeviceQualifierDescriptor{}
-	device.Qualifier.SetDefaults()
-	device.Qualifier.DeviceClass = 2
-	device.Qualifier.NumConfigurations = 2
-}
-
-func configureECM(device *usb.Device) {
-	// source and sink configuration
-	conf := &usb.ConfigurationDescriptor{}
-	conf.SetDefaults()
-	conf.TotalLength = 71
-	conf.NumInterfaces = 1
-	conf.ConfigurationValue = 1
-
-	device.Configurations = append(device.Configurations, conf)
-
-	// CDC communication interface
-	iface := &usb.InterfaceDescriptor{}
+// Build a CDC control interface.
+func buildControlInterface(device *usb.Device) (iface *usb.InterfaceDescriptor) {
+	iface = &usb.InterfaceDescriptor{}
 	iface.SetDefaults()
+
 	iface.NumEndpoints = 1
 	iface.InterfaceClass = 2
 	iface.InterfaceSubClass = 6
 
 	iInterface, _ := device.AddString(`CDC Ethernet Control Model (ECM)`)
 	iface.Interface = iInterface
+
+	// Set IAD to be inserted before first interface, to support multiple
+	// functions in this same configuration.
+	iface.IAD = &usb.InterfaceAssociationDescriptor{}
+	iface.IAD.SetDefaults()
+	// alternate settings do not count
+	iface.IAD.InterfaceCount = 1
+	iface.IAD.FunctionClass = iface.InterfaceClass
+	iface.IAD.FunctionSubClass = iface.InterfaceSubClass
+
+	iFunction, _ := device.AddString(`CDC`)
+	iface.IAD.Function = iFunction
 
 	header := &usb.CDCHeaderDescriptor{}
 	header.SetDefaults()
@@ -114,8 +77,6 @@ func configureECM(device *usb.Device) {
 
 	iface.ClassDescriptors = append(iface.ClassDescriptors, ethernet.Bytes())
 
-	conf.Interfaces = append(conf.Interfaces, iface)
-
 	ep2IN := &usb.EndpointDescriptor{}
 	ep2IN.SetDefaults()
 	ep2IN.EndpointAddress = 0x82
@@ -126,17 +87,21 @@ func configureECM(device *usb.Device) {
 
 	iface.Endpoints = append(iface.Endpoints, ep2IN)
 
-	// CDC data interface
+	return
+}
+
+// Build a CDC data interface.
+func buildDataInterface(device *usb.Device) (iface *usb.InterfaceDescriptor) {
 	iface = &usb.InterfaceDescriptor{}
 	iface.SetDefaults()
+
+	// ECM requires the use of "alternate settings" for its data interface
 	iface.AlternateSetting = 1
 	iface.NumEndpoints = 2
 	iface.InterfaceClass = 10
 
-	iInterface, _ = device.AddString(`CDC Data`)
+	iInterface, _ := device.AddString(`CDC Data`)
 	iface.Interface = iInterface
-
-	conf.Interfaces = append(conf.Interfaces, iface)
 
 	ep1IN := &usb.EndpointDescriptor{}
 	ep1IN.SetDefaults()
@@ -155,84 +120,16 @@ func configureECM(device *usb.Device) {
 	ep1OUT.Function = ECMRx
 
 	iface.Endpoints = append(iface.Endpoints, ep1OUT)
-}
-
-func configureNetworkStack(addr tcpip.Address, nic tcpip.NICID, sniff bool) (s *stack.Stack) {
-	var err error
-
-	hostMACBytes, err = net.ParseMAC(hostMAC)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	deviceMACBytes, err = net.ParseMAC(deviceMAC)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	s = stack.New(stack.Options{
-		NetworkProtocols: []stack.NetworkProtocol{
-			ipv4.NewProtocol(),
-			arp.NewProtocol()},
-		TransportProtocols: []stack.TransportProtocol{
-			tcp.NewProtocol(),
-			icmp.NewProtocol4()},
-	})
-
-	linkAddr, err := tcpip.ParseMACAddress(deviceMAC)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	link = channel.New(256, MTU, linkAddr)
-	linkEP := stack.LinkEndpoint(link)
-
-	if sniff {
-		linkEP = sniffer.New(linkEP)
-	}
-
-	if err := s.CreateNIC(nic, linkEP); err != nil {
-		log.Fatal(err)
-	}
-
-	if err := s.AddAddress(nic, arp.ProtocolNumber, arp.ProtocolAddress); err != nil {
-		log.Fatal(err)
-	}
-
-	if err := s.AddAddress(nic, ipv4.ProtocolNumber, addr); err != nil {
-		log.Fatal(err)
-	}
-
-	subnet, err := tcpip.NewSubnet("\x00\x00\x00\x00", "\x00\x00\x00\x00")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	s.SetRouteTable([]tcpip.Route{{
-		Destination: subnet,
-		NIC:         nic,
-	}})
 
 	return
 }
 
-func startICMPEndpoint(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpip.NICID) {
-	var wq waiter.Queue
+func configureECM(device *usb.Device, configurationIndex int) {
+	controlInterface := buildControlInterface(device)
+	device.Configurations[configurationIndex].AddInterface(controlInterface)
 
-	fullAddr := tcpip.FullAddress{Addr: addr, Port: port, NIC: nic}
-	ep, err := s.NewEndpoint(icmp.ProtocolNumber4, ipv4.ProtocolNumber, &wq)
-
-	if err != nil {
-		log.Fatalf("endpoint error (icmp): %v\n", err)
-	}
-
-	if err := ep.Bind(fullAddr); err != nil {
-		log.Fatal("bind error (icmp endpoint): ", err)
-	}
+	dataInterface := buildDataInterface(device)
+	device.Configurations[configurationIndex].AddInterface(dataInterface)
 }
 
 // ECMControl implements the endpoint 2 IN function.
@@ -294,45 +191,4 @@ func ECMRx(out []byte, lastErr error) (_ []byte, err error) {
 	rx = []byte{}
 
 	return
-}
-
-// StartUSBEthernet starts an emulated Ethernet over USB device (ECM protocol,
-// only supported on Linux hosts) with test SSH and HTTP services.
-func StartUSBEthernet() {
-	addr := tcpip.Address(net.ParseIP(IP)).To4()
-
-	s := configureNetworkStack(addr, 1, sniff)
-
-	// handle pings
-	startICMPEndpoint(s, addr, 0, 1)
-
-	// create index.html
-	setupStaticWebAssets()
-
-	// HTTP web server (see web_server.go)
-	go func() {
-		startWebServer(s, addr, 80, 1, false)
-	}()
-
-	// HTTPS web server (see web_server.go)
-	go func() {
-		startWebServer(s, addr, 443, 1, true)
-	}()
-
-	// SSH server (see ssh_server.go)
-	go func() {
-		startSSHServer(s, addr, 22, 1)
-	}()
-
-	device := &usb.Device{}
-
-	configureEthernetDevice(device)
-	configureECM(device)
-
-	usb.USB1.Init()
-	usb.USB1.DeviceMode()
-	usb.USB1.Reset()
-
-	// never returns
-	usb.USB1.Start(device)
 }

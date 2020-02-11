@@ -27,6 +27,8 @@ import (
 	"strconv"
 	"unsafe"
 
+	"github.com/f-secure-foundry/tamago/imx6"
+
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
 
@@ -35,8 +37,6 @@ import (
 	"gvisor.dev/gvisor/pkg/tcpip/network/ipv4"
 	"gvisor.dev/gvisor/pkg/tcpip/stack"
 )
-
-const WDOG1 uint32 = 0x020bc000
 
 const help = `
   exit, quit			# close session
@@ -113,8 +113,7 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 		rand.Read(buf)
 		res = string(term.Escape.Cyan) + fmt.Sprintf("%x", buf) + string(term.Escape.Reset)
 	case "reboot":
-		reg := (*uint16)(unsafe.Pointer(uintptr(WDOG1)))
-		*reg = 0x0000
+		imx6.Reboot()
 	case "stack":
 		res = string(debug.Stack())
 	case "stackall":

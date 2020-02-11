@@ -54,17 +54,17 @@ func init() {
 	_, family, revMajor, revMinor := imx6.SiliconVersion()
 
 	if !imx6.Native {
-		banner += fmt.Sprintf(" • %s %d MHz (emulated)", imx6.Model(), imx6.ARMFreq()/1000000)
+		banner += fmt.Sprintf(" • %s %d MHz (emulated)", model, imx6.ARMFreq()/1000000)
 		return
 	}
 
 	if err := imx6.SetARMFreq(900000000); err != nil {
-		fmt.Printf("WARNING: error setting ARM frequency: %v\n", err)
+		log.Printf("WARNING: error setting ARM frequency: %v\n", err)
 	}
 
-	banner += fmt.Sprintf(" • %s %d MHz", imx6.Model(), imx6.ARMFreq()/1000000)
+	banner += fmt.Sprintf(" • %s %d MHz", model, imx6.ARMFreq()/1000000)
 
-	fmt.Printf("imx6_soc: %s (%#x, %d.%d) @ %d MHz - native:%v\n",
+	log.Printf("imx6_soc: %s (%#x, %d.%d) @ %d MHz - native:%v\n",
 		model, family, revMajor, revMinor, imx6.ARMFreq()/1000000, imx6.Native)
 }
 
@@ -197,7 +197,7 @@ func main() {
 
 	if imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL) {
 		log.Println("-- i.mx6 usb ---------------------------------------------------------")
-		StartUSBEthernet()
+		StartUSB()
 	}
 
 	log.Printf("Goodbye from tamago/arm (%s)\n", time.Since(start))
