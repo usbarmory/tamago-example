@@ -5,8 +5,6 @@
 //
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
-//
-// +build tamago,arm
 
 // Basic test example for tamago/arm running on the USB armory Mk II.
 
