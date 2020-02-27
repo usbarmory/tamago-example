@@ -12,7 +12,7 @@ require (
 	golang.org/x/crypto v0.0.0-20200219234226-1ad67e1f0ef4
 	golang.org/x/sys v0.0.0-20200219091948-cb0a6d8edb6c // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	gvisor.dev/gvisor v0.0.0-20200220022842-ec5630527bc4
+	gvisor.dev/gvisor v0.0.0-20191224014503-95108940a01c
 )
 
 replace gvisor.dev/gvisor v0.0.0-20191224014503-95108940a01c => github.com/f-secure-foundry/gvisor v0.0.0-20191224100818-98827aa91607
