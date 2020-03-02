@@ -77,7 +77,7 @@ The web servers expose the following routes:
   * `/debug/pprof`: Go runtime profiling data through [pprof](https://golang.org/pkg/net/http/pprof/)
   * `/debug/charts`: Go runtime profiling data through [debugcharts](https://github.com/mkevac/debugcharts)
 
-The SSH server expose a basic shell with the following commands:
+The SSH server exposes a basic shell with the following commands:
 
 ```
   exit, quit                    # close session
