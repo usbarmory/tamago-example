@@ -63,8 +63,8 @@ its separate goroutine:
   8. Large memory allocation.
 
 Once all tests are completed, and only on non-emulated hardware, the following
-network services are started on Ethernet over USB (ECM protocol, only supported
-on Linux hosts).
+network services are started on [Ethernet over USB](https://github.com/f-secure-foundry/usbarmory/wiki/Host-communication)
+(ECM protocol, only supported on Linux hosts).
 
   * SSH server on 10.0.0.1:22
   * HTTP server on 10.0.0.1:80
@@ -102,18 +102,32 @@ cd tamago-go/src && ./all.bash
 cd ../bin && export TAMAGO=`pwd`/go
 ```
 
-Build the example application:
+Build the `example` application executable:
 
 ```
 git clone https://github.com/f-secure-foundry/tamago-example
 cd tamago-example && make
 ```
 
+For native hardware execution you can bundle the application in a raw
+image (`example.raw`), for microSD or eMMC flashing, as follows:
+
+```
+# microSD: BOOTDEV=0, eMMC: BOOTDEV=1
+make raw BOOTDEV=0
+```
+
 Executing and debugging
 =======================
 
-Native hardware
----------------
+Native hardware: raw image
+--------------------------
+
+Follow [these instructions](https://github.com/f-secure-foundry/usbarmory-debian-base_image#installation)
+using the built `example.raw` image.
+
+Native hardware: existing bootloader
+------------------------------------
 
 Copy the compiled application on an external microSD card (replace `$dev` with
 `0`) or the internal eMMC (replace `$dev` with `1`), then launch it from the
@@ -126,13 +140,22 @@ bootelf -p 0x90000000
 
 For non-interactive execution modify the U-Boot configuration accordingly.
 
-The standard output can be accessed through the
+Standard output
+---------------
+
+The built in SSH server, once connected to, will redirect all logs to the
+established session.
+
+Alternatively the standard output can be accessed through the
 [debug accessory](https://github.com/f-secure-foundry/usbarmory/tree/master/hardware/mark-two-debug-accessory)
 and the following `picocom` configuration:
 
 ```
 picocom -b 115200 -eb /dev/ttyUSB2 --imap lfcrlf
 ```
+
+Debugging
+---------
 
 The application can be debugged with GDB over JTAG using `openocd` and the
 `imx6ull.cfg` and `gdbinit` debugging helpers published
