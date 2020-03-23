@@ -123,7 +123,6 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 
 		if len(m) == 4 {
 			res = memoryCommand(m[1], m[2], m[3])
-			break
 		} else {
 			res = "unknown command, type `help`"
 		}
