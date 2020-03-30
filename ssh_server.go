@@ -26,6 +26,7 @@ import (
 	"unsafe"
 
 	"github.com/f-secure-foundry/tamago/imx6"
+	"github.com/f-secure-foundry/tamago/usbarmory/mark-two"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
@@ -40,6 +41,7 @@ const help = `
   exit, quit			# close session
   example			# launch example test code
   help				# this help
+  led (white|blue) (on|off)	# LED control
   md <hex offset> <size>	# memory display (use with caution)
   mw <hex offset> <hex data>	# memory write   (use with caution)
   rand				# gather 32 bytes from TRNG via crypto/rand
@@ -48,7 +50,18 @@ const help = `
   stackall			# stack trace of all goroutines
 `
 
+var ledCommandPattern = regexp.MustCompile(`led (white|blue) (on|off).*`)
 var memoryCommandPattern = regexp.MustCompile(`(md|mw) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
+
+func ledCommand(name string, state string) (res string) {
+	if state == "on" {
+		usbarmory.LED(name, true)
+	} else {
+		usbarmory.LED(name, false)
+	}
+
+	return
+}
 
 func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 	addr, err := strconv.ParseUint(arg1, 16, 32)
@@ -119,10 +132,10 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 		pprof.Lookup("goroutine").WriteTo(buf, 1)
 		res = buf.String()
 	default:
-		m := memoryCommandPattern.FindStringSubmatch(cmd)
-
-		if len(m) == 4 {
+		if m := memoryCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
 			res = memoryCommand(m[1], m[2], m[3])
+		} else if m := ledCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
+			res = ledCommand(m[1], m[2])
 		} else {
 			res = "unknown command, type `help`"
 		}

@@ -83,6 +83,7 @@ The SSH server exposes a basic shell with the following commands:
   exit, quit                    # close session
   example                       # launch example test code
   help                          # this help
+  led (white|blue) (on|off)     # LED control
   md <hex offset> <size>        # memory display (use with caution)
   mw <hex offset> <hex data>    # memory write   (use with caution)
   rand                          # gather 32 bytes from TRNG via crypto/rand
