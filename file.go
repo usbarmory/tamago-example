@@ -21,7 +21,7 @@ func TestFile() {
 
 	defer func() {
 		if err != nil {
-			log.Printf("TestFile error: %v\n", err)
+			log.Printf("TestFile error: %v", err)
 		}
 	}()
 
@@ -29,7 +29,7 @@ func TestFile() {
 	fileName := "tamago.txt"
 	path := filepath.Join(dirPath, fileName)
 
-	log.Printf("writing %d bytes to %s\n", len(banner), path)
+	log.Printf("writing %d bytes to %s", len(banner), path)
 
 	err = os.MkdirAll(dirPath, 0700)
 
@@ -59,14 +59,14 @@ func TestFile() {
 	if strings.Compare(banner, string(read)) != 0 {
 		log.Println("TestFile: comparison fail")
 	} else {
-		log.Printf("read %s (%d bytes)\n", path, len(read))
+		log.Printf("read %s (%d bytes)", path, len(read))
 	}
 }
 
 func TestDir() {
 	dirPath := "/dir"
 
-	log.Printf("listing directory %s\n", dirPath)
+	log.Printf("listing directory %s", dirPath)
 
 	f, err := os.Open(dirPath)
 
@@ -91,6 +91,6 @@ func TestDir() {
 	}
 
 	for _, i := range files {
-		log.Printf("%s/%s (%d bytes)\n", dirPath, i.Name(), i.Size())
+		log.Printf("%s/%s (%d bytes)", dirPath, i.Name(), i.Size())
 	}
 }

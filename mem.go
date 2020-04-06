@@ -49,6 +49,6 @@ func testAlloc(runs int, chunks int, chunkSize int) {
 
 	runtime.ReadMemStats(&memstats)
 	totalAllocated := uint64(runs) * uint64(chunks) * uint64(chunkSize)
-	log.Printf("%d MB allocated (Mallocs: %d Frees: %d HeapSys: %d NumGC:%d)\n",
+	log.Printf("%d MB allocated (Mallocs: %d Frees: %d HeapSys: %d NumGC:%d)",
 		totalAllocated/(1024*1024), memstats.Mallocs, memstats.Frees, memstats.HeapSys, memstats.NumGC)
 }

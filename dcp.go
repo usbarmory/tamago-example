@@ -57,10 +57,10 @@ func TestDCP() {
 	// derive twice to ensure consistency across repeated operations
 
 	if err := testKeyDerivation(); err != nil {
-		log.Printf("imx6_dcp: error, %v\n", err)
+		log.Printf("imx6_dcp: error, %v", err)
 	}
 
 	if err := testKeyDerivation(); err != nil {
-		log.Printf("imx6_dcp: error, %v\n", err)
+		log.Printf("imx6_dcp: error, %v", err)
 	}
 }

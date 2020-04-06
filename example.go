@@ -57,12 +57,12 @@ func init() {
 	}
 
 	if err := imx6.SetARMFreq(900000000); err != nil {
-		log.Printf("WARNING: error setting ARM frequency: %v\n", err)
+		log.Printf("WARNING: error setting ARM frequency: %v", err)
 	}
 
 	banner += fmt.Sprintf(" • %s %d MHz", model, imx6.ARMFreq()/1000000)
 
-	log.Printf("imx6_soc: %s (%#x, %d.%d) @ %d MHz - native:%v\n",
+	log.Printf("imx6_soc: %s (%#x, %d.%d) @ %d MHz - native:%v",
 		model, family, revMajor, revMinor, imx6.ARMFreq()/1000000, imx6.Native)
 }
 
@@ -88,12 +88,12 @@ func example() {
 		log.Println("-- timer -------------------------------------------------------------")
 
 		t := time.NewTimer(sleep)
-		log.Printf("waking up timer after %v\n", sleep)
+		log.Printf("waking up timer after %v", sleep)
 
 		start := time.Now()
 
 		for now := range t.C {
-			log.Printf("woke up at %d (%v)\n", now.Nanosecond(), now.Sub(start))
+			log.Printf("woke up at %d (%v)", now.Nanosecond(), now.Sub(start))
 			break
 		}
 
@@ -104,10 +104,10 @@ func example() {
 	go func() {
 		log.Println("-- sleep -------------------------------------------------------------")
 
-		log.Printf("sleeping %s\n", sleep)
+		log.Printf("sleeping %s", sleep)
 		start := time.Now()
 		time.Sleep(sleep)
-		log.Printf("slept %s (%v)\n", sleep, time.Now().Sub(start))
+		log.Printf("slept %s (%v)", sleep, time.Now().Sub(start))
 
 		exit <- true
 	}()
@@ -121,7 +121,7 @@ func example() {
 		for i := 0; i < 10; i++ {
 			rng := make([]byte, size)
 			rand.Read(rng)
-			log.Printf("%x\n", rng)
+			log.Printf("%x", rng)
 		}
 
 		count := 1000
@@ -132,7 +132,7 @@ func example() {
 			rand.Read(rng)
 		}
 
-		log.Printf("retrieved %d random bytes in %s\n", size*count, time.Since(start))
+		log.Printf("retrieved %d random bytes in %s", size*count, time.Since(start))
 
 		seed, _ := rand.Int(rand.Reader, big.NewInt(int64(math.MaxInt64)))
 		mathrand.Seed(seed.Int64())
@@ -167,14 +167,14 @@ func example() {
 		}()
 	}
 
-	log.Printf("launched %d test goroutines\n", n)
+	log.Printf("launched %d test goroutines", n)
 
 	for i := 1; i <= n; i++ {
 		<-exit
 	}
 
-	log.Printf("----------------------------------------------------------------------\n")
-	log.Printf("completed %d goroutines (%s)\n", n, time.Since(start))
+	log.Printf("----------------------------------------------------------------------")
+	log.Printf("completed %d goroutines (%s)", n, time.Since(start))
 
 	runs := 9
 	chunksMax := 50
@@ -182,7 +182,7 @@ func example() {
 	chunks := mathrand.Intn(chunksMax) + 1
 	chunkSize := fillSize / chunks
 
-	log.Printf("-- memory allocation (%d runs) ----------------------------------------\n", runs)
+	log.Printf("-- memory allocation (%d runs) ----------------------------------------", runs)
 	testAlloc(runs, chunks, chunkSize)
 }
 
@@ -198,5 +198,5 @@ func main() {
 		StartUSB()
 	}
 
-	log.Printf("Goodbye from tamago/arm (%s)\n", time.Since(start))
+	log.Printf("Goodbye from tamago/arm (%s)", time.Since(start))
 }

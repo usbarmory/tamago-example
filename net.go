@@ -96,7 +96,7 @@ func startICMPEndpoint(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpi
 	ep, err := s.NewEndpoint(icmp.ProtocolNumber4, ipv4.ProtocolNumber, &wq)
 
 	if err != nil {
-		log.Fatalf("endpoint error (icmp): %v\n", err)
+		log.Fatalf("endpoint error (icmp): %v", err)
 	}
 
 	if err := ep.Bind(fullAddr); err != nil {
