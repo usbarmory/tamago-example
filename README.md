@@ -46,7 +46,7 @@ Operation
 The example application performs a variety of simple test procedures, each in
 its separate goroutine:
 
-  1. Directory and file writt/read from an in-memory filesystem.
+  1. Directory and file write/read from an in-memory filesystem.
 
   2. Timer operation.
 
