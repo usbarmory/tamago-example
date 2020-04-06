@@ -43,7 +43,7 @@ const help = `
   help				# this help
   led (white|blue) (on|off)	# LED control
   md <hex offset> <size>	# memory display (use with caution)
-  mw <hex offset> <hex data>	# memory write   (use with caution)
+  mw <hex offset> <hex value>	# memory write   (use with caution)
   rand				# gather 32 bytes from TRNG via crypto/rand
   reboot			# reset watchdog timer
   stack				# stack trace of current goroutine
@@ -78,31 +78,36 @@ func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 			return fmt.Sprintf("invalid size: %v", err)
 		}
 
+		if (addr%4) != 0 || (size%4) != 0 {
+			return "please only perform 32-bit aligned accesses"
+		}
+
 		if size > 4096 {
-			return "please use size argument <= 4096"
+			return "please only use a size argument <= 4096"
 		}
 
 		data := make([]byte, size)
 
-		for i := 0; i < int(size); i++ {
-			data[i] = *(*byte)(unsafe.Pointer(uintptr(addr + uint64(i))))
+		for i := 0; i < int(size); i += 4 {
+			reg := (*uint32)(unsafe.Pointer(uintptr(addr + uint64(i))))
+			val := *reg
+
+			data[i] = byte((val >> 24) & 0xff)
+			data[i+1] = byte((val >> 16) & 0xff)
+			data[i+2] = byte((val >> 8) & 0xff)
+			data[i+3] = byte(val & 0xff)
 		}
 
 		res = hex.Dump(data)
 	case "mw":
-		data, err := hex.DecodeString(arg2)
+		val, err := strconv.ParseUint(arg2, 16, 32)
 
 		if err != nil {
 			return fmt.Sprintf("invalid data: %v", err)
 		}
 
-		if len(data) > 4 {
-			return "please use data size <= 32 bits"
-		}
-
-		for i := 0; i < len(data); i++ {
-			*(*byte)(unsafe.Pointer(uintptr(addr + uint64(i)))) = data[i]
-		}
+		reg := (*uint32)(unsafe.Pointer(uintptr(addr)))
+		*reg = uint32(val)
 	}
 
 	return
@@ -179,7 +184,7 @@ func handleChannel(newChannel ssh.NewChannel) {
 			}
 
 			if err != nil {
-				log.Println("readline error: %v\n", err)
+				log.Println("readline error: %v", err)
 				continue
 			}
 
