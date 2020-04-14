@@ -111,7 +111,10 @@ cd tamago-example && make
 ```
 
 For native hardware execution you can bundle the application in a raw
-image (`example.raw`), for microSD or eMMC flashing, as follows:
+image (`example.raw`), for microSD or eMMC flashing, as follows (example
+raw target [pre-requisites](https://github.com/f-secure-foundry/usbarmory-debian-base_image/blob/master/README.md#pre-requisites)
+for Debian):
+
 
 ```
 # microSD: BOOTDEV=0, eMMC: BOOTDEV=1
