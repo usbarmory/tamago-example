@@ -23,6 +23,7 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
 SHELL = /bin/bash
 UBOOT_VER=2019.07
 USBARMORY_REPO=https://raw.githubusercontent.com/f-secure-foundry/usbarmory/master
+DCD=imx6ul-512mb.cfg
 LOSETUP_DEV=$(shell /sbin/losetup -f)
 DISK_SIZE = 50MiB
 JOBS=2
@@ -41,6 +42,19 @@ $(APP):
 	fi
 
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
+
+$(DCD):
+	wget ${USBARMORY_REPO}/software/dcd/$(DCD)
+
+$(APP).bin: $(APP)
+	arm-none-eabi-objcopy -j .text -j .rodata -j .shstrtab -j .typelink \
+	    -j .itablink -j .gopclntab -j .go.buildinfo -j .noptrdata -j .data \
+	    --set-section-alignment .rodata=4096 --set-section-alignment .go.buildinfo=4096 $(APP) -O binary $(APP).bin
+
+$(APP).imx: $(APP).bin $(DCD)
+	mkimage -n $(DCD) -T imximage -e $(TEXT_START) -d $(APP).bin $(APP).imx
+	# Copy entry point from ELF file
+	dd if=$(APP) of=$(APP).imx bs=1 count=4 skip=24 seek=4 conv=notrunc
 
 $(APP).raw: $(APP) u-boot
 	@if [ ! -f "$(APP).raw" ]; then \
@@ -62,6 +76,8 @@ elf: $(APP)
 
 raw: $(APP).raw
 
+imx: $(APP).imx
+
 qemu: $(APP)
 	$(QEMU) -kernel $(APP)
 
@@ -70,7 +86,7 @@ qemu-gdb: $(APP)
 
 clean:
 	rm -f $(APP)
-	@rm -fr $(APP).raw u-boot-${UBOOT_VER}*
+	@rm -fr $(APP).raw $(APP).bin $(APP).imx $(DCD) u-boot-${UBOOT_VER}*
 
 u-boot-${UBOOT_VER}.tar.bz2:
 	wget ftp://ftp.denx.de/pub/u-boot/u-boot-${UBOOT_VER}.tar.bz2 -O u-boot-${UBOOT_VER}.tar.bz2
