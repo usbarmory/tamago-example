@@ -14,7 +14,27 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/f-secure-foundry/tamago/usbarmory/mark-two"
 )
+
+func TestUSDHC() {
+	err := usbarmory.SD.Detect()
+
+	if err != nil {
+		log.Printf("imx6_usdhc: SD error, %v", err)
+	} else {
+		log.Printf("imx6_usdhc: SD card detected")
+	}
+
+	err = usbarmory.MMC.Detect()
+
+	if err != nil {
+		log.Printf("imx6_usdhc: MMC error, %v", err)
+	} else {
+		log.Printf("imx6_usdhc: MMC card detected")
+	}
+}
 
 func TestFile() {
 	var err error

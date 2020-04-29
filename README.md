@@ -47,19 +47,21 @@ its separate goroutine:
 
   1. Directory and file write/read from an in-memory filesystem.
 
-  2. Timer operation.
+  2. SD/MMC card detection (only on non-emulated runs).
 
-  3. Sleep operation.
+  3. Timer operation.
 
-  4. Random bytes collection (gathered from SoC TRNG on non-emulated runs).
+  4. Sleep operation.
 
-  5. ECDSA signing and verification.
+  5. Random bytes collection (gathered from SoC TRNG on non-emulated runs).
 
-  6. Test BTC transaction creation and signing.
+  6. ECDSA signing and verification.
 
-  7. Key derivation with DCP HSM (only on non-emulated runs).
+  7. Test BTC transaction creation and signing.
 
-  8. Large memory allocation.
+  8. Key derivation with DCP HSM (only on non-emulated runs).
+
+  9. Large memory allocation.
 
 Once all tests are completed, and only on non-emulated hardware, the following
 network services are started on [Ethernet over USB](https://github.com/f-secure-foundry/usbarmory/wiki/Host-communication)

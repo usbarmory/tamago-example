@@ -56,7 +56,7 @@ func init() {
 		return
 	}
 
-	if err := imx6.SetARMFreq(900000000); err != nil {
+	if err := imx6.SetARMFreq(900); err != nil {
 		log.Printf("WARNING: error setting ARM frequency: %v", err)
 	}
 
@@ -78,6 +78,11 @@ func example() {
 		log.Println("-- fs ----------------------------------------------------------------")
 		TestFile()
 		TestDir()
+
+		if imx6.Native {
+			TestUSDHC()
+		}
+
 		exit <- true
 	}()
 
