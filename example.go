@@ -112,7 +112,7 @@ func example() {
 		log.Printf("sleeping %s", sleep)
 		start := time.Now()
 		time.Sleep(sleep)
-		log.Printf("slept %s (%v)", sleep, time.Now().Sub(start))
+		log.Printf("slept %s (%v)", sleep, time.Since(start))
 
 		exit <- true
 	}()

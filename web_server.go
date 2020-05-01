@@ -152,6 +152,4 @@ func startWebServer(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpip.N
 	}
 
 	log.Fatal("server returned unexpectedly ", err)
-
-	return
 }
