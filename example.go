@@ -66,7 +66,7 @@ func init() {
 		model, family, revMajor, revMinor, imx6.ARMFreq()/1000000, imx6.Native)
 }
 
-func example() {
+func example(init bool) {
 	start := time.Now()
 	exit = make(chan bool)
 	n := 0
@@ -187,9 +187,19 @@ func example() {
 	testAlloc(runs, chunks, chunkSize)
 
 	if imx6.Native {
+		// 10MB
+		count := 10
+		readSize := 0xffff
+
+		if init {
+			// Pre-USB use the entire iRAM, accounting for required
+			// alignments which take additional space.
+			readSize = 0x20000 - 512
+		}
+
 		log.Println("-- memory cards -------------------------------------------------------")
-		TestUSDHC(usbarmory.SD)
-		TestUSDHC(usbarmory.MMC)
+		TestUSDHC(usbarmory.SD, count, readSize)
+		TestUSDHC(usbarmory.MMC, count, readSize)
 	}
 }
 
@@ -198,7 +208,7 @@ func main() {
 
 	log.Println(banner)
 
-	example()
+	example(true)
 
 	if imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL) {
 		log.Println("-- i.mx6 usb ---------------------------------------------------------")

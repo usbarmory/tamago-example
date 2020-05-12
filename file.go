@@ -19,14 +19,7 @@ import (
 	"github.com/f-secure-foundry/tamago/imx6/usdhc"
 )
 
-func TestUSDHC(card *usdhc.Interface) {
-	// Use the entire iRAM as it is available pre-USB.
-	readSize := 0x20000
-	// Account for required alignments which require additional space.
-	readSize -= 512
-	// read 10MB
-	count := 10
-
+func TestUSDHC(card *usdhc.Interface, count int, readSize int) {
 	err := card.Detect()
 
 	if err != nil {

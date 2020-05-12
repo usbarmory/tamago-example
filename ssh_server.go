@@ -148,7 +148,7 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 		res = "logout"
 		err = io.EOF
 	case "example":
-		example()
+		example(false)
 	case "help":
 		res = string(term.Escape.Cyan) + help + string(term.Escape.Reset)
 	case "rand":
