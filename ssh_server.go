@@ -71,6 +71,7 @@ func ledCommand(name string, state string) (res string) {
 func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 	var err error
 	var val uint64
+	var data []byte
 
 	addr, err := strconv.ParseUint(arg1, 16, 32)
 
@@ -94,10 +95,10 @@ func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 			return fmt.Sprintf("please only use a size argument <= %d", MD_LIMIT)
 		}
 
-		data := make([]byte, val)
-
 		switch op {
 		case "md":
+			data = make([]byte, val)
+
 			for i := 0; i < int(val); i += 4 {
 				reg := (*uint32)(unsafe.Pointer(uintptr(addr + uint64(i))))
 				val := *reg
@@ -126,7 +127,7 @@ func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 			reg := (*uint32)(unsafe.Pointer(uintptr(addr)))
 			*reg = uint32(val)
 		case "sd write":
-			data := make([]byte, 4)
+			data = make([]byte, 4)
 			binary.LittleEndian.PutUint32(data, uint32(val))
 			err = usbarmory.MMC.Write(uint32(addr), data)
 		}
