@@ -14,25 +14,41 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
-	"github.com/f-secure-foundry/tamago/usbarmory/mark-two"
+	"github.com/f-secure-foundry/tamago/imx6/usdhc"
 )
 
-func TestUSDHC() {
-	err := usbarmory.SD.Detect()
+func TestUSDHC(card *usdhc.Interface) {
+	// Use the entire iRAM as it is available pre-USB.
+	readSize := 0x20000
+	// Account for required alignments which require additional space.
+	readSize -= 512
+	// read 10MB
+	count := 10
+
+	err := card.Detect()
 
 	if err != nil {
-		log.Printf("imx6_usdhc: SD error, %v", err)
+		log.Printf("imx6_usdhc: card error, %v", err)
 	} else {
-		log.Printf("imx6_usdhc: SD card detected")
-	}
+		log.Printf("imx6_usdhc: card detected %+v", card.Info())
 
-	err = usbarmory.MMC.Detect()
+		start := time.Now()
 
-	if err != nil {
-		log.Printf("imx6_usdhc: MMC error, %v", err)
-	} else {
-		log.Printf("imx6_usdhc: MMC card detected")
+		for i := 0; i < count*1024*1024; i += readSize {
+			_, err := card.Read(uint32(i), readSize)
+
+			if err != nil {
+				log.Printf("imx6_usdhc: card read error, %v", err)
+				return
+			}
+		}
+
+		elapsed := time.Since(start)
+		mps := (float64(count) / elapsed.Seconds())
+
+		log.Printf("imx6_usdhc: read %d MB in %s (%.2f MB/s)", count, elapsed, mps)
 	}
 }
 

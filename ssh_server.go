@@ -38,20 +38,25 @@ import (
 )
 
 const help = `
-  exit, quit			# close session
-  example			# launch example test code
-  help				# this help
-  led (white|blue) (on|off)	# LED control
-  md <hex offset> <size>	# memory display (use with caution)
-  mw <hex offset> <hex value>	# memory write   (use with caution)
-  rand				# gather 32 bytes from TRNG via crypto/rand
-  reboot			# reset watchdog timer
-  stack				# stack trace of current goroutine
-  stackall			# stack trace of all goroutines
+  help                                # this help
+  exit, quit                          # close session
+  example                             # launch example test code
+  rand                                # gather 32 bytes from TRNG via crypto/rand
+  reboot                              # reset watchdog timer
+  stack                               # stack trace of current goroutine
+  stackall                            # stack trace of all goroutines
+  led       (white|blue) (on|off)     # LED control
+  mmc read  <hex offset> <size>       # internal MMC card read
+  sd  read  <hex offset> <size>       # external uSD card read
+  sd  write <hex offset> <hex value>  # external uSD card card write (danger!)
+  md        <hex offset> <size>       # memory display (use with caution)
+  mw        <hex offset> <hex value>  # memory write   (use with caution)
 `
 
+const MD_LIMIT = 102400
+
 var ledCommandPattern = regexp.MustCompile(`led (white|blue) (on|off).*`)
-var memoryCommandPattern = regexp.MustCompile(`(md|mw) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
+var memoryCommandPattern = regexp.MustCompile(`(md|mw|sd read|sd write|mmc read) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
 
 func ledCommand(name string, state string) (res string) {
 	if state == "on" {
@@ -64,6 +69,9 @@ func ledCommand(name string, state string) (res string) {
 }
 
 func memoryCommand(op string, arg1 string, arg2 string) (res string) {
+	var err error
+	var val uint64
+
 	addr, err := strconv.ParseUint(arg1, 16, 32)
 
 	if err != nil {
@@ -71,43 +79,61 @@ func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 	}
 
 	switch op {
-	case "md":
-		size, err := strconv.ParseUint(arg2, 10, 32)
+	case "md", "sd read", "mmc read":
+		val, err = strconv.ParseUint(arg2, 10, 32)
 
 		if err != nil {
 			return fmt.Sprintf("invalid size: %v", err)
 		}
 
-		if (addr%4) != 0 || (size%4) != 0 {
+		if op == "md" && ((addr%4) != 0 || (val%4) != 0) {
 			return "please only perform 32-bit aligned accesses"
 		}
 
-		if size > 4096 {
-			return "please only use a size argument <= 4096"
+		if val > MD_LIMIT {
+			return fmt.Sprintf("please only use a size argument <= %d", MD_LIMIT)
 		}
 
-		data := make([]byte, size)
+		data := make([]byte, val)
 
-		for i := 0; i < int(size); i += 4 {
-			reg := (*uint32)(unsafe.Pointer(uintptr(addr + uint64(i))))
-			val := *reg
+		switch op {
+		case "md":
+			for i := 0; i < int(val); i += 4 {
+				reg := (*uint32)(unsafe.Pointer(uintptr(addr + uint64(i))))
+				val := *reg
 
-			data[i] = byte((val >> 24) & 0xff)
-			data[i+1] = byte((val >> 16) & 0xff)
-			data[i+2] = byte((val >> 8) & 0xff)
-			data[i+3] = byte(val & 0xff)
+				data[i] = byte((val >> 24) & 0xff)
+				data[i+1] = byte((val >> 16) & 0xff)
+				data[i+2] = byte((val >> 8) & 0xff)
+				data[i+3] = byte(val & 0xff)
+			}
+		case "sd read":
+			data, err = usbarmory.SD.Read(uint32(addr), int(val))
+		case "mmc read":
+			data, err = usbarmory.MMC.Read(uint32(addr), int(val))
 		}
 
 		res = hex.Dump(data)
-	case "mw":
-		val, err := strconv.ParseUint(arg2, 16, 32)
+	case "mw", "sd write":
+		val, err = strconv.ParseUint(arg2, 16, 32)
 
 		if err != nil {
 			return fmt.Sprintf("invalid data: %v", err)
 		}
 
-		reg := (*uint32)(unsafe.Pointer(uintptr(addr)))
-		*reg = uint32(val)
+		switch op {
+		case "mw":
+			reg := (*uint32)(unsafe.Pointer(uintptr(addr)))
+			*reg = uint32(val)
+		case "sd write":
+			data := make([]byte, 4)
+			binary.LittleEndian.PutUint32(data, uint32(val))
+			err = usbarmory.MMC.Write(uint32(addr), data)
+		}
+	}
+
+	if err != nil {
+		return err.Error()
 	}
 
 	return

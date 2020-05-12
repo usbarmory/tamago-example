@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/f-secure-foundry/tamago/imx6"
-	_ "github.com/f-secure-foundry/tamago/usbarmory/mark-two"
+	"github.com/f-secure-foundry/tamago/usbarmory/mark-two"
 )
 
 var Build string
@@ -78,10 +78,6 @@ func example() {
 		log.Println("-- fs ----------------------------------------------------------------")
 		TestFile()
 		TestDir()
-
-		if imx6.Native {
-			TestUSDHC()
-		}
 
 		exit <- true
 	}()
@@ -183,12 +179,18 @@ func example() {
 
 	runs := 9
 	chunksMax := 50
-	fillSize := 160 * 1024 * 1024
 	chunks := mathrand.Intn(chunksMax) + 1
+	fillSize := 160 * 1024 * 1024
 	chunkSize := fillSize / chunks
 
 	log.Printf("-- memory allocation (%d runs) ----------------------------------------", runs)
 	testAlloc(runs, chunks, chunkSize)
+
+	if imx6.Native {
+		log.Println("-- memory cards -------------------------------------------------------")
+		TestUSDHC(usbarmory.SD)
+		TestUSDHC(usbarmory.MMC)
+	}
 }
 
 func main() {

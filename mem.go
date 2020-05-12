@@ -31,10 +31,10 @@ func testAlloc(runs int, chunks int, chunkSize int) {
 	for run := 1; run <= runs; run++ {
 		log.Printf("allocating %d * %d MB chunks (%d/%d)", chunks, chunkSize/(1024*1024), run, runs)
 
-		mem := make([][]byte, chunks)
+		buf := make([][]byte, chunks)
 
 		for i := 0; i <= chunks-1; i++ {
-			mem[i] = make([]byte, chunkSize)
+			buf[i] = make([]byte, chunkSize)
 		}
 
 		// When getting close to the end of available RAM, the next GC

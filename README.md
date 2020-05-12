@@ -47,7 +47,7 @@ its separate goroutine:
 
   1. Directory and file write/read from an in-memory filesystem.
 
-  2. SD/MMC card detection (only on non-emulated runs).
+  2. SD/MMC card detection and read (only on non-emulated runs).
 
   3. Timer operation.
 
@@ -81,16 +81,19 @@ The web servers expose the following routes:
 The SSH server exposes a basic shell with the following commands:
 
 ```
-  exit, quit                    # close session
-  example                       # launch example test code
-  help                          # this help
-  led (white|blue) (on|off)     # LED control
-  md <hex offset> <size>        # memory display (use with caution)
-  mw <hex offset> <hex value>   # memory write   (use with caution)
-  rand                          # gather 32 bytes from TRNG via crypto/rand
-  reboot                        # reset watchdog timer
-  stack                         # stack trace of current goroutine
-  stackall                      # stack trace of all goroutines
+  help                                # this help
+  exit, quit                          # close session
+  example                             # launch example test code
+  rand                                # gather 32 bytes from TRNG via crypto/rand
+  reboot                              # reset watchdog timer
+  stack                               # stack trace of current goroutine
+  stackall                            # stack trace of all goroutines
+  led       (white|blue) (on|off)     # LED control
+  mmc read  <hex offset> <size>       # internal MMC card read
+  sd  read  <hex offset> <size>       # external uSD card read
+  sd  write <hex offset> <hex value>  # external uSD card card write (danger!)
+  md        <hex offset> <size>       # memory display (use with caution)
+  mw        <hex offset> <hex value>  # memory write   (use with caution)
 ```
 
 Compiling
