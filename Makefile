@@ -32,14 +32,14 @@ BOOTCOMMAND = ext2load mmc $(BOOTDEV):1 0x90000000 ${APP}; bootelf -p 0x90000000
 
 .PHONY: clean qemu qemu-gdb
 
+all: $(APP)
+
 check_usbarmory_git:
 	@if [ "${USBARMORY_GIT}" == "" ]; then \
 		echo 'You need to set the USBARMORY_GIT variable to the path of a clone of'; \
 		echo '  https://github.com/f-secure-foundry/usbarmory'; \
 		exit 1; \
 	fi
-
-all: $(APP)
 
 $(APP):
 	@if [ "${TAMAGO}" == "" ] || [ ! -f "${TAMAGO}" ]; then \
