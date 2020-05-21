@@ -29,7 +29,7 @@ func testAlloc(runs int, chunks int, chunkSize int) {
 	//debug.SetGCPercent(gcpercent)
 
 	for run := 1; run <= runs; run++ {
-		log.Printf("allocating %d * %d MB chunks (%d/%d)", chunks, chunkSize/(1024*1024), run, runs)
+		log.Printf("allocating %d * %d MiB chunks (%d/%d)", chunks, chunkSize/(1024*1024), run, runs)
 
 		buf := make([][]byte, chunks)
 
@@ -49,6 +49,6 @@ func testAlloc(runs int, chunks int, chunkSize int) {
 
 	runtime.ReadMemStats(&memstats)
 	totalAllocated := uint64(runs) * uint64(chunks) * uint64(chunkSize)
-	log.Printf("%d MB allocated (Mallocs: %d Frees: %d HeapSys: %d NumGC:%d)",
+	log.Printf("%d MiB allocated (Mallocs: %d Frees: %d HeapSys: %d NumGC:%d)",
 		totalAllocated/(1024*1024), memstats.Mallocs, memstats.Frees, memstats.HeapSys, memstats.NumGC)
 }

@@ -187,8 +187,7 @@ func example(init bool) {
 	testAlloc(runs, chunks, chunkSize)
 
 	if imx6.Native {
-		// 10MB
-		count := 10
+		count := 10 * 1024 * 1024
 		readSize := 0xffff
 
 		if init {

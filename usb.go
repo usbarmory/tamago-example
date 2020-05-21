@@ -37,7 +37,7 @@ func configureDevice(device *usb.Device) {
 	iManufacturer, _ := device.AddString(`TamaGo`)
 	device.Descriptor.Manufacturer = iManufacturer
 
-	iProduct, _ := device.AddString(`Composite Ethernet ECM / OpenPGP Smart Card Device`)
+	iProduct, _ := device.AddString(`RNDIS/Ethernet Gadget`)
 	device.Descriptor.Product = iProduct
 
 	iSerial, _ := device.AddString(`0.1`)
