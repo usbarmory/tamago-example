@@ -22,7 +22,6 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
 
 SHELL = /bin/bash
 UBOOT_VER=2019.07
-USBARMORY_REPO=https://raw.githubusercontent.com/f-secure-foundry/usbarmory/master
 DCD=imx6ul-512mb.cfg
 LOSETUP_DEV=$(shell /sbin/losetup -f)
 DISK_SIZE = 50MiB
@@ -32,6 +31,13 @@ BOOTDEV ?= 0
 BOOTCOMMAND = ext2load mmc $(BOOTDEV):1 0x90000000 ${APP}; bootelf -p 0x90000000
 
 .PHONY: clean qemu qemu-gdb
+
+check_usbarmory_git:
+	@if [ "${USBARMORY_GIT}" == "" ]; then \
+		echo 'You need to set the USBARMORY_GIT variable to the path of a clone of'; \
+		echo '  https://github.com/f-secure-foundry/usbarmory'; \
+		exit 1; \
+	fi
 
 all: $(APP)
 
@@ -43,16 +49,13 @@ $(APP):
 
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 
-$(DCD):
-	wget ${USBARMORY_REPO}/software/dcd/$(DCD)
-
 $(APP).bin: $(APP)
 	arm-none-eabi-objcopy -j .text -j .rodata -j .shstrtab -j .typelink \
 	    -j .itablink -j .gopclntab -j .go.buildinfo -j .noptrdata -j .data \
 	    --set-section-alignment .rodata=4096 --set-section-alignment .go.buildinfo=4096 $(APP) -O binary $(APP).bin
 
-$(APP).imx: $(APP).bin $(DCD)
-	mkimage -n $(DCD) -T imximage -e $(TEXT_START) -d $(APP).bin $(APP).imx
+$(APP).imx: check_usbarmory_git $(APP).bin
+	mkimage -n ${USBARMORY_GIT}/software/dcd/$(DCD) -T imximage -e $(TEXT_START) -d $(APP).bin $(APP).imx
 	# Copy entry point from ELF file
 	dd if=$(APP) of=$(APP).imx bs=1 count=4 skip=24 seek=4 conv=notrunc
 
@@ -92,15 +95,13 @@ u-boot-${UBOOT_VER}.tar.bz2:
 	wget ftp://ftp.denx.de/pub/u-boot/u-boot-${UBOOT_VER}.tar.bz2 -O u-boot-${UBOOT_VER}.tar.bz2
 	wget ftp://ftp.denx.de/pub/u-boot/u-boot-${UBOOT_VER}.tar.bz2.sig -O u-boot-${UBOOT_VER}.tar.bz2.sig
 
-u-boot-${UBOOT_VER}/u-boot-dtb.imx: u-boot-${UBOOT_VER}.tar.bz2
+u-boot-${UBOOT_VER}/u-boot-dtb.imx: check_usbarmory_git u-boot-${UBOOT_VER}.tar.bz2
 	gpg --verify u-boot-${UBOOT_VER}.tar.bz2.sig
 	tar xf u-boot-${UBOOT_VER}.tar.bz2
 	cd u-boot-${UBOOT_VER} && make distclean
 	cd u-boot-${UBOOT_VER} && \
-		wget ${USBARMORY_REPO}/software/u-boot/0001-ARM-mx6-add-support-for-USB-armory-Mk-II-board.patch && \
-		wget ${USBARMORY_REPO}/software/u-boot/0001-Drop-linker-generated-array-creation-when-CONFIG_CMD.patch && \
-		patch -p1 < 0001-ARM-mx6-add-support-for-USB-armory-Mk-II-board.patch && \
-		patch -p1 < 0001-Drop-linker-generated-array-creation-when-CONFIG_CMD.patch && \
+		patch -p1 < ${USBARMORY_GIT}/software/u-boot/0001-ARM-mx6-add-support-for-USB-armory-Mk-II-board.patch && \
+		patch -p1 < ${USBARMORY_GIT}/software/u-boot/0001-Drop-linker-generated-array-creation-when-CONFIG_CMD.patch && \
 		make usbarmory-mark-two_defconfig; \
 		sed -i -e 's/run start_normal/${BOOTCOMMAND}/' include/configs/usbarmory-mark-two.h
 	cd u-boot-${UBOOT_VER} && CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm make -j${JOBS}
