@@ -91,7 +91,6 @@ The SSH server exposes a basic shell with the following commands:
   led       (white|blue) (on|off)     # LED control
   mmc read  <hex offset> <size>       # internal MMC card read
   sd  read  <hex offset> <size>       # external uSD card read
-  sd  write <hex offset> <hex value>  # external uSD card card write (danger!)
   md        <hex offset> <size>       # memory display (use with caution)
   mw        <hex offset> <hex value>  # memory write   (use with caution)
 ```
