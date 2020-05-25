@@ -48,7 +48,6 @@ const help = `
   led       (white|blue) (on|off)     # LED control
   mmc read  <hex offset> <size>       # internal MMC card read
   sd  read  <hex offset> <size>       # external uSD card read
-  sd  write <hex offset> <hex value>  # external uSD card card write (danger!)
   md        <hex offset> <size>       # memory display (use with caution)
   mw        <hex offset> <hex value>  # memory write   (use with caution)
 `
@@ -56,7 +55,7 @@ const help = `
 const MD_LIMIT = 102400
 
 var ledCommandPattern = regexp.MustCompile(`led (white|blue) (on|off).*`)
-var memoryCommandPattern = regexp.MustCompile(`(md|mw|sd read|sd write|mmc read) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
+var memoryCommandPattern = regexp.MustCompile(`(md|mw|sd read|mmc read) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
 
 func ledCommand(name string, state string) (res string) {
 	if state == "on" {
@@ -115,22 +114,15 @@ func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 		}
 
 		res = hex.Dump(data)
-	case "mw", "sd write":
+	case "mw":
 		val, err = strconv.ParseUint(arg2, 16, 32)
 
 		if err != nil {
 			return fmt.Sprintf("invalid data: %v", err)
 		}
 
-		switch op {
-		case "mw":
-			reg := (*uint32)(unsafe.Pointer(uintptr(addr)))
-			*reg = uint32(val)
-		case "sd write":
-			data = make([]byte, 4)
-			binary.LittleEndian.PutUint32(data, uint32(val))
-			err = usbarmory.MMC.Write(uint32(addr), data)
-		}
+		reg := (*uint32)(unsafe.Pointer(uintptr(addr)))
+		*reg = uint32(val)
 	}
 
 	if err != nil {

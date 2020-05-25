@@ -30,7 +30,7 @@ func testKeyDerivation() (err error) {
 		return
 	} else {
 		if strings.Compare(string(key), zeroVector) == 0 {
-			err = fmt.Errorf("derivedKey all zeros!")
+			err = fmt.Errorf("derivedKey all zeros")
 			return
 		}
 
