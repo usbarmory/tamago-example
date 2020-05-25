@@ -81,18 +81,18 @@ The web servers expose the following routes:
 The SSH server exposes a basic shell with the following commands:
 
 ```
-  help                                # this help
-  exit, quit                          # close session
-  example                             # launch example test code
-  rand                                # gather 32 bytes from TRNG via crypto/rand
-  reboot                              # reset watchdog timer
-  stack                               # stack trace of current goroutine
-  stackall                            # stack trace of all goroutines
-  led       (white|blue) (on|off)     # LED control
-  mmc read  <hex offset> <size>       # internal MMC card read
-  sd  read  <hex offset> <size>       # external uSD card read
-  md        <hex offset> <size>       # memory display (use with caution)
-  mw        <hex offset> <hex value>  # memory write   (use with caution)
+  help                               # this help
+  exit, quit                         # close session
+  example                            # launch example test code
+  rand                               # gather 32 bytes from TRNG via crypto/rand
+  reboot                             # reset watchdog timer
+  stack                              # stack trace of current goroutine
+  stackall                           # stack trace of all goroutines
+  led       (white|blue) (on|off)    # LED control
+  mmc read  <hex offset> <size>      # internal MMC card read
+  sd  read  <hex offset> <size>      # external uSD card read
+  md        <hex offset> <size>      # memory display (use with caution)
+  mw        <hex offset> <hex value> # memory write   (use with caution)
 ```
 
 Compiling
@@ -102,7 +102,7 @@ Build the [TamaGo compiler](https://github.com/f-secure-foundry/tamago-go)
 (or use the [latest binary release](https://github.com/f-secure-foundry/tamago-go/releases/latest)):
 
 ```
-git clone https://github.com/f-secure-foundry/tamago-go -b tamago1.14.2
+git clone https://github.com/f-secure-foundry/tamago-go -b tamago1.14.3
 cd tamago-go/src && ./all.bash
 cd ../bin && export TAMAGO=`pwd`/go
 ```

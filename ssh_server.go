@@ -38,18 +38,18 @@ import (
 )
 
 const help = `
-  help                                # this help
-  exit, quit                          # close session
-  example                             # launch example test code
-  rand                                # gather 32 bytes from TRNG via crypto/rand
-  reboot                              # reset watchdog timer
-  stack                               # stack trace of current goroutine
-  stackall                            # stack trace of all goroutines
-  led       (white|blue) (on|off)     # LED control
-  mmc read  <hex offset> <size>       # internal MMC card read
-  sd  read  <hex offset> <size>       # external uSD card read
-  md        <hex offset> <size>       # memory display (use with caution)
-  mw        <hex offset> <hex value>  # memory write   (use with caution)
+  help                               # this help
+  exit, quit                         # close session
+  example                            # launch example test code
+  rand                               # gather 32 bytes from TRNG via crypto/rand
+  reboot                             # reset watchdog timer
+  stack                              # stack trace of current goroutine
+  stackall                           # stack trace of all goroutines
+  led       (white|blue) (on|off)    # LED control
+  mmc read  <hex offset> <size>      # internal MMC card read
+  sd  read  <hex offset> <size>      # external uSD card read
+  md        <hex offset> <size>      # memory display (use with caution)
+  mw        <hex offset> <hex value> # memory write   (use with caution)
 `
 
 const MD_LIMIT = 102400
