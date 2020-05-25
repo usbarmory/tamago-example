@@ -27,10 +27,10 @@ func TestUSDHC(card *usdhc.Interface, count int, readSize int) {
 	} else {
 		info := card.Info()
 		capacity := int64(info.BlockSize) * int64(info.Blocks)
-		mebi := capacity / (1000 * 1000 * 1000)
-		mega := capacity / (1024 * 1024 * 1024)
+		giga := capacity / (1000 * 1000 * 1000)
+		gibi := capacity / (1024 * 1024 * 1024)
 
-		log.Printf("imx6_usdhc: %d GB/%d GiB card detected %+v", mebi, mega, info)
+		log.Printf("imx6_usdhc: %d GB/%d GiB card detected %+v", giga, gibi, info)
 
 		start := time.Now()
 
@@ -44,10 +44,10 @@ func TestUSDHC(card *usdhc.Interface, count int, readSize int) {
 		}
 
 		elapsed := time.Since(start)
-		mebips := (float64(count) / (1000 * 1000)) / elapsed.Seconds()
-		megaps := (float64(count) / (1024 * 1024)) / elapsed.Seconds()
+		megaps := (float64(count) / (1000 * 1000)) / elapsed.Seconds()
+		mebips := (float64(count) / (1024 * 1024)) / elapsed.Seconds()
 
-		log.Printf("imx6_usdhc: read %d MiB in %s (%.2f MB/s | %.2f MiB/s)", count / (1024 * 1024), elapsed, mebips, megaps)
+		log.Printf("imx6_usdhc: read %d MiB in %s (%.2f MB/s | %.2f MiB/s)", count / (1024 * 1024), elapsed, megaps, mebips)
 	}
 }
 
