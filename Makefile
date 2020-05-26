@@ -52,6 +52,8 @@ $(APP):
 $(APP).bin: $(APP)
 	arm-none-eabi-objcopy -j .text -j .rodata -j .shstrtab -j .typelink \
 	    -j .itablink -j .gopclntab -j .go.buildinfo -j .noptrdata -j .data \
+	    -j .bss --set-section-flags .bss=alloc,load,contents \
+	    -j .noptrbss --set-section-flags .noptrbss=alloc,load,contents\
 	    --set-section-alignment .rodata=4096 --set-section-alignment .go.buildinfo=4096 $(APP) -O binary $(APP).bin
 
 $(APP).imx: check_usbarmory_git $(APP).bin
