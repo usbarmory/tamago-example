@@ -38,7 +38,7 @@ all: $(APP)
 
 imx: $(APP).imx
 
-imx_signed: imx sign-imx
+imx_signed: $(APP)-signed.imx
 
 elf: $(APP)
 
@@ -100,7 +100,7 @@ $(APP).imx: check_usbarmory_git $(APP).bin
 
 #### secure boot ####
 
-sign-imx: check_usbarmory_git check_hab_keys $(APP).imx
+$(APP)-signed.imx: check_usbarmory_git check_hab_keys $(APP).imx
 	${USBARMORY_GIT}/software/secure_boot/usbarmory_csftool \
 		--csf_key ${KEYS_PATH}/CSF_1_key.pem \
 		--csf_crt ${KEYS_PATH}/CSF_1_crt.pem \
