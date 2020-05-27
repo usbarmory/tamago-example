@@ -35,7 +35,7 @@ func TestUSDHC(card *usdhc.Interface, count int, readSize int) {
 		start := time.Now()
 
 		for i := 0; i < count; i += readSize {
-			_, err := card.Read(uint32(i), readSize)
+			_, err := card.Read(i, readSize)
 
 			if err != nil {
 				log.Printf("imx6_usdhc: card read error, %v", err)

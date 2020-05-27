@@ -108,9 +108,9 @@ func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 				data[i+3] = byte(val & 0xff)
 			}
 		case "sd read":
-			data, err = usbarmory.SD.Read(uint32(addr), int(val))
+			data, err = usbarmory.SD.Read(int(addr), int(val))
 		case "mmc read":
-			data, err = usbarmory.MMC.Read(uint32(addr), int(val))
+			data, err = usbarmory.MMC.Read(int(addr), int(val))
 		}
 
 		res = hex.Dump(data)
