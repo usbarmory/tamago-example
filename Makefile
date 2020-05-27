@@ -82,7 +82,7 @@ $(APP): check_tamago
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 
 $(APP).bin: $(APP)
-	arm-none-eabi-objcopy -j .text -j .rodata -j .shstrtab -j .typelink \
+	$(CROSS_COMPILE)objcopy -j .text -j .rodata -j .shstrtab -j .typelink \
 	    -j .itablink -j .gopclntab -j .go.buildinfo -j .noptrdata -j .data \
 	    -j .bss --set-section-flags .bss=alloc,load,contents \
 	    -j .noptrbss --set-section-flags .noptrbss=alloc,load,contents\
