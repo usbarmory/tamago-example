@@ -28,7 +28,7 @@ DISK_SIZE = 50MiB
 JOBS=2
 # microSD: 0, eMMC: 1
 BOOTDEV ?= 0
-BOOTCOMMAND = ext2load mmc $(BOOTDEV):1 0x90000000 ${APP}; bootelf -p 0x90000000
+BOOTCOMMAND = ext2load mmc $(BOOTDEV):1 0x90000000 $(APP); bootelf -p 0x90000000
 
 .PHONY: clean qemu qemu-gdb
 
@@ -78,12 +78,7 @@ qemu-gdb: $(APP)
 
 #### dependencies ####
 
-$(APP):
-	@if [ "${TAMAGO}" == "" ] || [ ! -f "${TAMAGO}" ]; then \
-		echo 'You need to set the TAMAGO variable to a compiled version of https://github.com/f-secure-foundry/tamago-go'; \
-		exit 1; \
-	fi
-
+$(APP): check_tamago
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 
 $(APP).bin: $(APP)
