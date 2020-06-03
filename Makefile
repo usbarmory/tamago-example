@@ -21,14 +21,8 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -semihosting -d unimp
 
 SHELL = /bin/bash
-UBOOT_VER=2019.07
 DCD=imx6ul-512mb.cfg
-LOSETUP_DEV=$(shell /sbin/losetup -f)
-DISK_SIZE = 50MiB
 JOBS=2
-# microSD: 0, eMMC: 1
-BOOTDEV ?= 0
-BOOTCOMMAND = ext2load mmc $(BOOTDEV):1 0x90000000 $(APP); bootelf -p 0x90000000
 
 .PHONY: clean qemu qemu-gdb
 
@@ -41,8 +35,6 @@ imx: $(APP).imx
 imx_signed: $(APP)-signed.imx
 
 elf: $(APP)
-
-raw: $(APP).raw
 
 #### utilities ####
 
@@ -68,7 +60,7 @@ check_hab_keys:
 
 clean:
 	rm -f $(APP)
-	@rm -fr $(APP).raw $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(DCD) u-boot-${UBOOT_VER}*
+	@rm -fr $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(DCD)
 
 qemu: $(APP)
 	$(QEMU) -kernel $(APP)
@@ -106,38 +98,3 @@ $(APP)-signed.imx: check_usbarmory_git check_hab_keys $(APP).imx
 		--image   $(APP).imx \
 		--output  $(APP).csf && \
 	cat $(APP).imx $(APP).csf > $(APP)-signed.imx
-
-#### u-boot (to be deprecated) ####
-
-u-boot-${UBOOT_VER}.tar.bz2:
-	wget ftp://ftp.denx.de/pub/u-boot/u-boot-${UBOOT_VER}.tar.bz2 -O u-boot-${UBOOT_VER}.tar.bz2
-	wget ftp://ftp.denx.de/pub/u-boot/u-boot-${UBOOT_VER}.tar.bz2.sig -O u-boot-${UBOOT_VER}.tar.bz2.sig
-
-u-boot-${UBOOT_VER}/u-boot-dtb.imx: check_usbarmory_git u-boot-${UBOOT_VER}.tar.bz2
-	gpg --verify u-boot-${UBOOT_VER}.tar.bz2.sig
-	tar xf u-boot-${UBOOT_VER}.tar.bz2
-	cd u-boot-${UBOOT_VER} && make distclean
-	cd u-boot-${UBOOT_VER} && \
-		patch -p1 < ${USBARMORY_GIT}/software/u-boot/0001-ARM-mx6-add-support-for-USB-armory-Mk-II-board.patch && \
-		patch -p1 < ${USBARMORY_GIT}/software/u-boot/0001-Drop-linker-generated-array-creation-when-CONFIG_CMD.patch && \
-		make usbarmory-mark-two_defconfig; \
-		sed -i -e 's/run start_normal/${BOOTCOMMAND}/' include/configs/usbarmory-mark-two.h
-	cd u-boot-${UBOOT_VER} && CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm make -j${JOBS}
-
-u-boot: u-boot-${UBOOT_VER}/u-boot-dtb.imx
-
-$(APP).raw: $(APP) u-boot
-	@if [ ! -f "$(APP).raw" ]; then \
-		truncate -s $(DISK_SIZE) $(APP).raw && \
-		sudo /sbin/parted $(APP).raw --script mklabel msdos && \
-		sudo /sbin/parted $(APP).raw --script mkpart primary ext4 5M 100% && \
-		sudo /sbin/losetup $(LOSETUP_DEV) $(APP).raw -o 5242880 --sizelimit $(DISK_SIZE) && \
-		sudo /sbin/mkfs.ext4 -F $(LOSETUP_DEV) && \
-		sudo /sbin/losetup -d $(LOSETUP_DEV) && \
-		mkdir -p rootfs && \
-		sudo mount -o loop,offset=5242880 -t ext4 $(APP).raw rootfs/ && \
-		sudo cp ${APP} rootfs/ && \
-		sudo umount rootfs && \
-		sudo dd if=u-boot-${UBOOT_VER}/u-boot-dtb.imx of=$(APP).raw bs=512 seek=2 conv=fsync conv=notrunc && \
-		rmdir rootfs; \
-	fi

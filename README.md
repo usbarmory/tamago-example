@@ -107,39 +107,28 @@ cd tamago-go/src && ./all.bash
 cd ../bin && export TAMAGO=`pwd`/go
 ```
 
-Build the `example` application executable:
+Build the `example.imx` application executable:
 
 ```
 git clone https://github.com/f-secure-foundry/tamago-example
-cd tamago-example && make
-```
-
-For native hardware execution you can bundle the application in a raw
-image (`example.raw`), for microSD or eMMC flashing, as follows (example
-raw target [pre-requisites](https://github.com/f-secure-foundry/usbarmory-debian-base_image/blob/master/README.md#pre-requisites)
-for Debian):
-
-
-```
-# microSD: BOOTDEV=0, eMMC: BOOTDEV=1
-make raw BOOTDEV=0
+cd tamago-example && make CROSS_COMPILE=arm-none-eabi- imx
 ```
 
 Executing and debugging
 =======================
 
-Native hardware: raw image
+Native hardware: imx image
 --------------------------
 
-Follow [these instructions](https://github.com/f-secure-foundry/usbarmory-debian-base_image#installation)
-using the built `example.raw` image.
+Follow [these instructions](https://github.com/f-secure-foundry/usbarmory/wiki/Boot-Modes-(Mk-II)#flashing-bootable-images-on-externalinternal-media)
+using the built `example.imx` image.
 
 Native hardware: existing bootloader
 ------------------------------------
 
-Copy the compiled application on an external microSD card (replace `$dev` with
-`0`) or the internal eMMC (replace `$dev` with `1`), then launch it from the
-U-Boot console as follows:
+Copy the built `example` binary on an external microSD card (replace `$dev`
+with `0`) or the internal eMMC (replace `$dev` with `1`), then launch it from
+the U-Boot console as follows:
 
 ```
 ext2load mmc $dev:1 0x90000000 example
