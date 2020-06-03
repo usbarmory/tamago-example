@@ -6,7 +6,7 @@ require (
 	github.com/btcsuite/btcd v0.20.1-beta
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/f-secure-foundry/tamago v0.0.0-20200601141914-e29c43837699
+	github.com/f-secure-foundry/tamago v0.0.0-20200603130453-e37b0d36a84b
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/mkevac/debugcharts v0.0.0-20191222103121-ae1c48aa8615
