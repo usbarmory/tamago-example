@@ -19,7 +19,7 @@ import (
 	"github.com/f-secure-foundry/tamago/imx6/usdhc"
 )
 
-func TestUSDHC(card *usdhc.Interface, count int, readSize int) {
+func TestUSDHC(card *usdhc.USDHC, count int, readSize int) {
 	err := card.Detect()
 
 	if err != nil {
