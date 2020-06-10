@@ -27,8 +27,10 @@ github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.m
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/f-secure-foundry/gvisor v0.0.0-20191224100818-98827aa91607 h1:qEivZMI07i5BH8QIe41AhkxczCmBOIXih624UpnT8Vw=
 github.com/f-secure-foundry/gvisor v0.0.0-20191224100818-98827aa91607/go.mod h1:rPM8OvTBwX0eD8lW4bytttlKgsWOsHwWu0U9fj3y/BU=
-github.com/f-secure-foundry/tamago v0.0.0-20200609085001-1cf499249137 h1:WXm098Ow+ik/8UjbX+gg9LO593XP8ZfH8VPVPwh/gTc=
-github.com/f-secure-foundry/tamago v0.0.0-20200609085001-1cf499249137/go.mod h1:DqIfWSA3FGzHRg3lrltaiqlpVSZwqRkRTbuLz335LoI=
+github.com/f-secure-foundry/tamago v0.0.0-20200609092021-909c79780325 h1:sH6RAFEJp3cHTNfferxHu/d59SPIN8KiNVzK1nh2J+Q=
+github.com/f-secure-foundry/tamago v0.0.0-20200609092021-909c79780325/go.mod h1:DqIfWSA3FGzHRg3lrltaiqlpVSZwqRkRTbuLz335LoI=
+github.com/f-secure-foundry/tamago v0.0.0-20200610074239-bca5eb456ad4 h1:jVDpPVmXXuWfkylljhXymijMtPNB+Y4QhoIhfQTRuGE=
+github.com/f-secure-foundry/tamago v0.0.0-20200610074239-bca5eb456ad4/go.mod h1:DqIfWSA3FGzHRg3lrltaiqlpVSZwqRkRTbuLz335LoI=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/go-ole/go-ole v1.2.4 h1:nNBDSCOigTSiarFpYE9J/KtEA1IOW4CNeqT9TQDqCxI=
 github.com/go-ole/go-ole v1.2.4/go.mod h1:XCwSNxSkXRo4vlyPy93sltvi/qJq0jqQhjqQNIwKuxM=
