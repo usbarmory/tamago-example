@@ -47,7 +47,7 @@ func TestUSDHC(card *usdhc.USDHC, count int, readSize int) {
 		megaps := (float64(count) / (1000 * 1000)) / elapsed.Seconds()
 		mebips := (float64(count) / (1024 * 1024)) / elapsed.Seconds()
 
-		log.Printf("imx6_usdhc: read %d MiB in %s (%.2f MB/s | %.2f MiB/s)", count / (1024 * 1024), elapsed, megaps, mebips)
+		log.Printf("imx6_usdhc: read %d MiB in %s (%.2f MB/s | %.2f MiB/s)", count/(1024*1024), elapsed, megaps, mebips)
 	}
 }
 

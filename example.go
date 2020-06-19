@@ -210,6 +210,10 @@ func main() {
 	example(true)
 
 	if imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL) {
+		log.Println("-- i.mx6 ble ---------------------------------------------------------")
+		usbarmory.BLE.Init()
+		log.Println("ANNA-B112 BLE module initialized")
+
 		log.Println("-- i.mx6 usb ---------------------------------------------------------")
 		StartUSB()
 	}

@@ -88,6 +88,7 @@ The SSH server exposes a basic shell with the following commands:
   reboot                             # reset watchdog timer
   stack                              # stack trace of current goroutine
   stackall                           # stack trace of all goroutines
+  ble                                # enter BLE serial console
   led       (white|blue) (on|off)    # LED control
   mmc read  <hex offset> <size>      # internal MMC card read
   sd  read  <hex offset> <size>      # external uSD card read

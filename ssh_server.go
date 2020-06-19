@@ -45,6 +45,7 @@ const help = `
   reboot                             # reset watchdog timer
   stack                              # stack trace of current goroutine
   stackall                           # stack trace of all goroutines
+  ble                                # enter BLE serial console
   led       (white|blue) (on|off)    # LED control
   mmc read  <hex offset> <size>      # internal MMC card read
   sd  read  <hex offset> <size>      # external uSD card read
@@ -207,7 +208,11 @@ func handleChannel(newChannel ssh.NewChannel) {
 				continue
 			}
 
-			err = handleCommand(term, cmd)
+			if cmd == "ble" {
+				err = bleConsole(term)
+			} else {
+				err = handleCommand(term, cmd)
+			}
 
 			if err == io.EOF {
 				break
