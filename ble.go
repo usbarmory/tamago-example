@@ -48,7 +48,7 @@ func bleConsole(term *terminal.Terminal) (err error) {
 			default:
 			}
 
-			c, valid := imx6.UART1.Read()
+			c, valid := imx6.UART1.Rx()
 
 			if !valid || c == CR {
 				runtime.Gosched()
@@ -74,11 +74,7 @@ func bleConsole(term *terminal.Terminal) (err error) {
 			break
 		}
 
-		tx += "\r"
-
-		for i := 0; i < len(tx); i++ {
-			usbarmory.BLE.UART.Write(tx[i])
-		}
+		usbarmory.BLE.UART.Write([]byte(tx + "\r"))
 	}
 
 	exit <- true
