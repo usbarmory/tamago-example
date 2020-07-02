@@ -24,7 +24,7 @@ func testKeyDerivation() (err error) {
 	diversifier := []byte{0xde, 0xad, 0xbe, 0xef}
 	iv := make([]byte, aes.BlockSize)
 
-	key, err := imx6.DCP.DeriveKey(diversifier, iv)
+	key, err := imx6.DCP.DeriveKey(diversifier, iv, -1)
 
 	if err != nil {
 		return
