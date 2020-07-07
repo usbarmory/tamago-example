@@ -115,6 +115,13 @@ git clone https://github.com/f-secure-foundry/tamago-example
 cd tamago-example && make CROSS_COMPILE=arm-none-eabi- imx
 ```
 
+When cross compiling from a non-arm host, as shown in the example, ensure that
+the `CROSS_COMPILE` variable is set according to the available toolchain (e.g.
+`gcc-arm-none-eabi` package on Debian/Ubuntu).
+
+The imx target also requires the `mkimage` tool from U-Boot (e.g.
+`u-boot-tools` on Debian/Ubuntu).
+
 Executing and debugging
 =======================
 
