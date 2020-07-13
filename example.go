@@ -188,7 +188,7 @@ func example(init bool) {
 
 	if imx6.Native {
 		count := 10 * 1024 * 1024
-		readSize := 0xffff
+		readSize := 0x7fff
 
 		if init {
 			// Pre-USB use the entire iRAM, accounting for required
