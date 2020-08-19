@@ -9,10 +9,12 @@
 package main
 
 import (
-	"github.com/f-secure-foundry/tamago/imx6/usb"
-)
+	"log"
+	"net"
 
-const maxPacketSize = 512
+	"github.com/f-secure-foundry/tamago/imx6/usb"
+	"github.com/f-secure-foundry/tamago/imx6/usb/ethernet"
+)
 
 func configureDevice(device *usb.Device) {
 	// Supported Language Code Zero: English
@@ -58,12 +60,34 @@ func StartUSB() {
 	device := &usb.Device{}
 	configureDevice(device)
 
-	// Configure Ethernet over USB endpoints
-	// (ECM protocol, only supported on Linux hosts).
-	configureECM(device, 0)
+	hostAddress, err := net.ParseMAC(hostMAC)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	deviceAddress, err := net.ParseMAC(deviceMAC)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Start basic networking and SSH HTTP services.
-	StartNetworking()
+	link := StartNetworking()
+
+	// Configure Ethernet over USB endpoints
+	// (ECM protocol, only supported on Linux hosts).
+	eth := ethernet.NIC{
+		Host:   hostAddress,
+		Device: deviceAddress,
+		Link:   link,
+	}
+
+	err = eth.Init(device, 0)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	usb.USB1.Init()
 	usb.USB1.DeviceMode()

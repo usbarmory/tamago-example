@@ -14,7 +14,6 @@ import (
 
 	"gvisor.dev/gvisor/pkg/tcpip"
 	"gvisor.dev/gvisor/pkg/tcpip/link/channel"
-	"gvisor.dev/gvisor/pkg/tcpip/link/sniffer"
 	"gvisor.dev/gvisor/pkg/tcpip/network/arp"
 	"gvisor.dev/gvisor/pkg/tcpip/network/ipv4"
 	"gvisor.dev/gvisor/pkg/tcpip/stack"
@@ -23,23 +22,17 @@ import (
 	"gvisor.dev/gvisor/pkg/waiter"
 )
 
-const IP = "10.0.0.1"
-const MTU = 1500
+const (
+	MTU = 1500
 
-func configureNetworkStack(addr tcpip.Address, nic tcpip.NICID, sniff bool) (s *stack.Stack) {
+	hostMAC   = "1a:55:89:a2:69:42"
+	deviceMAC = "1a:55:89:a2:69:41"
+
+	IP = "10.0.0.1"
+)
+
+func configureNetworkStack(addr tcpip.Address, nic tcpip.NICID) (s *stack.Stack, link *channel.Endpoint) {
 	var err error
-
-	hostMACBytes, err = net.ParseMAC(hostMAC)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	deviceMACBytes, err = net.ParseMAC(deviceMAC)
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	s = stack.New(stack.Options{
 		NetworkProtocols: []stack.NetworkProtocol{
@@ -58,10 +51,6 @@ func configureNetworkStack(addr tcpip.Address, nic tcpip.NICID, sniff bool) (s *
 
 	link = channel.New(256, MTU, linkAddr)
 	linkEP := stack.LinkEndpoint(link)
-
-	if sniff {
-		linkEP = sniffer.New(linkEP)
-	}
 
 	if err := s.CreateNIC(nic, linkEP); err != nil {
 		log.Fatal(err)
@@ -105,10 +94,10 @@ func startICMPEndpoint(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpi
 }
 
 // StartNetworking starts SSH and HTTP services.
-func StartNetworking() {
+func StartNetworking() (link *channel.Endpoint) {
 	addr := tcpip.Address(net.ParseIP(IP)).To4()
 
-	s := configureNetworkStack(addr, 1, sniff)
+	s, link := configureNetworkStack(addr, 1)
 
 	// handle pings
 	startICMPEndpoint(s, addr, 0, 1)
@@ -130,4 +119,6 @@ func StartNetworking() {
 	go func() {
 		startSSHServer(s, addr, 22, 1)
 	}()
+
+	return
 }
