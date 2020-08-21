@@ -15,6 +15,4 @@ require (
 	gvisor.dev/gvisor v0.0.0-20200819190334-5cf330106a01
 )
 
-replace github.com/f-secure-foundry/tamago => /mnt/git/public/tamago
-
 replace gvisor.dev/gvisor => github.com/f-secure-foundry/gvisor v0.0.0-20200812210008-801bb984d4b1
