@@ -23,12 +23,10 @@ import (
 )
 
 const (
-	MTU = 1500
-
+	MTU       = 1500
 	hostMAC   = "1a:55:89:a2:69:42"
 	deviceMAC = "1a:55:89:a2:69:41"
-
-	IP = "10.0.0.1"
+	IP        = "10.0.0.1"
 )
 
 func configureNetworkStack(addr tcpip.Address, nic tcpip.NICID) (s *stack.Stack, link *channel.Endpoint) {
@@ -94,10 +92,9 @@ func startICMPEndpoint(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpi
 }
 
 // StartNetworking starts SSH and HTTP services.
-func StartNetworking() (link *channel.Endpoint) {
+func StartNetworking() (l *channel.Endpoint) {
 	addr := tcpip.Address(net.ParseIP(IP)).To4()
-
-	s, link := configureNetworkStack(addr, 1)
+	s, l := configureNetworkStack(addr, 1)
 
 	// handle pings
 	startICMPEndpoint(s, addr, 0, 1)
