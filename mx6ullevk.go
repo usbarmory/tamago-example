@@ -13,6 +13,8 @@ package main
 import (
 	"errors"
 
+	"golang.org/x/crypto/ssh/terminal"
+
 	"github.com/f-secure-foundry/tamago/board/nxp/mx6ullevk"
 )
 
