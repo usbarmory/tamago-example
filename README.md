@@ -89,11 +89,10 @@ The SSH server exposes a basic shell with the following commands:
   stack                              # stack trace of current goroutine
   stackall                           # stack trace of all goroutines
   ble                                # enter BLE serial console
-  led       (white|blue) (on|off)    # LED control
-  mmc read  <hex offset> <size>      # internal MMC card read
-  sd  read  <hex offset> <size>      # external uSD card read
+  mmc read <n> <hex offset> <size>   # internal MMC/SD card read
   md        <hex offset> <size>      # memory display (use with caution)
   mw        <hex offset> <hex value> # memory write   (use with caution)
+  led       (white|blue) (on|off)    # LED control
 ```
 
 Compiling

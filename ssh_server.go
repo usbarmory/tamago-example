@@ -37,19 +37,18 @@ import (
 )
 
 const help = `
-  help                               # this help
-  exit, quit                         # close session
-  example                            # launch example test code
-  rand                               # gather 32 bytes from TRNG via crypto/rand
-  reboot                             # reset watchdog timer
-  stack                              # stack trace of current goroutine
-  stackall                           # stack trace of all goroutines
-  ble                                # enter BLE serial console
-  led       (white|blue) (on|off)    # LED control
-  mmc read  <hex offset> <size>      # internal MMC card read
-  sd  read  <hex offset> <size>      # external uSD card read
-  md        <hex offset> <size>      # memory display (use with caution)
-  mw        <hex offset> <hex value> # memory write   (use with caution)
+  help                              # this help
+  exit, quit                        # close session
+  example                           # launch example test code
+  rand                              # gather 32 bytes from TRNG via crypto/rand
+  reboot                            # reset watchdog timer
+  stack                             # stack trace of current goroutine
+  stackall                          # stack trace of all goroutines
+  ble                               # enter BLE serial console
+  mmc read <n> <hex offset> <size>  # internal MMC/SD card read
+  md       <hex offset> <size>      # memory display (use with caution)
+  mw       <hex offset> <hex value> # memory write   (use with caution)
+  led      (white|blue) (on|off)    # LED control
 `
 
 const MD_LIMIT = 102400
@@ -57,7 +56,8 @@ const MD_LIMIT = 102400
 var LED func(string, bool) error
 
 var ledCommandPattern = regexp.MustCompile(`led (white|blue) (on|off).*`)
-var memoryCommandPattern = regexp.MustCompile(`(md|mw|sd read|mmc read) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
+var cardCommandPattern = regexp.MustCompile(`mmc read (\d) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
+var memoryCommandPattern = regexp.MustCompile(`(md|mw) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
 
 func ledCommand(name string, state string) (res string) {
 	if LED == nil {
@@ -73,6 +73,42 @@ func ledCommand(name string, state string) (res string) {
 	return
 }
 
+func cardCommand(arg1 string, arg2 string, arg3 string) (res string) {
+	n, err := strconv.ParseUint(arg1, 10, 8)
+
+	if err != nil {
+		return fmt.Sprintf("invalid index: %v", err)
+	}
+
+	addr, err := strconv.ParseUint(arg2, 16, 32)
+
+	if err != nil {
+		return fmt.Sprintf("invalid address: %v", err)
+	}
+
+	val, err := strconv.ParseUint(arg3, 10, 32)
+
+	if err != nil {
+		return fmt.Sprintf("invalid size: %v", err)
+	}
+
+	if val > MD_LIMIT {
+		return fmt.Sprintf("please only use a size argument <= %d", MD_LIMIT)
+	}
+
+	if len(cards) < int(n+1) {
+		return "invalid index"
+	}
+
+	data, err := cards[n].Read(int64(addr), int64(val))
+
+	if err != nil {
+		return err.Error()
+	}
+
+	return hex.Dump(data)
+}
+
 func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 	var err error
 	var val uint64
@@ -85,14 +121,14 @@ func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 	}
 
 	switch op {
-	case "md", "sd read", "mmc read":
+	case "md":
 		val, err = strconv.ParseUint(arg2, 10, 32)
 
 		if err != nil {
 			return fmt.Sprintf("invalid size: %v", err)
 		}
 
-		if op == "md" && ((addr%4) != 0 || (val%4) != 0) {
+		if (addr%4) != 0 || (val%4) != 0 {
 			return "please only perform 32-bit aligned accesses"
 		}
 
@@ -100,27 +136,16 @@ func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 			return fmt.Sprintf("please only use a size argument <= %d", MD_LIMIT)
 		}
 
-		switch op {
-		case "md":
-			data = make([]byte, val)
+		data = make([]byte, val)
 
-			for i := 0; i < int(val); i += 4 {
-				reg := (*uint32)(unsafe.Pointer(uintptr(addr + uint64(i))))
-				val := *reg
+		for i := 0; i < int(val); i += 4 {
+			reg := (*uint32)(unsafe.Pointer(uintptr(addr + uint64(i))))
+			val := *reg
 
-				data[i] = byte((val >> 24) & 0xff)
-				data[i+1] = byte((val >> 16) & 0xff)
-				data[i+2] = byte((val >> 8) & 0xff)
-				data[i+3] = byte(val & 0xff)
-			}
-		case "sd read":
-			if SD != nil {
-				data, err = SD.Read(int64(addr), int64(val))
-			}
-		case "mmc read":
-			if MMC != nil {
-				data, err = MMC.Read(int64(addr), int64(val))
-			}
+			data[i] = byte((val >> 24) & 0xff)
+			data[i+1] = byte((val >> 16) & 0xff)
+			data[i+2] = byte((val >> 8) & 0xff)
+			data[i+3] = byte(val & 0xff)
 		}
 
 		res = hex.Dump(data)
@@ -133,10 +158,6 @@ func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 
 		reg := (*uint32)(unsafe.Pointer(uintptr(addr)))
 		*reg = uint32(val)
-	}
-
-	if err != nil {
-		return err.Error()
 	}
 
 	return
@@ -166,10 +187,12 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 		pprof.Lookup("goroutine").WriteTo(buf, 1)
 		res = buf.String()
 	default:
-		if m := memoryCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
-			res = memoryCommand(m[1], m[2], m[3])
-		} else if m := ledCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
+		if m := ledCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
 			res = ledCommand(m[1], m[2])
+		} else if m := cardCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
+			res = cardCommand(m[1], m[2], m[3])
+		} else if m := memoryCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
+			res = memoryCommand(m[1], m[2], m[3])
 		} else {
 			res = "unknown command, type `help`"
 		}

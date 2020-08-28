@@ -11,10 +11,16 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/f-secure-foundry/tamago/board/nxp/mx6ullevk"
 )
 
 func init() {
-	SD = mx6ullevk.SD
-	MMC = mx6ullevk.MMC
+	cards = append(cards, mx6ullevk.SD1)
+	cards = append(cards, mx6ullevk.SD2)
+}
+
+func bleConsole(term *terminal.Terminal) (err error) {
+	return errors.New("not supported")
 }

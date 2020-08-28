@@ -196,8 +196,11 @@ func example(init bool) {
 		}
 
 		log.Println("-- memory cards -------------------------------------------------------")
-		TestUSDHC(SD, count, readSize)
-		TestUSDHC(MMC, count, readSize)
+
+		for _, card := range cards {
+			TestUSDHC(card, count, readSize)
+			TestUSDHC(card, count, readSize)
+		}
 	}
 }
 
