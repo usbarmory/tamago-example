@@ -1,5 +1,5 @@
-TamaGo - bare metal Go for ARM SoCs - USB armory example
-========================================================
+TamaGo - bare metal Go for ARM SoCs - example application
+=========================================================
 
 tamago | https://github.com/f-secure-foundry/tamago  
 
@@ -24,11 +24,13 @@ TamaGo is a framework that enables compilation and execution of unencumbered Go
 applications on bare metal ARM System-on-Chip (SoC) components.
 
 This example Go application illustrates use of the
-[usbarmory](https://github.com/f-secure-foundry/tamago/tree/master/usbarmory) package
-part of [TamaGo](https://github.com/f-secure-foundry/tamago), to execute bare metal Go code on the
-[USB armory Mk II](https://github.com/f-secure-foundry/usbarmory/wiki).
+[tamago](https://github.com/f-secure-foundry/tamago) package
+execute bare metal Go code on the following platforms:
 
-<img src="https://github.com/f-secure-foundry/usbarmory/wiki/images/armory-mark-two-bottom.png" width="350"> <img src="https://github.com/f-secure-foundry/usbarmory/wiki/images/armory-mark-two-top.png" width="350">
+| SoC          | Board                                                                                                                                                                                | SoC package                                                         | Board package                                                                               |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| NXP i.MX6ULL | [USB armory Mk II](https://github.com/f-secure-foundry/usbarmory/wiki)                                                                                                               | [imx6](https://github.com/f-secure-foundry/tamago/tree/master/imx6) | [usbarmory/mark-two](https://github.com/f-secure-foundry/tamago/tree/master/usbarmory)      |
+| NXP i.MX6ULL | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6](https://github.com/f-secure-foundry/tamago/tree/master/imx6) | [nxp/mx6ullevk](https://github.com/f-secure-foundry/tamago/tree/master/board/nxp/mx6ullevk) |
 
 Documentation
 =============
@@ -111,8 +113,12 @@ Build the `example.imx` application executable:
 
 ```
 git clone https://github.com/f-secure-foundry/tamago-example
-cd tamago-example && make CROSS_COMPILE=arm-none-eabi- imx
+cd tamago-example && make CROSS_COMPILE=arm-none-eabi- TARGET=usbarmory imx
 ```
+
+The supported targets for the `TARGET` environment variable are:
+  * `usbarmory` - USB armory Mk II
+  * `mx6ullevk` - MCIMX6ULL-EVK
 
 When cross compiling from a non-arm host, as shown in the example, ensure that
 the `CROSS_COMPILE` variable is set according to the available toolchain (e.g.
