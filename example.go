@@ -6,7 +6,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-// Basic test example for tamago/arm running on the USB armory Mk II.
+// Basic test example for tamago/arm running on supported i.MX6 targets.
 
 package main
 
@@ -23,7 +23,6 @@ import (
 	"time"
 
 	"github.com/f-secure-foundry/tamago/imx6"
-	"github.com/f-secure-foundry/tamago/usbarmory/mark-two"
 )
 
 var Build string
@@ -197,8 +196,8 @@ func example(init bool) {
 		}
 
 		log.Println("-- memory cards -------------------------------------------------------")
-		TestUSDHC(usbarmory.SD, count, readSize)
-		TestUSDHC(usbarmory.MMC, count, readSize)
+		TestUSDHC(SD, count, readSize)
+		TestUSDHC(MMC, count, readSize)
 	}
 }
 
@@ -210,10 +209,6 @@ func main() {
 	example(true)
 
 	if imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL) {
-		log.Println("-- i.mx6 ble ---------------------------------------------------------")
-		usbarmory.BLE.Init()
-		log.Println("ANNA-B112 BLE module initialized")
-
 		log.Println("-- i.mx6 usb ---------------------------------------------------------")
 		StartUSB()
 	}

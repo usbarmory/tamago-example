@@ -26,7 +26,6 @@ import (
 	"unsafe"
 
 	"github.com/f-secure-foundry/tamago/imx6"
-	"github.com/f-secure-foundry/tamago/usbarmory/mark-two"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
@@ -55,14 +54,20 @@ const help = `
 
 const MD_LIMIT = 102400
 
+var LED func(string, bool) error
+
 var ledCommandPattern = regexp.MustCompile(`led (white|blue) (on|off).*`)
 var memoryCommandPattern = regexp.MustCompile(`(md|mw|sd read|mmc read) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
 
 func ledCommand(name string, state string) (res string) {
+	if LED == nil {
+		return
+	}
+
 	if state == "on" {
-		usbarmory.LED(name, true)
+		LED(name, true)
 	} else {
-		usbarmory.LED(name, false)
+		LED(name, false)
 	}
 
 	return
@@ -109,9 +114,13 @@ func memoryCommand(op string, arg1 string, arg2 string) (res string) {
 				data[i+3] = byte(val & 0xff)
 			}
 		case "sd read":
-			data, err = usbarmory.SD.Read(int64(addr), int64(val))
+			if SD != nil {
+				data, err = SD.Read(int64(addr), int64(val))
+			}
 		case "mmc read":
-			data, err = usbarmory.MMC.Read(int64(addr), int64(val))
+			if MMC != nil {
+				data, err = MMC.Read(int64(addr), int64(val))
+			}
 		}
 
 		res = hex.Dump(data)
