@@ -117,7 +117,7 @@ cd tamago-example && make CROSS_COMPILE=arm-none-eabi- TARGET=usbarmory imx
 ```
 
 The supported targets for the `TARGET` environment variable are:
-  * `usbarmory` - USB armory Mk II
+  * `usbarmory` - USB armory Mk II (default)
   * `mx6ullevk` - MCIMX6ULL-EVK
 
 When cross compiling from a non-arm host, as shown in the example, ensure that
