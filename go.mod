@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/btcsuite/btcd v0.21.0-beta
 	github.com/btcsuite/btcutil v1.0.2
-	github.com/f-secure-foundry/tamago v0.0.0-20200831100456-7cd47a42b4f6
+	github.com/f-secure-foundry/tamago v0.0.0-20200831114948-b9974f7f9c64
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/mkevac/debugcharts v0.0.0-20191222103121-ae1c48aa8615
 	github.com/shirou/gopsutil v2.20.7+incompatible // indirect
