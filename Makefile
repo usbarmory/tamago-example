@@ -22,7 +22,6 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -semihosting -d unimp
 
 SHELL = /bin/bash
-DCD=imx6ul-512mb.cfg
 
 .PHONY: clean qemu qemu-gdb
 
@@ -58,9 +57,19 @@ check_hab_keys:
 		exit 1; \
 	fi
 
+dcd:
+	@if test "${TARGET}" = "usbarmory"; then \
+		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/usbarmory/mark-two/imximage.cfg $(APP).dcd; \
+	elif test "${TARGET}" = "mx6ullevk"; then \
+		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/board/nxp/mx6ullevk/imximage.cfg $(APP).dcd; \
+	else \
+		echo "invalid target - options are: usbarmory, mx6ullevk"; \
+		exit 1; \
+	fi
+
 clean:
 	rm -f $(APP)
-	@rm -fr $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf
+	@rm -fr $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd
 
 qemu: $(APP)
 	$(QEMU) -kernel $(APP)
@@ -73,6 +82,11 @@ qemu-gdb: $(APP)
 $(APP): check_tamago
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 
+$(APP).dcd: check_tamago
+$(APP).dcd: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
+$(APP).dcd: TAMAGO_PKG=$(shell grep "github.com/f-secure-foundry/tamago " go.mod | awk '{print $$1"@"$$2}')
+$(APP).dcd: dcd
+
 $(APP).bin: $(APP)
 	$(CROSS_COMPILE)objcopy -j .text -j .rodata -j .shstrtab -j .typelink \
 	    -j .itablink -j .gopclntab -j .go.buildinfo -j .noptrdata -j .data \
@@ -80,8 +94,8 @@ $(APP).bin: $(APP)
 	    -j .noptrbss --set-section-flags .noptrbss=alloc,load,contents\
 	    $(APP) -O binary $(APP).bin
 
-$(APP).imx: check_usbarmory_git $(APP).bin
-	mkimage -n ${USBARMORY_GIT}/software/dcd/$(DCD) -T imximage -e $(TEXT_START) -d $(APP).bin $(APP).imx
+$(APP).imx: check_usbarmory_git $(APP).bin $(APP).dcd
+	mkimage -n $(APP).dcd -T imximage -e $(TEXT_START) -d $(APP).bin $(APP).imx
 	# Copy entry point from ELF file
 	dd if=$(APP) of=$(APP).imx bs=1 count=4 skip=24 seek=4 conv=notrunc
 
