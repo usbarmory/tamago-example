@@ -25,7 +25,7 @@ import (
 	"strconv"
 	"unsafe"
 
-	"github.com/f-secure-foundry/tamago/imx6"
+	"github.com/f-secure-foundry/tamago/soc/imx6"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"

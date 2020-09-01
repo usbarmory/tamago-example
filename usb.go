@@ -12,8 +12,8 @@ import (
 	"log"
 	"net"
 
-	"github.com/f-secure-foundry/tamago/imx6/usb"
-	"github.com/f-secure-foundry/tamago/imx6/usb/ethernet"
+	"github.com/f-secure-foundry/tamago/soc/imx6/usb"
+	"github.com/f-secure-foundry/tamago/soc/imx6/usb/ethernet"
 )
 
 func configureDevice(device *usb.Device) {
