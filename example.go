@@ -199,7 +199,6 @@ func example(init bool) {
 
 		for _, card := range cards {
 			TestUSDHC(card, count, readSize)
-			TestUSDHC(card, count, readSize)
 		}
 	}
 }
