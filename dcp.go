@@ -28,25 +28,25 @@ func testKeyDerivation() (err error) {
 
 	if err != nil {
 		return
-	} else {
-		if strings.Compare(string(key), zeroVector) == 0 {
-			err = fmt.Errorf("derivedKey all zeros")
-			return
-		}
-
-		// if the SoC is secure booted we can only print the result
-		if imx6.DCP.SNVS() {
-			log.Printf("imx6_dcp: derived SNVS key %x", key)
-			return
-		}
-
-		if strings.Compare(string(key), testVector) != 0 {
-			err = fmt.Errorf("derivedKey:%x != testVector:%x", key, testVector)
-			return
-		} else {
-			log.Printf("imx6_dcp: derived test key %x", key)
-		}
 	}
+
+	if strings.Compare(string(key), zeroVector) == 0 {
+		err = fmt.Errorf("derivedKey all zeros")
+		return
+	}
+
+	// if the SoC is secure booted we can only print the result
+	if imx6.DCP.SNVS() {
+		log.Printf("imx6_dcp: derived SNVS key %x", key)
+		return
+	}
+
+	if strings.Compare(string(key), testVector) != 0 {
+		err = fmt.Errorf("derivedKey:%x != testVector:%x", key, testVector)
+		return
+	}
+
+	log.Printf("imx6_dcp: derived test key %x", key)
 
 	return
 }
