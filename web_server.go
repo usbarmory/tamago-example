@@ -119,7 +119,7 @@ func startWebServer(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpip.N
 	}
 
 	srv := &http.Server{
-		Addr: addr.String() + ":" + string(port),
+		Addr: addr.String() + ":" + fmt.Sprintf("%d", port),
 	}
 
 	if https {
