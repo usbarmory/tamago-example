@@ -236,7 +236,7 @@ func handleChannel(newChannel ssh.NewChannel) {
 			}
 
 			if err != nil {
-				log.Println("readline error: %v", err)
+				log.Printf("readline error: %v", err)
 				continue
 			}
 
