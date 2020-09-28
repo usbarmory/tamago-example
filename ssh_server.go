@@ -49,15 +49,41 @@ const help = `
   md       <hex offset> <size>      # memory display (use with caution)
   mw       <hex offset> <hex value> # memory write   (use with caution)
   led      (white|blue) (on|off)    # LED control
+  dcp      <size> <sec>             # benchmark hardware encryption
 `
 
 const MD_LIMIT = 102400
 
 var LED func(string, bool) error
 
+var dcpCommandPattern = regexp.MustCompile(`dcp (\d+) (\d+).*`)
 var ledCommandPattern = regexp.MustCompile(`led (white|blue) (on|off).*`)
 var cardCommandPattern = regexp.MustCompile(`mmc read (\d) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
 var memoryCommandPattern = regexp.MustCompile(`(md|mw) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
+
+func dcpCommand(arg1 string, arg2 string) (res string) {
+	size, err := strconv.Atoi(arg1)
+
+	if err != nil {
+		return fmt.Sprintf("invalid size: %v", err)
+	}
+
+	sec, err := strconv.Atoi(arg2)
+
+	if err != nil {
+		return fmt.Sprintf("invalid duration: %v", err)
+	}
+
+	log.Printf("Doing aes-128 cbc for %ds on %d blocks", sec, size)
+
+	n, d, err := testDecryption(size, sec)
+
+	if err != nil {
+		return err.Error()
+	}
+
+	return fmt.Sprintf("%d aes-128 cbc's in %s", n, d)
+}
 
 func ledCommand(name string, state string) (res string) {
 	if LED == nil {
@@ -187,7 +213,9 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 		pprof.Lookup("goroutine").WriteTo(buf, 1)
 		res = buf.String()
 	default:
-		if m := ledCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
+		if m := dcpCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
+			res = dcpCommand(m[1], m[2])
+		} else if m := ledCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
 			res = ledCommand(m[1], m[2])
 		} else if m := cardCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
 			res = cardCommand(m[1], m[2], m[3])

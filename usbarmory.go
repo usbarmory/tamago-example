@@ -18,8 +18,8 @@ import (
 
 	"golang.org/x/crypto/ssh/terminal"
 
-	"github.com/f-secure-foundry/tamago/soc/imx6"
 	"github.com/f-secure-foundry/tamago/board/f-secure/usbarmory/mark-two"
+	"github.com/f-secure-foundry/tamago/soc/imx6"
 )
 
 const CR = 0x0d

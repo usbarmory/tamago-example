@@ -96,6 +96,7 @@ The SSH server exposes a basic shell with the following commands:
   md        <hex offset> <size>      # memory display (use with caution)
   mw        <hex offset> <hex value> # memory write   (use with caution)
   led       (white|blue) (on|off)    # LED control
+  dcp       <size> <sec>             # benchmark hardware encryption
 ```
 
 Compiling
