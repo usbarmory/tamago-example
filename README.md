@@ -62,7 +62,7 @@ its separate goroutine:
 
   7. Test BTC transaction creation and signing.
 
-  8. Key derivation with DCP HSM (only on non-emulated runs).
+  8. Key derivation with SoC DCP (only on non emulated secure booted devices).
 
   9. Large memory allocation.
 
