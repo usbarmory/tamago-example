@@ -42,6 +42,14 @@ func testKeyDerivation() (err error) {
 		return
 	}
 
+	// The test vector comparison is left for reference as on non secure
+	// booted units it is never reached, as the earlier DeriveKey()
+	// invocation returns an error to ensure that no key is derived with
+	// public test vectors.
+	//
+	// Therefore to get here for testing purposes the imx6 package needs to
+	// be manually modified to skip the SNVS() check within DeriveKey().
+
 	if strings.Compare(string(key), testVector) != 0 {
 		err = fmt.Errorf("derivedKey:%x != testVector:%x", key, testVector)
 		return
