@@ -16,9 +16,16 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/f-secure-foundry/tamago/board/nxp/mx6ullevk"
+	"github.com/f-secure-foundry/tamago/soc/imx6"
 )
 
 func init() {
+	imx6.I2C1.Init()
+	i2c = append(i2c, imx6.I2C1)
+
+	imx6.I2C2.Init()
+	i2c = append(i2c, imx6.I2C2)
+
 	cards = append(cards, mx6ullevk.SD1)
 	cards = append(cards, mx6ullevk.SD2)
 }

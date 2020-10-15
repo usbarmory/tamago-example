@@ -37,38 +37,41 @@ import (
 )
 
 const help = `
-  help                              # this help
-  exit, quit                        # close session
-  example                           # launch example test code
-  rand                              # gather 32 bytes from TRNG via crypto/rand
-  reboot                            # reset watchdog timer
-  stack                             # stack trace of current goroutine
-  stackall                          # stack trace of all goroutines
-  ble                               # enter BLE serial console
-  mmc read <n> <hex offset> <size>  # internal MMC/SD card read
-  md       <hex offset> <size>      # memory display (use with caution)
-  mw       <hex offset> <hex value> # memory write   (use with caution)
-  led      (white|blue) (on|off)    # LED control
-  dcp      <size> <sec>             # benchmark hardware encryption
+  help                                   # this help
+  exit, quit                             # close session
+  example                                # launch example test code
+  rand                                   # gather 32 bytes from TRNG
+  reboot                                 # reset watchdog timer
+  stack                                  # stack trace of current goroutine
+  stackall                               # stack trace of all goroutines
+  ble                                    # enter BLE serial console
+  i2c <n> <hex slave> <hex addr> <size>  # I²C bus read
+  mmc <n> <hex offset> <size>            # internal MMC/SD card read
+  md  <hex offset> <size>                # memory display (use with caution)
+  mw  <hex offset> <hex value>           # memory write   (use with caution)
+  led (white|blue) (on|off)              # LED control
+  dcp <size> <sec>                       # benchmark hardware encryption
 `
 
 const MD_LIMIT = 102400
 
 var LED func(string, bool) error
+var i2c []*imx6.I2C
 
-var dcpCommandPattern = regexp.MustCompile(`dcp (\d+) (\d+).*`)
-var ledCommandPattern = regexp.MustCompile(`led (white|blue) (on|off).*`)
-var cardCommandPattern = regexp.MustCompile(`mmc read (\d) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
-var memoryCommandPattern = regexp.MustCompile(`(md|mw) ?([[:xdigit:]]+) (\d+|[[:xdigit:]]+).*`)
+var dcpCommandPattern = regexp.MustCompile(`dcp (\d+) (\d+)`)
+var ledCommandPattern = regexp.MustCompile(`led (white|blue) (on|off)`)
+var mmcCommandPattern = regexp.MustCompile(`mmc (\d) ([[:xdigit:]]+) (\d+)`)
+var i2cCommandPattern = regexp.MustCompile(`i2c (\d) ([[:xdigit:]]+) ([[:xdigit:]]+) (\d+)`)
+var memoryCommandPattern = regexp.MustCompile(`(md|mw) ([[:xdigit:]]+) (\d+|[[:xdigit:]]+)`)
 
-func dcpCommand(arg1 string, arg2 string) (res string) {
-	size, err := strconv.Atoi(arg1)
+func dcpCommand(arg []string) (res string) {
+	size, err := strconv.Atoi(arg[0])
 
 	if err != nil {
 		return fmt.Sprintf("invalid size: %v", err)
 	}
 
-	sec, err := strconv.Atoi(arg2)
+	sec, err := strconv.Atoi(arg[1])
 
 	if err != nil {
 		return fmt.Sprintf("invalid duration: %v", err)
@@ -85,10 +88,13 @@ func dcpCommand(arg1 string, arg2 string) (res string) {
 	return fmt.Sprintf("%d aes-128 cbc's in %s", n, d)
 }
 
-func ledCommand(name string, state string) (res string) {
+func ledCommand(arg []string) (res string) {
 	if LED == nil {
 		return
 	}
+
+	name := arg[0]
+	state := arg[1]
 
 	if state == "on" {
 		LED(name, true)
@@ -99,84 +105,122 @@ func ledCommand(name string, state string) (res string) {
 	return
 }
 
-func cardCommand(arg1 string, arg2 string, arg3 string) (res string) {
-	n, err := strconv.ParseUint(arg1, 10, 8)
+func mmcCommand(arg []string) (res string) {
+	n, err := strconv.ParseUint(arg[0], 10, 8)
 
 	if err != nil {
-		return fmt.Sprintf("invalid index: %v", err)
+		return fmt.Sprintf("invalid card index: %v", err)
 	}
 
-	addr, err := strconv.ParseUint(arg2, 16, 32)
+	addr, err := strconv.ParseUint(arg[1], 16, 32)
 
 	if err != nil {
 		return fmt.Sprintf("invalid address: %v", err)
 	}
 
-	val, err := strconv.ParseUint(arg3, 10, 32)
+	size, err := strconv.ParseUint(arg[2], 10, 32)
 
 	if err != nil {
 		return fmt.Sprintf("invalid size: %v", err)
 	}
 
-	if val > MD_LIMIT {
+	if size > MD_LIMIT {
 		return fmt.Sprintf("please only use a size argument <= %d", MD_LIMIT)
 	}
 
 	if len(cards) < int(n+1) {
-		return "invalid index"
+		return "invalid card index"
 	}
 
-	data, err := cards[n].Read(int64(addr), int64(val))
+	buf, err := cards[n].Read(int64(addr), int64(size))
 
 	if err != nil {
 		return err.Error()
 	}
 
-	return hex.Dump(data)
+	return hex.Dump(buf)
 }
 
-func memoryCommand(op string, arg1 string, arg2 string) (res string) {
-	var err error
-	var val uint64
-	var data []byte
+func i2cCommand(arg []string) (res string) {
+	n, err := strconv.ParseUint(arg[0], 10, 8)
 
-	addr, err := strconv.ParseUint(arg1, 16, 32)
+	if err != nil {
+		return fmt.Sprintf("invalid bus index: %v", err)
+	}
+
+	slave, err := strconv.ParseUint(arg[1], 16, 7)
+
+	if err != nil {
+		return fmt.Sprintf("invalid slave: %v", err)
+	}
+
+	addr, err := strconv.ParseUint(arg[2], 16, 32)
 
 	if err != nil {
 		return fmt.Sprintf("invalid address: %v", err)
 	}
 
-	switch op {
+	size, err := strconv.ParseUint(arg[3], 10, 32)
+
+	if err != nil {
+		return fmt.Sprintf("invalid size: %v", err)
+	}
+
+	if size > MD_LIMIT {
+		return fmt.Sprintf("please only use a size argument <= %d", MD_LIMIT)
+	}
+
+	if n <= 0 || len(i2c) < int(n) {
+		return "invalid bus index"
+	}
+
+	buf, err := i2c[n-1].Read(uint8(slave), uint32(addr), 1, int(size))
+
+	if err != nil {
+		return err.Error()
+	}
+
+	return hex.Dump(buf)
+}
+
+func memoryCommand(arg []string) (res string) {
+	addr, err := strconv.ParseUint(arg[1], 16, 32)
+
+	if err != nil {
+		return fmt.Sprintf("invalid address: %v", err)
+	}
+
+	switch arg[0] {
 	case "md":
-		val, err = strconv.ParseUint(arg2, 10, 32)
+		size, err := strconv.ParseUint(arg[2], 10, 32)
 
 		if err != nil {
 			return fmt.Sprintf("invalid size: %v", err)
 		}
 
-		if (addr%4) != 0 || (val%4) != 0 {
+		if (addr%4) != 0 || (size%4) != 0 {
 			return "please only perform 32-bit aligned accesses"
 		}
 
-		if val > MD_LIMIT {
+		if size > MD_LIMIT {
 			return fmt.Sprintf("please only use a size argument <= %d", MD_LIMIT)
 		}
 
-		data = make([]byte, val)
+		buf := make([]byte, size)
 
-		for i := 0; i < int(val); i += 4 {
+		for i := 0; i < int(size); i += 4 {
 			reg := (*uint32)(unsafe.Pointer(uintptr(addr + uint64(i))))
 			val := *reg
 
-			data[i] = byte((val >> 24) & 0xff)
-			data[i+1] = byte((val >> 16) & 0xff)
-			data[i+2] = byte((val >> 8) & 0xff)
-			data[i+3] = byte(val & 0xff)
+			buf[i] = byte((val >> 24) & 0xff)
+			buf[i+1] = byte((val >> 16) & 0xff)
+			buf[i+2] = byte((val >> 8) & 0xff)
+			buf[i+3] = byte(val & 0xff)
 		}
 
-		res = hex.Dump(data)
+		res = hex.Dump(buf)
 	case "mw":
-		val, err = strconv.ParseUint(arg2, 16, 32)
+		val, err := strconv.ParseUint(arg[2], 16, 32)
 
 		if err != nil {
 			return fmt.Sprintf("invalid data: %v", err)
@@ -214,13 +258,15 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 		res = buf.String()
 	default:
 		if m := dcpCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
-			res = dcpCommand(m[1], m[2])
+			res = dcpCommand(m[1:3])
 		} else if m := ledCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
-			res = ledCommand(m[1], m[2])
-		} else if m := cardCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
-			res = cardCommand(m[1], m[2], m[3])
+			res = ledCommand(m[1:3])
+		} else if m := mmcCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
+			res = mmcCommand(m[1:4])
+		} else if m := i2cCommandPattern.FindStringSubmatch(cmd); len(m) == 5 {
+			res = i2cCommand(m[1:5])
 		} else if m := memoryCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
-			res = memoryCommand(m[1], m[2], m[3])
+			res = memoryCommand(m[1:4])
 		} else {
 			res = "unknown command, type `help`"
 		}

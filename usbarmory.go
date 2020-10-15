@@ -25,10 +25,16 @@ import (
 const CR = 0x0d
 
 func init() {
-	LED = usbarmory.LED
+	// On the USB armory Mk II the standard serial console (UART2) is
+	// exposed through the debug accessory, which needs to be enabled.
+	usbarmory.EnableDebugAccessory()
+
+	i2c = append(i2c, imx6.I2C1)
 
 	cards = append(cards, usbarmory.SD)
 	cards = append(cards, usbarmory.MMC)
+
+	LED = usbarmory.LED
 
 	if imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL) {
 		log.Println("-- i.mx6 ble ---------------------------------------------------------")

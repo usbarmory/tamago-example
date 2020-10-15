@@ -84,19 +84,20 @@ The web servers expose the following routes:
 The SSH server exposes a basic shell with the following commands:
 
 ```
-  help                               # this help
-  exit, quit                         # close session
-  example                            # launch example test code
-  rand                               # gather 32 bytes from TRNG via crypto/rand
-  reboot                             # reset watchdog timer
-  stack                              # stack trace of current goroutine
-  stackall                           # stack trace of all goroutines
-  ble                                # enter BLE serial console
-  mmc read <n> <hex offset> <size>   # internal MMC/SD card read
-  md        <hex offset> <size>      # memory display (use with caution)
-  mw        <hex offset> <hex value> # memory write   (use with caution)
-  led       (white|blue) (on|off)    # LED control
-  dcp       <size> <sec>             # benchmark hardware encryption
+  help                                   # this help
+  exit, quit                             # close session
+  example                                # launch example test code
+  rand                                   # gather 32 bytes from TRNG
+  reboot                                 # reset watchdog timer
+  stack                                  # stack trace of current goroutine
+  stackall                               # stack trace of all goroutines
+  ble                                    # enter BLE serial console
+  i2c <n> <hex slave> <hex addr> <size>  # I²C bus read
+  mmc <n> <hex offset> <size>            # internal MMC/SD card read
+  md  <hex offset> <size>                # memory display (use with caution)
+  mw  <hex offset> <hex value>           # memory write   (use with caution)
+  led (white|blue) (on|off)              # LED control
+  dcp <size> <sec>                       # benchmark hardware encryption
 ```
 
 Compiling

@@ -12,6 +12,8 @@ BUILD_DATE = $(shell /bin/date -u "+%Y-%m-%d %H:%M:%S")
 BUILD = ${BUILD_USER}@${BUILD_HOST} on ${BUILD_DATE}
 REV = $(shell git rev-parse --short HEAD 2> /dev/null)
 
+SHELL = /bin/bash
+
 APP := example
 TARGET ?= "usbarmory"
 GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARM=7 GOARCH=arm
@@ -20,8 +22,6 @@ GOFLAGS := -tags ${TARGET} -ldflags "-s -w -T $(TEXT_START) -E _rt0_arm_tamago -
 QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -nographic -monitor none -serial null -serial stdio -net none \
         -semihosting -d unimp
-
-SHELL = /bin/bash
 
 .PHONY: clean qemu qemu-gdb
 
@@ -74,6 +74,8 @@ clean:
 qemu: $(APP)
 	$(QEMU) -kernel $(APP)
 
+qemu-gdb: GOFLAGS := $(GOFLAGS:-s=)
+qemu-gdb: GOFLAGS := $(GOFLAGS:-w=)
 qemu-gdb: $(APP)
 	$(QEMU) -kernel $(APP) -S -s
 
@@ -91,10 +93,10 @@ $(APP).bin: $(APP)
 	$(CROSS_COMPILE)objcopy -j .text -j .rodata -j .shstrtab -j .typelink \
 	    -j .itablink -j .gopclntab -j .go.buildinfo -j .noptrdata -j .data \
 	    -j .bss --set-section-flags .bss=alloc,load,contents \
-	    -j .noptrbss --set-section-flags .noptrbss=alloc,load,contents\
+	    -j .noptrbss --set-section-flags .noptrbss=alloc,load,contents \
 	    $(APP) -O binary $(APP).bin
 
-$(APP).imx: check_usbarmory_git $(APP).bin $(APP).dcd
+$(APP).imx: $(APP).bin $(APP).dcd
 	mkimage -n $(APP).dcd -T imximage -e $(TEXT_START) -d $(APP).bin $(APP).imx
 	# Copy entry point from ELF file
 	dd if=$(APP) of=$(APP).imx bs=1 count=4 skip=24 seek=4 conv=notrunc
