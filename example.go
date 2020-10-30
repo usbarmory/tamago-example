@@ -186,19 +186,20 @@ func example(init bool) {
 	testAlloc(runs, chunks, chunkSize)
 
 	if imx6.Native {
-		count := 10 * 1024 * 1024
+		size := 10 * 1024 * 1024
 		readSize := 0x7fff
 
 		if init {
-			// Pre-USB use the entire iRAM, accounting for required
-			// alignments which take additional space.
-			readSize = 0x20000 - 512
+			// We can use the entire iRAM before USB activation,
+			// accounting for required dTD alignment which takes
+			// additional space.
+			readSize = 0x20000 - 4096
 		}
 
 		log.Println("-- memory cards -------------------------------------------------------")
 
 		for _, card := range cards {
-			TestUSDHC(card, count, readSize)
+			TestUSDHC(card, size, readSize)
 		}
 	}
 }
