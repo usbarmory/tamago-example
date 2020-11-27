@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/f-secure-foundry/tamago/soc/imx6"
+	"github.com/f-secure-foundry/tamago/soc/imx6/dcp"
 )
 
 const testVector = "\x75\xf9\x02\x2d\x5a\x86\x7a\xd4\x30\x44\x0f\xee\xc6\x61\x1f\x0a"
@@ -25,7 +26,7 @@ const diversifier = "\xde\xad\xbe\xef"
 func testKeyDerivation() (err error) {
 	iv := make([]byte, aes.BlockSize)
 
-	key, err := imx6.DCP.DeriveKey([]byte(diversifier), iv, -1)
+	key, err := dcp.DeriveKey([]byte(diversifier), iv, -1)
 
 	if err != nil {
 		return
@@ -37,7 +38,7 @@ func testKeyDerivation() (err error) {
 	}
 
 	// if the SoC is secure booted we can only print the result
-	if imx6.DCP.SNVS() {
+	if imx6.SNVS() {
 		log.Printf("imx6_dcp: derived SNVS key %x", key)
 		return
 	}
@@ -64,7 +65,7 @@ func testDecryption(size int, sec int) (n int, d time.Duration, err error) {
 	iv := make([]byte, aes.BlockSize)
 	buf := make([]byte, size)
 
-	_, err = imx6.DCP.DeriveKey([]byte(diversifier), iv, 0)
+	_, err = dcp.DeriveKey([]byte(diversifier), iv, 0)
 
 	if err != nil {
 		return
@@ -73,7 +74,7 @@ func testDecryption(size int, sec int) (n int, d time.Duration, err error) {
 	start := time.Now()
 
 	for run, timeout := true, time.After(time.Duration(sec)*time.Second); run; {
-		err = imx6.DCP.Decrypt(buf, 0, iv)
+		err = dcp.Decrypt(buf, 0, iv)
 
 		if err != nil {
 			return
@@ -92,8 +93,6 @@ func testDecryption(size int, sec int) (n int, d time.Duration, err error) {
 }
 
 func TestDCP() {
-	imx6.DCP.Init()
-
 	// derive twice to ensure consistency across repeated operations
 
 	if err := testKeyDerivation(); err != nil {
