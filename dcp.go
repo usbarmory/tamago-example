@@ -93,6 +93,8 @@ func testDecryption(size int, sec int) (n int, d time.Duration, err error) {
 }
 
 func TestDCP() {
+	dcp.Init()
+
 	// derive twice to ensure consistency across repeated operations
 
 	if err := testKeyDerivation(); err != nil {
