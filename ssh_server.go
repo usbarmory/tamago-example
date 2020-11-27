@@ -399,7 +399,7 @@ func startSSHServer(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpip.N
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 
 	if err != nil {
-		log.Fatal("ECDSA key error: ", err)
+		log.Fatal("private key generation error: ", err)
 	}
 
 	signer, err := ssh.NewSignerFromKey(key)
