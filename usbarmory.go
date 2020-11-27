@@ -26,10 +26,6 @@ import (
 const CR = 0x0d
 
 func init() {
-	// On the USB armory Mk II the standard serial console (UART2) is
-	// exposed through the debug accessory, which needs to be enabled.
-	consolePresence, _ := usbarmory.DetectDebugAccessory(200 * time.Millisecond)
-
 	i2c = append(i2c, imx6.I2C1)
 
 	cards = append(cards, usbarmory.SD)
@@ -38,7 +34,11 @@ func init() {
 	LED = usbarmory.LED
 
 	if imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL) {
+		// On the USB armory Mk II the standard serial console (UART2) is
+		// exposed through the debug accessory, which needs to be enabled.
+		consolePresence, _ := usbarmory.DetectDebugAccessory(200 * time.Millisecond)
 		<-consolePresence
+
 		log.Println("-- i.mx6 ble ---------------------------------------------------------")
 		usbarmory.BLE.Init()
 		log.Println("ANNA-B112 BLE module initialized")
