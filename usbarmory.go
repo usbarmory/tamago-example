@@ -36,8 +36,8 @@ func init() {
 	if imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL) {
 		// On the USB armory Mk II the standard serial console (UART2) is
 		// exposed through the debug accessory, which needs to be enabled.
-		consolePresence, _ := usbarmory.DetectDebugAccessory(200 * time.Millisecond)
-		<-consolePresence
+		debugConsole, _ := usbarmory.DetectDebugAccessory(250 * time.Millisecond)
+		<-debugConsole
 
 		log.Println("-- i.mx6 ble ---------------------------------------------------------")
 		usbarmory.BLE.Init()
