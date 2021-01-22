@@ -5,16 +5,17 @@ go 1.15
 require (
 	github.com/btcsuite/btcd v0.21.0-beta
 	github.com/btcsuite/btcutil v1.0.2
-	github.com/f-secure-foundry/tamago v0.0.0-20201201225010-4fbf219a7dce
+	github.com/f-secure-foundry/tamago v0.0.0-20210120185021-8387bb5064a1
+	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/mkevac/debugcharts v0.0.0-20191222103121-ae1c48aa8615
-	github.com/shirou/gopsutil v3.20.11+incompatible // indirect
-	golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392
-	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9 // indirect
-	golang.org/x/sys v0.0.0-20201202213521-69691e467435 // indirect
-	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 // indirect
-	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
-	gvisor.dev/gvisor v0.0.0-20201203090021-80552b936d06
+	github.com/shirou/gopsutil v3.20.12+incompatible // indirect
+	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
+	golang.org/x/sys v0.0.0-20210122093101-04d7465088b8 // indirect
+	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
+	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
+	gvisor.dev/gvisor v0.0.0-20210122193846-527ef5fc0307
 )
 
 replace gvisor.dev/gvisor => github.com/f-secure-foundry/gvisor v0.0.0-20200812210008-801bb984d4b1
