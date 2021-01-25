@@ -48,7 +48,7 @@ func TestUSDHC(card *usdhc.USDHC, size int, readSize int) {
 	start := time.Now()
 
 	for lba = 0; lba < (size / info.BlockSize); lba += blocks {
-		err := card.ReadBlocks(lba, blocks, buf)
+		err := card.ReadBlocks(lba, buf)
 
 		if err != nil {
 			log.Printf("imx6_usdhc: card read error, %v", err)
