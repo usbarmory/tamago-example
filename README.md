@@ -29,7 +29,7 @@ execute bare metal Go code on the following platforms:
 
 | SoC          | Board                                                                                                                                                                                | SoC package                                                         | Board package                                                                               |
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| NXP i.MX6ULL | [USB armory Mk II](https://github.com/f-secure-foundry/usbarmory/wiki)                                                                                                               | [imx6](https://github.com/f-secure-foundry/tamago/tree/master/soc/imx6) | [usbarmory/mark-two](https://github.com/f-secure-foundry/tamago/tree/master/board/f-secure/usbarmory)      |
+| NXP i.MX6ULZ | [USB armory Mk II](https://github.com/f-secure-foundry/usbarmory/wiki)                                                                                                               | [imx6](https://github.com/f-secure-foundry/tamago/tree/master/soc/imx6) | [usbarmory/mark-two](https://github.com/f-secure-foundry/tamago/tree/master/board/f-secure/usbarmory)      |
 | NXP i.MX6ULL | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6](https://github.com/f-secure-foundry/tamago/tree/master/soc/imx6) | [nxp/mx6ullevk](https://github.com/f-secure-foundry/tamago/tree/master/board/nxp/mx6ullevk) |
 
 
@@ -98,6 +98,7 @@ The SSH server exposes a basic shell with the following commands:
   mw  <hex offset> <hex value>           # memory write   (use with caution)
   led (white|blue) (on|off)              # LED control
   dcp <size> <sec>                       # benchmark hardware encryption
+  otp <bank> <word>                      # OTP fuse display
 ```
 
 Compiling

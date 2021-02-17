@@ -69,7 +69,7 @@ dcd:
 
 clean:
 	rm -f $(APP)
-	@rm -fr $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd
+	@rm -fr $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd IMX6ULL.yaml
 
 qemu: $(APP)
 	$(QEMU) -kernel $(APP)
@@ -81,7 +81,7 @@ qemu-gdb: $(APP)
 
 #### dependencies ####
 
-$(APP): check_tamago
+$(APP): check_tamago IMX6ULL.yaml
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 
 $(APP).dcd: check_tamago
@@ -100,6 +100,12 @@ $(APP).imx: $(APP).bin $(APP).dcd
 	mkimage -n $(APP).dcd -T imximage -e $(TEXT_START) -d $(APP).bin $(APP).imx
 	# Copy entry point from ELF file
 	dd if=$(APP) of=$(APP).imx bs=1 count=4 skip=24 seek=4 conv=notrunc
+
+IMX6ULL.yaml: check_tamago
+IMX6ULL.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
+IMX6ULL.yaml: CRUCIBLE_PKG=$(shell grep "github.com/f-secure-foundry/crucible v" go.mod | awk '{print $$1"@"$$2}')
+IMX6ULL.yaml:
+	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/fusemaps/IMX6ULL.yaml IMX6ULL.yaml
 
 #### secure boot ####
 

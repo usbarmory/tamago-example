@@ -28,7 +28,7 @@ import (
 	"github.com/f-secure-foundry/tamago/soc/imx6"
 
 	"golang.org/x/crypto/ssh"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 
 	"gvisor.dev/gvisor/pkg/tcpip"
 	"gvisor.dev/gvisor/pkg/tcpip/adapters/gonet"
@@ -51,6 +51,7 @@ const help = `
   mw  <hex offset> <hex value>           # memory write   (use with caution)
   led (white|blue) (on|off)              # LED control
   dcp <size> <sec>                       # benchmark hardware encryption
+  otp <bank> <word>                      # OTP fuse display
 `
 
 const MD_LIMIT = 102400
@@ -59,6 +60,7 @@ var LED func(string, bool) error
 var i2c []*imx6.I2C
 
 var dcpCommandPattern = regexp.MustCompile(`dcp (\d+) (\d+)`)
+var otpCommandPattern = regexp.MustCompile(`otp (\d+) (\d+)`)
 var ledCommandPattern = regexp.MustCompile(`led (white|blue) (on|off)`)
 var mmcCommandPattern = regexp.MustCompile(`mmc (\d) ([[:xdigit:]]+) (\d+)`)
 var i2cCommandPattern = regexp.MustCompile(`i2c (\d) ([[:xdigit:]]+) ([[:xdigit:]]+) (\d+)`)
@@ -86,6 +88,28 @@ func dcpCommand(arg []string) (res string) {
 	}
 
 	return fmt.Sprintf("%d aes-128 cbc's in %s", n, d)
+}
+
+func otpCommand(arg []string) (res string) {
+	bank, err := strconv.Atoi(arg[0])
+
+	if err != nil {
+		return fmt.Sprintf("invalid bank: %v", err)
+	}
+
+	word, err := strconv.Atoi(arg[1])
+
+	if err != nil {
+		return fmt.Sprintf("invalid word: %v", err)
+	}
+
+	res, err = readOTP(bank, word)
+
+	if err != nil {
+		return err.Error()
+	}
+
+	return
 }
 
 func ledCommand(arg []string) (res string) {
@@ -233,7 +257,7 @@ func memoryCommand(arg []string) (res string) {
 	return
 }
 
-func handleCommand(term *terminal.Terminal, cmd string) (err error) {
+func handleCommand(term *term.Terminal, cmd string) (err error) {
 	var res string
 
 	switch cmd {
@@ -258,15 +282,17 @@ func handleCommand(term *terminal.Terminal, cmd string) (err error) {
 		res = buf.String()
 	default:
 		if m := dcpCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
-			res = dcpCommand(m[1:3])
+			res = dcpCommand(m[1:])
+		} else if m := otpCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
+			res = otpCommand(m[1:])
 		} else if m := ledCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
-			res = ledCommand(m[1:3])
+			res = ledCommand(m[1:])
 		} else if m := mmcCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
-			res = mmcCommand(m[1:4])
+			res = mmcCommand(m[1:])
 		} else if m := i2cCommandPattern.FindStringSubmatch(cmd); len(m) == 5 {
-			res = i2cCommand(m[1:5])
+			res = i2cCommand(m[1:])
 		} else if m := memoryCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
-			res = memoryCommand(m[1:4])
+			res = memoryCommand(m[1:])
 		} else {
 			res = "unknown command, type `help`"
 		}
@@ -290,7 +316,7 @@ func handleChannel(newChannel ssh.NewChannel) {
 		return
 	}
 
-	term := terminal.NewTerminal(conn, "")
+	term := term.NewTerminal(conn, "")
 	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
 
 	go func() {
