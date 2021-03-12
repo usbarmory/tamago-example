@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/btcsuite/btcd v0.21.0-beta
 	github.com/btcsuite/btcutil v1.0.2
-	github.com/f-secure-foundry/crucible v0.0.0-20210210184510-b33ae13b737a
+	github.com/f-secure-foundry/crucible v0.0.0-20210312172715-ee016f688e57
 	github.com/f-secure-foundry/tamago v0.0.0-20210217103808-875e533027e3
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
