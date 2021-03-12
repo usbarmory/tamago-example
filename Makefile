@@ -18,7 +18,7 @@ APP := example
 TARGET ?= "usbarmory"
 GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARM=7 GOARCH=arm
 TEXT_START := 0x80010000 # ramStart (defined in imx6/imx6ul/memory.go) + 0x10000
-GOFLAGS := -tags ${TARGET} -ldflags "-s -w -T $(TEXT_START) -E _rt0_arm_tamago -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
+GOFLAGS := -tags ${TARGET} -trimpath -ldflags "-s -w -T $(TEXT_START) -E _rt0_arm_tamago -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
 QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -nographic -monitor none -serial null -serial stdio -net none \
         -semihosting -d unimp
@@ -40,13 +40,6 @@ elf: $(APP)
 check_tamago:
 	@if [ "${TAMAGO}" == "" ] || [ ! -f "${TAMAGO}" ]; then \
 		echo 'You need to set the TAMAGO variable to a compiled version of https://github.com/f-secure-foundry/tamago-go'; \
-		exit 1; \
-	fi
-
-check_usbarmory_git:
-	@if [ "${USBARMORY_GIT}" == "" ]; then \
-		echo 'You need to set the USBARMORY_GIT variable to the path of a clone of'; \
-		echo '  https://github.com/f-secure-foundry/usbarmory'; \
 		exit 1; \
 	fi
 
@@ -105,18 +98,19 @@ IMX6ULL.yaml: check_tamago
 IMX6ULL.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
 IMX6ULL.yaml: CRUCIBLE_PKG=$(shell grep "github.com/f-secure-foundry/crucible v" go.mod | awk '{print $$1"@"$$2}')
 IMX6ULL.yaml:
-	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/fusemaps/IMX6ULL.yaml IMX6ULL.yaml
+	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX6ULL.yaml IMX6ULL.yaml
 
 #### secure boot ####
 
-$(APP)-signed.imx: check_usbarmory_git check_hab_keys $(APP).imx
-	${USBARMORY_GIT}/software/secure_boot/usbarmory_csftool \
-		--csf_key ${HAB_KEYS}/CSF_1_key.pem \
-		--csf_crt ${HAB_KEYS}/CSF_1_crt.pem \
-		--img_key ${HAB_KEYS}/IMG_1_key.pem \
-		--img_crt ${HAB_KEYS}/IMG_1_crt.pem \
-		--table   ${HAB_KEYS}/SRK_1_2_3_4_table.bin \
-		--index   1 \
-		--image   $(APP).imx \
-		--output  $(APP).csf && \
+$(APP)-signed.imx: check_hab_keys $(APP).imx
+	${TAMAGO} get github.com/f-secure-foundry/crucible/cmd/habtool
+	$(shell ${TAMAGO} env GOPATH)/bin/habtool \
+		-A ${HAB_KEYS}/CSF_1_key.pem \
+		-a ${HAB_KEYS}/CSF_1_crt.pem \
+		-B ${HAB_KEYS}/IMG_1_key.pem \
+		-b ${HAB_KEYS}/IMG_1_crt.pem \
+		-t ${HAB_KEYS}/SRK_1_2_3_4_table.bin \
+		-x 1 \
+		-i $(APP).imx \
+		-o $(APP).csf && \
 	cat $(APP).imx $(APP).csf > $(APP)-signed.imx
