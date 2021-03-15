@@ -98,12 +98,13 @@ IMX6ULL.yaml: check_tamago
 IMX6ULL.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
 IMX6ULL.yaml: CRUCIBLE_PKG=$(shell grep "github.com/f-secure-foundry/crucible v" go.mod | awk '{print $$1"@"$$2}')
 IMX6ULL.yaml:
+	${TAMAGO} install github.com/f-secure-foundry/crucible/cmd/habtool
 	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX6ULL.yaml IMX6ULL.yaml
 
 #### secure boot ####
 
 $(APP)-signed.imx: check_hab_keys $(APP).imx
-	${TAMAGO} install github.com/f-secure-foundry/crucible/cmd/habtool@latest
+	${TAMAGO} install github.com/f-secure-foundry/crucible/cmd/habtool
 	$(shell ${TAMAGO} env GOPATH)/bin/habtool \
 		-A ${HAB_KEYS}/CSF_1_key.pem \
 		-a ${HAB_KEYS}/CSF_1_crt.pem \
