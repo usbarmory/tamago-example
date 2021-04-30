@@ -29,7 +29,7 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
 
 all: $(APP)
 
-imx: $(APP).imx
+imx: $(APP).dcd $(APP).imx
 
 imx_signed: $(APP)-signed.imx
 
@@ -89,7 +89,7 @@ $(APP).bin: $(APP)
 	    -j .noptrbss --set-section-flags .noptrbss=alloc,load,contents \
 	    $(APP) -O binary $(APP).bin
 
-$(APP).imx: $(APP).bin $(APP).dcd
+$(APP).imx: $(APP).bin
 	mkimage -n $(APP).dcd -T imximage -e $(TEXT_START) -d $(APP).bin $(APP).imx
 	# Copy entry point from ELF file
 	dd if=$(APP) of=$(APP).imx bs=1 count=4 skip=24 seek=4 conv=notrunc
