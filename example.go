@@ -29,15 +29,11 @@ var Build string
 var Revision string
 var banner string
 
-var verbose = true
+const verbose = true
 
 var exit chan bool
 
 func init() {
-	banner = fmt.Sprintf("%s/%s (%s) • %s %s",
-		runtime.GOOS, runtime.GOARCH, runtime.Version(),
-		Revision, Build)
-
 	log.SetFlags(0)
 
 	// imx6 package debugging
@@ -47,8 +43,11 @@ func init() {
 		log.SetOutput(ioutil.Discard)
 	}
 
+	banner = fmt.Sprintf("%s/%s (%s) • %s %s",
+		runtime.GOOS, runtime.GOARCH, runtime.Version(),
+		Revision, Build)
+
 	model := imx6.Model()
-	_, family, revMajor, revMinor := imx6.SiliconVersion()
 
 	if !imx6.Native {
 		banner += fmt.Sprintf(" • %s %d MHz (emulated)", model, imx6.ARMFreq()/1000000)
@@ -60,9 +59,6 @@ func init() {
 	}
 
 	banner += fmt.Sprintf(" • %s %d MHz", model, imx6.ARMFreq()/1000000)
-
-	log.Printf("imx6_soc: %s (%#x, %d.%d) @ %d MHz - native:%v",
-		model, family, revMajor, revMinor, imx6.ARMFreq()/1000000, imx6.Native)
 }
 
 func example(init bool) {

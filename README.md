@@ -88,7 +88,7 @@ The SSH server exposes a basic shell with the following commands:
   exit, quit                             # close session
   example                                # launch example test code
   rand                                   # gather 32 bytes from TRNG
-  reboot                                 # reset watchdog timer
+  reboot                                 # reset the SoC/board
   stack                                  # stack trace of current goroutine
   stackall                               # stack trace of all goroutines
   ble                                    # enter BLE serial console

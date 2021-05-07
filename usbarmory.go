@@ -45,6 +45,10 @@ func init() {
 	}
 }
 
+func reset() {
+	usbarmory.Reset()
+}
+
 func bleConsole(term *terminal.Terminal) (err error) {
 	log.Printf("switching to BLE console, type `quit` to exit")
 

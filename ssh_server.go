@@ -41,7 +41,7 @@ const help = `
   exit, quit                             # close session
   example                                # launch example test code
   rand                                   # gather 32 bytes from TRNG
-  reboot                                 # reset watchdog timer
+  reboot                                 # reset the SoC/board
   stack                                  # stack trace of current goroutine
   stackall                               # stack trace of all goroutines
   ble                                    # enter BLE serial console
@@ -273,7 +273,7 @@ func handleCommand(term *term.Terminal, cmd string) (err error) {
 		rand.Read(buf)
 		res = string(term.Escape.Cyan) + fmt.Sprintf("%x", buf) + string(term.Escape.Reset)
 	case "reboot":
-		imx6.Reboot()
+		reset()
 	case "stack":
 		res = string(debug.Stack())
 	case "stackall":

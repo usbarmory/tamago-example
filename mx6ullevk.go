@@ -30,6 +30,10 @@ func init() {
 	cards = append(cards, mx6ullevk.SD2)
 }
 
+func reset() {
+	mx6ullevk.Reset()
+}
+
 func bleConsole(term *terminal.Terminal) (err error) {
 	return errors.New("not supported")
 }
