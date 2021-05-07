@@ -103,7 +103,7 @@ IMX6ULL.yaml:
 
 #### secure boot ####
 
-$(APP)-signed.imx: check_hab_keys $(APP).dcd $(APP).imx
+$(APP)-signed.imx: check_hab_keys $(APP).imx
 	${TAMAGO} install github.com/f-secure-foundry/crucible/cmd/habtool
 	$(shell ${TAMAGO} env GOPATH)/bin/habtool \
 		-A ${HAB_KEYS}/CSF_1_key.pem \
