@@ -13,7 +13,7 @@ package main
 import (
 	"crypto/rand"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"math"
 	"math/big"
@@ -29,19 +29,12 @@ var Build string
 var Revision string
 var banner string
 
-const verbose = true
-
 var exit chan bool
+
+var logFile *os.File
 
 func init() {
 	log.SetFlags(0)
-
-	// imx6 package debugging
-	if verbose {
-		log.SetOutput(os.Stdout)
-	} else {
-		log.SetOutput(ioutil.Discard)
-	}
 
 	banner = fmt.Sprintf("%s/%s (%s) • %s %s",
 		runtime.GOOS, runtime.GOARCH, runtime.Version(),
@@ -203,6 +196,8 @@ func example(init bool) {
 func main() {
 	start := time.Now()
 
+	logFile, _ = os.OpenFile("/tamago-example.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 	log.Println(banner)
 
 	example(true)

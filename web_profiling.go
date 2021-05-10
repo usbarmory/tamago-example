@@ -9,6 +9,10 @@
 package main
 
 import (
-	_ "github.com/mkevac/debugcharts"
+	"github.com/arl/statsviz"
 	_ "net/http/pprof"
 )
+
+func init() {
+	statsviz.RegisterDefault()
+}

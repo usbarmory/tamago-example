@@ -89,6 +89,18 @@ func generateTLSCerts(address net.IP) ([]byte, []byte, error) {
 	return TLSCert.Bytes(), TLSKey.Bytes(), nil
 }
 
+func flushingHandler(h http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "Fri, 07 Jan 1981 00:00:00 GMT")
+
+		logFile.Sync()
+
+		h.ServeHTTP(w, r)
+	}
+}
+
 func setupStaticWebAssets() {
 	file, err := os.OpenFile("/index.html", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 
@@ -99,12 +111,14 @@ func setupStaticWebAssets() {
 
 	file.WriteString("<html><body>")
 	file.WriteString(fmt.Sprintf("<p>%s</p><ul>", html.EscapeString(banner)))
+	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/tamago-example.log", "/tamago-example.log"))
 	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/dir", "/dir"))
-	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/debug/charts", "/debug/charts"))
 	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/debug/pprof", "/debug/pprof"))
+	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/debug/statsviz", "/debug/statsviz"))
 	file.WriteString("</ul></body></html>")
 
-	staticHandler := http.FileServer(http.Dir("/"))
+	static := http.FileServer(http.Dir("/"))
+	staticHandler := flushingHandler(static)
 	http.Handle("/", http.StripPrefix("/", staticHandler))
 }
 

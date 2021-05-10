@@ -322,8 +322,8 @@ func handleChannel(newChannel ssh.NewChannel) {
 	go func() {
 		defer conn.Close()
 
-		log.SetOutput(io.MultiWriter(os.Stdout, term))
-		defer log.SetOutput(os.Stdout)
+		log.SetOutput(io.MultiWriter(os.Stdout, logFile, term))
+		defer log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 
 		fmt.Fprintf(term, "%s\n", banner)
 		fmt.Fprintf(term, "%s\n", string(term.Escape.Cyan)+help+string(term.Escape.Reset))

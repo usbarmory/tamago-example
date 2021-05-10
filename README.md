@@ -77,9 +77,10 @@ network services are started on [Ethernet over USB](https://github.com/f-secure-
 The web servers expose the following routes:
 
   * `/`: a welcome message
-  * `/dir`: in-memory filesystem
+  * `/tamago-example.log`: log output
+  * `/dir`: in-memory filesystem test directory
   * `/debug/pprof`: Go runtime profiling data through [pprof](https://golang.org/pkg/net/http/pprof/)
-  * `/debug/charts`: Go runtime profiling data through [debugcharts](https://github.com/mkevac/debugcharts)
+  * `/debug/statsviz`: Go runtime profiling data through [statsviz](https://github.com/arl/statsviz)
 
 The SSH server exposes a basic shell with the following commands:
 
