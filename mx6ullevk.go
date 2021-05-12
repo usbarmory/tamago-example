@@ -19,6 +19,8 @@ import (
 	"github.com/f-secure-foundry/tamago/soc/imx6"
 )
 
+const boardName = "MCIMX6ULL-EVK"
+
 func init() {
 	imx6.I2C1.Init()
 	i2c = append(i2c, imx6.I2C1)

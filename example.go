@@ -54,7 +54,7 @@ func init() {
 	banner += fmt.Sprintf(" • %s %d MHz", model, imx6.ARMFreq()/1000000)
 }
 
-func example(init bool) {
+func test(init bool) {
 	start := time.Now()
 	exit = make(chan bool)
 	n := 0
@@ -200,7 +200,7 @@ func main() {
 	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 	log.Println(banner)
 
-	example(true)
+	test(true)
 
 	if imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL) {
 		log.Println("-- i.mx6 usb ---------------------------------------------------------")

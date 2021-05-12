@@ -25,6 +25,8 @@ import (
 
 const CR = 0x0d
 
+const boardName = "USB armory Mk II"
+
 func init() {
 	i2c = append(i2c, imx6.I2C1)
 
