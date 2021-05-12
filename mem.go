@@ -11,7 +11,37 @@ package main
 import (
 	"log"
 	"runtime"
+
+	"github.com/f-secure-foundry/tamago/arm"
+	"github.com/f-secure-foundry/tamago/dma"
+	"github.com/f-secure-foundry/tamago/soc/imx6"
 )
+
+func mem(start uint32, size int, w []byte) (b []byte) {
+	// temporarily map page zero if required
+	if z := uint32(1 << 20); start < z {
+		imx6.ARM.ConfigureMMU(0, z, arm.TTE_AP_001|arm.TTE_SECTION_1MB)
+		defer imx6.ARM.ConfigureMMU(0, z, 0)
+	}
+
+	mem := &dma.Region{
+		Start: uint32(start),
+		Size:  size,
+	}
+	mem.Init()
+
+	start, buf := mem.Reserve(size, 0)
+	defer mem.Release(start)
+
+	if len(w) > 0 {
+		copy(buf, w)
+	} else {
+		b = make([]byte, size)
+		copy(b, buf)
+	}
+
+	return
+}
 
 func testAlloc(runs int, chunks int, chunkSize int) {
 	var memstats runtime.MemStats

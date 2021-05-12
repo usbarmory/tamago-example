@@ -21,10 +21,6 @@ import (
 	"runtime/pprof"
 	"strconv"
 
-	"github.com/f-secure-foundry/tamago/arm"
-	"github.com/f-secure-foundry/tamago/dma"
-	"github.com/f-secure-foundry/tamago/soc/imx6"
-
 	"golang.org/x/term"
 )
 
@@ -57,34 +53,6 @@ var i2cCommandPattern = regexp.MustCompile(`i2c (\d) ([[:xdigit:]]+) ([[:xdigit:
 var memoryCommandPattern = regexp.MustCompile(`(md|mw) ([[:xdigit:]]+) (\d+|[[:xdigit:]]+)`)
 
 var LED func(string, bool) error
-var i2c []*imx6.I2C
-
-func mem(start uint32, size int, w []byte) (b []byte) {
-	// temporarily map page zero if required
-	if start < (1 << 20) {
-		flags := uint32(arm.TTE_AP_001 | arm.TTE_SECTION_1MB)
-		imx6.ARM.ConfigureMMU(0, 1<<20, flags)
-		defer imx6.ARM.ConfigureMMU(0, 1<<20, 0)
-	}
-
-	mem := &dma.Region{
-		Start: uint32(start),
-		Size:  size,
-	}
-	mem.Init()
-
-	start, buf := mem.Reserve(size, 0)
-	defer mem.Release(start)
-
-	if len(w) > 0 {
-		copy(buf, w)
-	} else {
-		b = make([]byte, size)
-		copy(b, buf)
-	}
-
-	return
-}
 
 func dcpCommand(arg []string) (res string) {
 	size, err := strconv.Atoi(arg[0])

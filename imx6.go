@@ -24,6 +24,8 @@ const (
 	romSize  = 0x17000
 )
 
+var i2c []*imx6.I2C
+
 func info() string {
 	var res bytes.Buffer
 
