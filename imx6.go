@@ -31,7 +31,7 @@ func info() string {
 
 	rom := mem(romStart, romSize, nil)
 
-	res.WriteString(fmt.Sprintf("Runtime ......: tamago %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH))
+	res.WriteString(fmt.Sprintf("Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH))
 	res.WriteString(fmt.Sprintf("Board ........: %s\n", boardName))
 	res.WriteString(fmt.Sprintf("SoC ..........: %s %d MHz\n", imx6.Model(), imx6.ARMFreq()/1000000))
 	res.WriteString(fmt.Sprintf("Secure boot ..: %v\n", imx6.SNVS()))
