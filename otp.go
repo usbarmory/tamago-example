@@ -51,16 +51,11 @@ func readOTP(bank int, word int) (res string, err error) {
 
 	for _, reg = range IMX6ULLFusemap.Registers {
 		if reg.Bank == bank && reg.Word == word {
-			break
+			res = fmt.Sprintf("OTP bank:%d word:%d val:%#x\n\n", bank, word, val)
+			res += reg.BitMap(val)
+			return
 		}
 	}
 
-	if reg == nil {
-		return "", errors.New("invalid OTP register")
-	}
-
-	res = fmt.Sprintf("OTP bank:%d word:%d val:%#x\n\n", bank, word, val)
-	res += reg.BitMap(val)
-
-	return
+	return "", errors.New("invalid OTP register")
 }
