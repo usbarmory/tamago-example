@@ -87,6 +87,7 @@ The SSH server exposes a basic shell with the following commands:
 ```
   help                                   # this help
   exit, quit                             # close session
+  info                                   # SoC/board information
   test                                   # launch tests
   rand                                   # gather 32 bytes from TRNG
   reboot                                 # reset the SoC/board
