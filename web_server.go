@@ -26,11 +26,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-
-	"gvisor.dev/gvisor/pkg/tcpip"
-	"gvisor.dev/gvisor/pkg/tcpip/adapters/gonet"
-	"gvisor.dev/gvisor/pkg/tcpip/network/ipv4"
-	"gvisor.dev/gvisor/pkg/tcpip/stack"
 )
 
 func generateTLSCerts(address net.IP) ([]byte, []byte, error) {
@@ -39,7 +34,7 @@ func generateTLSCerts(address net.IP) ([]byte, []byte, error) {
 
 	serial, _ := rand.Int(rand.Reader, big.NewInt(1<<63-1))
 
-	log.Printf("generating TLS keypair IP: %s, Serial: %X", IP, serial)
+	log.Printf("generating TLS keypair IP: %s, Serial: %X", address.String(), serial)
 
 	validFrom, _ := time.Parse(time.RFC3339, "1981-01-07T00:00:00Z")
 	validUntil, _ := time.Parse(time.RFC3339, "2022-01-07T00:00:00Z")
@@ -49,7 +44,7 @@ func generateTLSCerts(address net.IP) ([]byte, []byte, error) {
 		Subject: pkix.Name{
 			Organization:       []string{"F-Secure Foundry"},
 			OrganizationalUnit: []string{"TamaGo test certificates"},
-			CommonName:         IP,
+			CommonName:         address.String(),
 		},
 		IPAddresses:        []net.IP{address},
 		SignatureAlgorithm: x509.ECDSAWithSHA256,
@@ -122,22 +117,15 @@ func setupStaticWebAssets() {
 	http.Handle("/", http.StripPrefix("/", staticHandler))
 }
 
-func startWebServer(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpip.NICID, https bool) {
+func startWebServer(listener net.Listener, addr string, port uint16, https bool) {
 	var err error
 
-	fullAddr := tcpip.FullAddress{Addr: addr, Port: port, NIC: nic}
-	listener, err := gonet.ListenTCP(s, fullAddr, ipv4.ProtocolNumber)
-
-	if err != nil {
-		log.Fatal("listener error: ", err)
-	}
-
 	srv := &http.Server{
-		Addr: addr.String() + ":" + fmt.Sprintf("%d", port),
+		Addr: addr + ":" + fmt.Sprintf("%d", port),
 	}
 
 	if https {
-		TLSCert, TLSKey, err := generateTLSCerts(net.ParseIP(addr.String()))
+		TLSCert, TLSKey, err := generateTLSCerts(net.ParseIP(addr))
 
 		if err != nil {
 			log.Fatal("TLS cert|key error: ", err)
@@ -157,7 +145,7 @@ func startWebServer(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpip.N
 		}
 	}
 
-	log.Printf("starting web server at %s:%d", addr.String(), port)
+	log.Printf("starting web server at %s:%d", addr, port)
 
 	if https {
 		err = srv.ServeTLS(listener, "", "")

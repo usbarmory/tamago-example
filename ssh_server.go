@@ -16,15 +16,11 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"os"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
-
-	"gvisor.dev/gvisor/pkg/tcpip"
-	"gvisor.dev/gvisor/pkg/tcpip/adapters/gonet"
-	"gvisor.dev/gvisor/pkg/tcpip/network/ipv4"
-	"gvisor.dev/gvisor/pkg/tcpip/stack"
 )
 
 func handleChannel(newChannel ssh.NewChannel) {
@@ -132,16 +128,7 @@ func handleChannels(chans <-chan ssh.NewChannel) {
 	}
 }
 
-func startSSHServer(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpip.NICID) {
-	var err error
-
-	fullAddr := tcpip.FullAddress{Addr: addr, Port: port, NIC: nic}
-	listener, err := gonet.ListenTCP(s, fullAddr, ipv4.ProtocolNumber)
-
-	if err != nil {
-		log.Fatal("listener error: ", err)
-	}
-
+func startSSHServer(listener net.Listener, addr string, port uint16) {
 	srv := &ssh.ServerConfig{
 		NoClientAuth: true,
 	}
@@ -158,7 +145,7 @@ func startSSHServer(s *stack.Stack, addr tcpip.Address, port uint16, nic tcpip.N
 		log.Fatal("key conversion error: ", err)
 	}
 
-	log.Printf("starting ssh server (%s) at %s:%d", ssh.FingerprintSHA256(signer.PublicKey()), addr.String(), port)
+	log.Printf("starting ssh server (%s) at %s:%d", ssh.FingerprintSHA256(signer.PublicKey()), addr, port)
 
 	srv.AddHostKey(signer)
 
