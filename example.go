@@ -64,8 +64,8 @@ func test(init bool) {
 	n += 1
 	go func() {
 		log.Println("-- fs ----------------------------------------------------------------")
+		TestDev()
 		TestFile()
-		TestDir()
 
 		exit <- true
 	}()

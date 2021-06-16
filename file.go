@@ -67,44 +67,58 @@ func TestUSDHC(card *usdhc.USDHC, size int, readSize int) {
 	log.Printf("imx6_usdhc: read %d MiB in %s (%.2f MB/s | %.2f MiB/s)", size/(1024*1024), elapsed, megaps, mebips)
 }
 
+func TestDev() {
+	ls("/dev")
+
+	buf := make([]byte, 20)
+	path := "/dev/random"
+
+	log.Printf("reading %d bytes from %s", len(buf), path)
+	file, err := os.OpenFile(path, os.O_RDONLY, 0600)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	n, err := file.Read(buf)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	file.Close()
+
+	log.Printf("read %s (%d bytes): %x", path, n, buf)
+}
+
 func TestFile() {
-	var err error
-
-	defer func() {
-		if err != nil {
-			log.Printf("TestFile error: %v", err)
-		}
-	}()
-
 	dirPath := "/dir"
 	fileName := "tamago.txt"
 	path := filepath.Join(dirPath, fileName)
 
-	log.Printf("writing %d bytes to %s", len(banner), path)
-
-	err = os.MkdirAll(dirPath, 0700)
+	err := os.MkdirAll(dirPath, 0700)
 
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
+	log.Printf("writing %d bytes to %s", len(banner), path)
 	_, err = file.WriteString(banner)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	file.Close()
 
 	read, err := ioutil.ReadFile(path)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	if strings.Compare(banner, string(read)) != 0 {
@@ -112,36 +126,36 @@ func TestFile() {
 	} else {
 		log.Printf("read %s (%d bytes)", path, len(read))
 	}
+
+	ls("/dir")
 }
 
-func TestDir() {
-	dirPath := "/dir"
+func ls(path string) {
+	log.Printf("listing %s:", path)
 
-	log.Printf("listing directory %s", dirPath)
-
-	f, err := os.Open(dirPath)
+	f, err := os.Open(path)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	d, err := f.Stat()
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	if !d.IsDir() {
-		panic("expected directory")
+		log.Fatal("expected directory")
 	}
 
 	files, err := f.Readdir(-1)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	for _, i := range files {
-		log.Printf("%s/%s (%d bytes)", dirPath, i.Name(), i.Size())
+		log.Printf(" %s/%s (%d bytes)", path, i.Name(), i.Size())
 	}
 }
