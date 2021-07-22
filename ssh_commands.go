@@ -20,6 +20,9 @@ import (
 	"runtime/debug"
 	"runtime/pprof"
 	"strconv"
+	"time"
+
+	"github.com/f-secure-foundry/tamago/soc/imx6"
 
 	"golang.org/x/term"
 )
@@ -31,6 +34,8 @@ const help = `
   exit, quit                             # close session
   info                                   # SoC/board information
   test                                   # launch tests
+  date                                   # print system date and time
+  date <time in RFC3339 format>          # set system date and time
   rand                                   # gather 32 bytes from TRNG
   reboot                                 # reset the SoC/board
   stack                                  # stack trace of current goroutine
@@ -45,6 +50,7 @@ const help = `
   otp <bank> <word>                      # OTP fuse display
 `
 
+var dateCommandPattern = regexp.MustCompile(`^date(.*)`)
 var dcpCommandPattern = regexp.MustCompile(`^dcp (\d+) (\d+)`)
 var otpCommandPattern = regexp.MustCompile(`^otp (\d+) (\d+)`)
 var ledCommandPattern = regexp.MustCompile(`^led (white|blue) (on|off)`)
@@ -115,6 +121,18 @@ func ledCommand(arg []string) (res string) {
 	}
 
 	return
+}
+
+func dateCommand(arg []string) (res string) {
+	if arg[0] != "" {
+		t, err := time.Parse(time.RFC3339, arg[0][1:])
+		if err != nil {
+			return fmt.Sprintf("invalid date: %v", err)
+		}
+		imx6.ARM.SetTimerOffset(t.UnixNano())
+	}
+
+	return fmt.Sprintf("%s", time.Now().Format(time.RFC3339))
 }
 
 func mmcCommand(arg []string) (res string) {
@@ -267,6 +285,8 @@ func handleCommand(term *term.Terminal, cmd string) (err error) {
 			res = otpCommand(m[1:])
 		} else if m := ledCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
 			res = ledCommand(m[1:])
+		} else if m := dateCommandPattern.FindStringSubmatch(cmd); len(m) == 2 {
+			res = dateCommand(m[1:])
 		} else if m := mmcCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
 			res = mmcCommand(m[1:])
 		} else if m := i2cCommandPattern.FindStringSubmatch(cmd); len(m) == 5 {
