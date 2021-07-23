@@ -33,13 +33,14 @@ const help = `
   help                                   # this help
   exit, quit                             # close session
   info                                   # SoC/board information
-  test                                   # launch tests
-  date                                   # print system date and time
-  date <time in RFC3339 format>          # set system date and time
   rand                                   # gather 32 bytes from TRNG
   reboot                                 # reset the SoC/board
   stack                                  # stack trace of current goroutine
   stackall                               # stack trace of all goroutines
+  date                                   # show   runtime date and time
+  date <time in RFC3339 format>          # change runtime date and time
+
+  test                                   # launch example code
   ble                                    # enter BLE serial console
   i2c <n> <hex slave> <hex addr> <size>  # I²C bus read
   mmc <n> <hex offset> <size>            # internal MMC/SD card read
@@ -124,11 +125,13 @@ func ledCommand(arg []string) (res string) {
 }
 
 func dateCommand(arg []string) (res string) {
-	if arg[0] != "" {
+	if len(arg[0]) > 1 {
 		t, err := time.Parse(time.RFC3339, arg[0][1:])
+
 		if err != nil {
 			return fmt.Sprintf("invalid date: %v", err)
 		}
+
 		imx6.ARM.SetTimerOffset(t.UnixNano())
 	}
 
@@ -257,15 +260,13 @@ func handleCommand(term *term.Terminal, cmd string) (err error) {
 	var res string
 
 	switch cmd {
+	case "help":
+		res = string(term.Escape.Cyan) + help + string(term.Escape.Reset)
 	case "exit", "quit":
 		res = "logout"
 		err = io.EOF
 	case "info":
 		res = info()
-	case "test":
-		test(false)
-	case "help":
-		res = string(term.Escape.Cyan) + help + string(term.Escape.Reset)
 	case "rand":
 		buf := make([]byte, 32)
 		rand.Read(buf)
@@ -278,6 +279,8 @@ func handleCommand(term *term.Terminal, cmd string) (err error) {
 		buf := new(bytes.Buffer)
 		pprof.Lookup("goroutine").WriteTo(buf, 1)
 		res = buf.String()
+	case "test":
+		test(false)
 	default:
 		if m := dcpCommandPattern.FindStringSubmatch(cmd); len(m) == 3 {
 			res = dcpCommand(m[1:])

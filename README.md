@@ -88,11 +88,14 @@ The SSH server exposes a basic shell with the following commands:
   help                                   # this help
   exit, quit                             # close session
   info                                   # SoC/board information
-  test                                   # launch tests
   rand                                   # gather 32 bytes from TRNG
   reboot                                 # reset the SoC/board
   stack                                  # stack trace of current goroutine
   stackall                               # stack trace of all goroutines
+  date                                   # show   runtime date and time
+  date <time in RFC3339 format>          # change runtime date and time
+
+  test                                   # launch example code
   ble                                    # enter BLE serial console
   i2c <n> <hex slave> <hex addr> <size>  # I²C bus read
   mmc <n> <hex offset> <size>            # internal MMC/SD card read
