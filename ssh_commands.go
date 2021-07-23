@@ -45,12 +45,12 @@ const help = `
   otp <bank> <word>                      # OTP fuse display
 `
 
-var dcpCommandPattern = regexp.MustCompile(`dcp (\d+) (\d+)`)
-var otpCommandPattern = regexp.MustCompile(`otp (\d+) (\d+)`)
-var ledCommandPattern = regexp.MustCompile(`led (white|blue) (on|off)`)
-var mmcCommandPattern = regexp.MustCompile(`mmc (\d) ([[:xdigit:]]+) (\d+)`)
-var i2cCommandPattern = regexp.MustCompile(`i2c (\d) ([[:xdigit:]]+) ([[:xdigit:]]+) (\d+)`)
-var memoryCommandPattern = regexp.MustCompile(`(md|mw) ([[:xdigit:]]+) (\d+|[[:xdigit:]]+)`)
+var dcpCommandPattern = regexp.MustCompile(`^dcp (\d+) (\d+)`)
+var otpCommandPattern = regexp.MustCompile(`^otp (\d+) (\d+)`)
+var ledCommandPattern = regexp.MustCompile(`^led (white|blue) (on|off)`)
+var mmcCommandPattern = regexp.MustCompile(`^mmc (\d) ([[:xdigit:]]+) (\d+)`)
+var i2cCommandPattern = regexp.MustCompile(`^i2c (\d) ([[:xdigit:]]+) ([[:xdigit:]]+) (\d+)`)
+var memoryCommandPattern = regexp.MustCompile(`^(md|mw) ([[:xdigit:]]+) (\d+|[[:xdigit:]]+)`)
 
 var LED func(string, bool) error
 
