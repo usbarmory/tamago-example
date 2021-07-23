@@ -219,12 +219,12 @@ github.com/evanphx/json-patch v4.2.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLi
 github.com/evanphx/json-patch v4.9.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=
 github.com/f-secure-foundry/crucible v0.0.0-20210519190101-b84eb54532b9 h1:azI6aa8SlifFH2ZCumSUdz8rqc1gNediUe0WObJov1U=
 github.com/f-secure-foundry/crucible v0.0.0-20210519190101-b84eb54532b9/go.mod h1:lKwj0vB9le2qIIiq3mKqiIcTlgrp8f3l1mD9ScgAzTc=
+github.com/f-secure-foundry/crucible v0.0.0-20210709091625-f4b1a824ee83 h1:T1m1cbOHmshTFUIN/20FwTClp9RDHyIINbTjDCX1IQ4=
+github.com/f-secure-foundry/crucible v0.0.0-20210709091625-f4b1a824ee83/go.mod h1:lKwj0vB9le2qIIiq3mKqiIcTlgrp8f3l1mD9ScgAzTc=
 github.com/f-secure-foundry/imx-usbnet v0.0.0-20210609082733-25cafdff7ada h1:pfYarTyga20trugP7NXdulEtdQ68vVbpIm9b7CH9EYI=
 github.com/f-secure-foundry/imx-usbnet v0.0.0-20210609082733-25cafdff7ada/go.mod h1:cdWNn9wINdW0rP0B+J13fk3mnLPxMqKtuSUQ9txzq+E=
 github.com/f-secure-foundry/tamago v0.0.0-20210518071534-ddf03422d158/go.mod h1:Zs5U/3bxiFFQzq23F7KkmS8Gz1jTGH141hbcdFHCk8E=
 github.com/f-secure-foundry/tamago v0.0.0-20210607142218-878b4c69ff4e/go.mod h1:Zs5U/3bxiFFQzq23F7KkmS8Gz1jTGH141hbcdFHCk8E=
-github.com/f-secure-foundry/tamago v0.0.0-20210609191352-f30703818563 h1:sLXZqgEk7ocPw5PWpqdNh6xKYxoVTVYkmd12awmXR8I=
-github.com/f-secure-foundry/tamago v0.0.0-20210609191352-f30703818563/go.mod h1:Zs5U/3bxiFFQzq23F7KkmS8Gz1jTGH141hbcdFHCk8E=
 github.com/f-secure-foundry/tamago v0.0.0-20210723091005-cc16beda7e12 h1:zzmxj9wxzycQ6X6QPIM8M/xIi92yVqwcYaeWOa07OGI=
 github.com/f-secure-foundry/tamago v0.0.0-20210723091005-cc16beda7e12/go.mod h1:Zs5U/3bxiFFQzq23F7KkmS8Gz1jTGH141hbcdFHCk8E=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
