@@ -204,7 +204,7 @@ func main() {
 
 	if imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL) {
 		log.Println("-- i.mx6 usb ---------------------------------------------------------")
-		StartUSBNetworking()
+		startNetworking()
 	}
 
 	log.Printf("Goodbye from tamago/arm (%s)", time.Since(start))

@@ -94,6 +94,7 @@ The SSH server exposes a basic shell with the following commands:
   stackall                               # stack trace of all goroutines
   date                                   # show   runtime date and time
   date <time in RFC3339 format>          # change runtime date and time
+  dns  <fqdn>                            # resolve domain (requires routing)
 
   test                                   # launch example code
   ble                                    # enter BLE serial console

@@ -10,40 +10,47 @@ package main
 
 import (
 	"log"
-
-	"github.com/f-secure-foundry/tamago/soc/imx6/usb"
+	"time"
 
 	"github.com/f-secure-foundry/imx-usbnet"
+	"github.com/f-secure-foundry/tamago/soc/imx6/usb"
+
+	"github.com/miekg/dns"
 )
 
 const (
 	deviceIP  = "10.0.0.1"
 	deviceMAC = "1a:55:89:a2:69:41"
 	hostMAC   = "1a:55:89:a2:69:42"
+	resolver  = "8.8.8.8:53"
 )
 
-func StartUSBNetworking() {
-	gonet, err := usbnet.Init(deviceIP, deviceMAC, hostMAC, 1)
+var iface *usbnet.Interface
+
+func startNetworking() {
+	var err error
+
+	iface, err = usbnet.Init(deviceIP, deviceMAC, hostMAC, 1)
 
 	if err != nil {
 		log.Fatalf("could not initialize USB networking, %v", err)
 	}
 
-	gonet.EnableICMP()
+	iface.EnableICMP()
 
-	listenerSSH, err := gonet.ListenerTCP4(22)
+	listenerSSH, err := iface.ListenerTCP4(22)
 
 	if err != nil {
 		log.Fatalf("could not initialize SSH listener, %v", err)
 	}
 
-	listenerHTTP, err := gonet.ListenerTCP4(80)
+	listenerHTTP, err := iface.ListenerTCP4(80)
 
 	if err != nil {
 		log.Fatalf("could not initialize HTTP listener, %v", err)
 	}
 
-	listenerHTTPS, err := gonet.ListenerTCP4(443)
+	listenerHTTPS, err := iface.ListenerTCP4(443)
 
 	if err != nil {
 		log.Fatalf("could not initialize HTTP listener, %v", err)
@@ -72,5 +79,28 @@ func StartUSBNetworking() {
 	usb.USB1.Reset()
 
 	// never returns
-	usb.USB1.Start(gonet.Device())
+	usb.USB1.Start(iface.Device())
+}
+
+func resolve(s string) (r *dns.Msg, rtt time.Duration, err error) {
+	if s[len(s)-1:] != "." {
+		s += "."
+	}
+
+	msg := new(dns.Msg)
+	msg.Id = dns.Id()
+	msg.RecursionDesired = true
+
+	msg.Question = make([]dns.Question, 1)
+	msg.Question[0] = dns.Question{s, dns.TypeANY, dns.ClassINET}
+
+	conn := new(dns.Conn)
+
+	if conn.Conn, err = iface.DialTCP4(resolver); err != nil {
+		return
+	}
+
+	c := new(dns.Client)
+
+	return c.ExchangeWithConn(msg, conn)
 }

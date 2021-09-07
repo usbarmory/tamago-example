@@ -39,6 +39,7 @@ const help = `
   stackall                               # stack trace of all goroutines
   date                                   # show   runtime date and time
   date <time in RFC3339 format>          # change runtime date and time
+  dns  <fqdn>                            # resolve domain (requires routing)
 
   test                                   # launch example code
   ble                                    # enter BLE serial console
@@ -51,7 +52,8 @@ const help = `
   otp <bank> <word>                      # OTP fuse display
 `
 
-var dateCommandPattern = regexp.MustCompile(`^date(.*)`)
+var dateCommandPattern = regexp.MustCompile(`^date (.*)`)
+var dnsCommandPattern = regexp.MustCompile(`^dns (.*)`)
 var dcpCommandPattern = regexp.MustCompile(`^dcp (\d+) (\d+)`)
 var otpCommandPattern = regexp.MustCompile(`^otp (\d+) (\d+)`)
 var ledCommandPattern = regexp.MustCompile(`^led (white|blue) (on|off)`)
@@ -136,6 +138,16 @@ func dateCommand(arg []string) (res string) {
 	}
 
 	return fmt.Sprintf("%s", time.Now().Format(time.RFC3339))
+}
+
+func dnsCommand(arg []string) (res string) {
+	r, _, err := resolve(arg[0])
+
+	if err != nil {
+		return fmt.Sprintf("query error: %v", err)
+	}
+
+	return fmt.Sprintf("%+v", r)
 }
 
 func mmcCommand(arg []string) (res string) {
@@ -290,6 +302,8 @@ func handleCommand(term *term.Terminal, cmd string) (err error) {
 			res = ledCommand(m[1:])
 		} else if m := dateCommandPattern.FindStringSubmatch(cmd); len(m) == 2 {
 			res = dateCommand(m[1:])
+		} else if m := dnsCommandPattern.FindStringSubmatch(cmd); len(m) == 2 {
+			res = dnsCommand(m[1:])
 		} else if m := mmcCommandPattern.FindStringSubmatch(cmd); len(m) == 4 {
 			res = mmcCommand(m[1:])
 		} else if m := i2cCommandPattern.FindStringSubmatch(cmd); len(m) == 5 {
