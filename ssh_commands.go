@@ -42,6 +42,7 @@ const help = `
   dns  <fqdn>                            # resolve domain (requires routing)
 
   test                                   # launch example code
+
   ble                                    # enter BLE serial console
   i2c <n> <hex slave> <hex addr> <size>  # I²C bus read
   mmc <n> <hex offset> <size>            # internal MMC/SD card read
@@ -52,7 +53,7 @@ const help = `
   otp <bank> <word>                      # OTP fuse display
 `
 
-var dateCommandPattern = regexp.MustCompile(`^date (.*)`)
+var dateCommandPattern = regexp.MustCompile(`^date(.*)`)
 var dnsCommandPattern = regexp.MustCompile(`^dns (.*)`)
 var dcpCommandPattern = regexp.MustCompile(`^dcp (\d+) (\d+)`)
 var otpCommandPattern = regexp.MustCompile(`^otp (\d+) (\d+)`)

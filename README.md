@@ -97,6 +97,7 @@ The SSH server exposes a basic shell with the following commands:
   dns  <fqdn>                            # resolve domain (requires routing)
 
   test                                   # launch example code
+
   ble                                    # enter BLE serial console
   i2c <n> <hex slave> <hex addr> <size>  # I²C bus read
   mmc <n> <hex offset> <size>            # internal MMC/SD card read
