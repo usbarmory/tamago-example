@@ -178,7 +178,14 @@ func mmcCommand(arg []string) (res string) {
 		return "invalid card index"
 	}
 
-	buf, err := cards[n].Read(int64(addr), int64(size))
+	card := cards[n]
+
+	if err := card.Detect(); err != nil {
+		log.Printf("error: %v", err)
+		return
+	}
+
+	buf, err := card.Read(int64(addr), int64(size))
 
 	if err != nil {
 		return err.Error()

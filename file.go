@@ -24,10 +24,8 @@ import (
 var cards []*usdhc.USDHC
 
 func TestUSDHC(card *usdhc.USDHC, size int, readSize int) {
-	err := card.Detect()
-
-	if err != nil {
-		log.Printf("imx6_usdhc: card error, %v", err)
+	if err := card.Detect(); err != nil {
+		log.Printf("imx6_usdhc: error, %v", err)
 		return
 	}
 
