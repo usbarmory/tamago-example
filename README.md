@@ -68,7 +68,7 @@ its separate goroutine:
 
 Once all tests are completed, and only on non-emulated hardware, the following
 network services are started on [Ethernet over USB](https://github.com/f-secure-foundry/usbarmory/wiki/Host-communication)
-(ECM protocol, only supported on Linux hosts).
+(ECM protocol, supported on Linux and macOS hosts).
 
   * SSH server on 10.0.0.1:22
   * HTTP server on 10.0.0.1:80

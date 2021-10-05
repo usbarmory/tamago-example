@@ -6,12 +6,12 @@ require (
 	github.com/arl/statsviz v0.4.0
 	github.com/btcsuite/btcd v0.22.0-beta
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
-	github.com/f-secure-foundry/crucible v0.0.0-20210730121542-ac44e572b63a
-	github.com/f-secure-foundry/imx-usbnet v0.0.0-20210907135038-f0f2c2eed57a
-	github.com/f-secure-foundry/tamago v0.0.0-20210824203737-4a1f9882089b
+	github.com/f-secure-foundry/crucible v0.0.0-20210923095115-24dde8355262
+	github.com/f-secure-foundry/imx-usbnet v0.0.0-20211005152612-ec70eaf9b56c
+	github.com/f-secure-foundry/tamago v0.0.0-20211005142637-ad64636f7f6b
 	github.com/miekg/dns v1.1.43
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
-	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211
 )
 
 require (
