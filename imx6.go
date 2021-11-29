@@ -18,6 +18,7 @@ import (
 	"runtime"
 
 	"github.com/f-secure-foundry/tamago/soc/imx6"
+	"github.com/f-secure-foundry/tamago/soc/imx6/usb"
 )
 
 const (
@@ -35,6 +36,7 @@ func info() string {
 	res.WriteString(fmt.Sprintf("Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH))
 	res.WriteString(fmt.Sprintf("Board ........: %s\n", boardName))
 	res.WriteString(fmt.Sprintf("SoC ..........: %s %d MHz\n", imx6.Model(), imx6.ARMFreq()/1000000))
+	res.WriteString(fmt.Sprintf("SDP ..........: %v\n", usb.SDP()))
 	res.WriteString(fmt.Sprintf("Secure boot ..: %v\n", imx6.SNVS()))
 	res.WriteString(fmt.Sprintf("Boot ROM hash : %x\n", sha256.Sum256(rom)))
 
