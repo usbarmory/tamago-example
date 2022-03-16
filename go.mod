@@ -1,4 +1,4 @@
-module github.com/f-secure-foundry/tamago-example
+module github.com/usbarmory/tamago-example
 
 go 1.17
 
@@ -6,9 +6,9 @@ require (
 	github.com/arl/statsviz v0.4.0
 	github.com/btcsuite/btcd v0.22.0-beta
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
-	github.com/f-secure-foundry/crucible v0.0.0-20210923095115-24dde8355262
-	github.com/f-secure-foundry/imx-usbnet v0.0.0-20211005152612-ec70eaf9b56c
-	github.com/f-secure-foundry/tamago v0.0.0-20211129125941-a3566d922d59
+	github.com/usbarmory/crucible v0.0.0-20210923095115-24dde8355262
+	github.com/usbarmory/imx-usbnet v0.0.0-20211005152612-ec70eaf9b56c
+	github.com/usbarmory/tamago v0.0.0-20211129125941-a3566d922d59
 	github.com/miekg/dns v1.1.43
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211
