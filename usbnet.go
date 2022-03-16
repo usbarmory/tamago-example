@@ -1,4 +1,4 @@
-// https://github.com/f-secure-foundry/tamago-example
+// https://github.com/usbarmory/tamago-example
 //
 // Copyright (c) F-Secure Corporation
 // https://foundry.f-secure.com
@@ -12,8 +12,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/f-secure-foundry/imx-usbnet"
-	"github.com/f-secure-foundry/tamago/soc/imx6/usb"
+	"github.com/usbarmory/imx-usbnet"
+	"github.com/usbarmory/tamago/soc/imx6/usb"
 
 	"github.com/miekg/dns"
 )

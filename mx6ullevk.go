@@ -1,4 +1,4 @@
-// https://github.com/f-secure-foundry/tamago-example
+// https://github.com/usbarmory/tamago-example
 //
 // Copyright (c) F-Secure Corporation
 // https://foundry.f-secure.com
@@ -16,8 +16,8 @@ import (
 
 	"golang.org/x/crypto/ssh/terminal"
 
-	"github.com/f-secure-foundry/tamago/board/nxp/mx6ullevk"
-	"github.com/f-secure-foundry/tamago/soc/imx6"
+	"github.com/usbarmory/tamago/board/nxp/mx6ullevk"
+	"github.com/usbarmory/tamago/soc/imx6"
 )
 
 const boardName = "MCIMX6ULL-EVK"

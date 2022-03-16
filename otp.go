@@ -1,4 +1,4 @@
-// https://github.com/f-secure-foundry/tamago-example
+// https://github.com/usbarmory/tamago-example
 //
 // Copyright (c) F-Secure Corporation
 // https://foundry.f-secure.com
@@ -13,8 +13,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/f-secure-foundry/crucible/fusemap"
-	"github.com/f-secure-foundry/crucible/otp"
+	"github.com/usbarmory/crucible/fusemap"
+	"github.com/usbarmory/crucible/otp"
 )
 
 //go:embed IMX6ULL.yaml

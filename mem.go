@@ -1,4 +1,4 @@
-// https://github.com/f-secure-foundry/tamago-example
+// https://github.com/usbarmory/tamago-example
 //
 // Copyright (c) F-Secure Corporation
 // https://foundry.f-secure.com
@@ -12,9 +12,9 @@ import (
 	"log"
 	"runtime"
 
-	"github.com/f-secure-foundry/tamago/arm"
-	"github.com/f-secure-foundry/tamago/dma"
-	"github.com/f-secure-foundry/tamago/soc/imx6"
+	"github.com/usbarmory/tamago/arm"
+	"github.com/usbarmory/tamago/dma"
+	"github.com/usbarmory/tamago/soc/imx6"
 )
 
 func mem(start uint32, size int, w []byte) (b []byte) {

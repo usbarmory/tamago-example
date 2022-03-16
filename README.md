@@ -1,12 +1,12 @@
 TamaGo - bare metal Go for ARM SoCs - example application
 =========================================================
 
-tamago | https://github.com/f-secure-foundry/tamago  
+tamago | https://github.com/usbarmory/tamago  
 
 Copyright (c) F-Secure Corporation  
 https://foundry.f-secure.com
 
-![TamaGo gopher](https://github.com/f-secure-foundry/tamago/wiki/images/tamago.svg?sanitize=true)
+![TamaGo gopher](https://github.com/usbarmory/tamago/wiki/images/tamago.svg?sanitize=true)
 
 Authors
 =======
@@ -24,26 +24,26 @@ TamaGo is a framework that enables compilation and execution of unencumbered Go
 applications on bare metal ARM System-on-Chip (SoC) components.
 
 This example Go application illustrates use of the
-[tamago](https://github.com/f-secure-foundry/tamago) package
+[tamago](https://github.com/usbarmory/tamago) package
 execute bare metal Go code on the following platforms:
 
 | SoC          | Board                                                                                                                                                                                | SoC package                                                         | Board package                                                                               |
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| NXP i.MX6ULZ | [USB armory Mk II](https://github.com/f-secure-foundry/usbarmory/wiki)                                                                                                               | [imx6](https://github.com/f-secure-foundry/tamago/tree/master/soc/imx6) | [usbarmory/mark-two](https://github.com/f-secure-foundry/tamago/tree/master/board/f-secure/usbarmory)      |
-| NXP i.MX6ULL | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6](https://github.com/f-secure-foundry/tamago/tree/master/soc/imx6) | [nxp/mx6ullevk](https://github.com/f-secure-foundry/tamago/tree/master/board/nxp/mx6ullevk) |
+| NXP i.MX6ULZ | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki)                                                                                                               | [imx6](https://github.com/f-secure-foundry/tamago/tree/master/soc/imx6) | [usbarmory/mark-two](https://github.com/f-secure-foundry/tamago/tree/master/board/f-secure/usbarmory)      |
+| NXP i.MX6ULL | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6](https://github.com/usbarmory/tamago/tree/master/soc/imx6) | [nxp/mx6ullevk](https://github.com/f-secure-foundry/tamago/tree/master/board/nxp/mx6ullevk) |
 
 
 Documentation
 =============
 
 For more information about TamaGo see its
-[repository](https://github.com/f-secure-foundry/tamago) and
-[project wiki](https://github.com/f-secure-foundry/tamago/wiki).
+[repository](https://github.com/usbarmory/tamago) and
+[project wiki](https://github.com/usbarmory/tamago/wiki).
 
 Operation
 =========
 
-![Example screenshot](https://github.com/f-secure-foundry/tamago/wiki/images/ssh.png)
+![Example screenshot](https://github.com/usbarmory/tamago/wiki/images/ssh.png)
 
 The example application performs a variety of simple test procedures, each in
 its separate goroutine:
@@ -67,7 +67,7 @@ its separate goroutine:
   9. Large memory allocation.
 
 Once all tests are completed, and only on non-emulated hardware, the following
-network services are started on [Ethernet over USB](https://github.com/f-secure-foundry/usbarmory/wiki/Host-communication)
+network services are started on [Ethernet over USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication)
 (ECM protocol, supported on Linux and macOS hosts).
 
   * SSH server on 10.0.0.1:22
@@ -111,11 +111,11 @@ The SSH server exposes a basic shell with the following commands:
 Compiling
 =========
 
-Build the [TamaGo compiler](https://github.com/f-secure-foundry/tamago-go)
-(or use the [latest binary release](https://github.com/f-secure-foundry/tamago-go/releases/latest)):
+Build the [TamaGo compiler](https://github.com/usbarmory/tamago-go)
+(or use the [latest binary release](https://github.com/usbarmory/tamago-go/releases/latest)):
 
 ```
-wget https://github.com/f-secure-foundry/tamago-go/archive/refs/tags/latest.zip
+wget https://github.com/usbarmory/tamago-go/archive/refs/tags/latest.zip
 unzip latest.zip
 cd tamago-go-latest/src && ./all.bash
 cd ../bin && export TAMAGO=`pwd`/go
@@ -124,7 +124,7 @@ cd ../bin && export TAMAGO=`pwd`/go
 Build the `example.imx` application executable:
 
 ```
-git clone https://github.com/f-secure-foundry/tamago-example
+git clone https://github.com/usbarmory/tamago-example
 cd tamago-example && make CROSS_COMPILE=arm-none-eabi- TARGET=usbarmory imx
 ```
 
@@ -145,7 +145,7 @@ Executing and debugging
 Native hardware: imx image
 --------------------------
 
-Follow [these instructions](https://github.com/f-secure-foundry/usbarmory/wiki/Boot-Modes-(Mk-II)#flashing-bootable-images-on-externalinternal-media)
+Follow [these instructions](https://github.com/usbarmory/usbarmory/wiki/Boot-Modes-(Mk-II)#flashing-bootable-images-on-externalinternal-media)
 using the built `example.imx` image.
 
 Native hardware: existing bootloader
@@ -169,7 +169,7 @@ The built in SSH server, once connected to, will redirect all logs to the
 established session.
 
 Alternatively the standard output can be accessed through the
-[debug accessory](https://github.com/f-secure-foundry/usbarmory/tree/master/hardware/mark-two-debug-accessory)
+[debug accessory](https://github.com/usbarmory/usbarmory/tree/master/hardware/mark-two-debug-accessory)
 and the following `picocom` configuration:
 
 ```
@@ -181,7 +181,7 @@ Debugging
 
 The application can be debugged with GDB over JTAG using `openocd` and the
 `imx6ull.cfg` and `gdbinit` debugging helpers published
-[here](https://github.com/f-secure-foundry/tamago/tree/master/_dev).
+[here](https://github.com/usbarmory/tamago/tree/master/_dev).
 
 ```
 # start openocd daemon
@@ -228,11 +228,11 @@ continue
 License
 =======
 
-tamago | https://github.com/f-secure-foundry/tamago  
+tamago | https://github.com/usbarmory/tamago  
 Copyright (c) F-Secure Corporation
 
 These source files are distributed under the BSD-style license found in the
-[LICENSE](https://github.com/f-secure-foundry/tamago-example/blob/master/LICENSE) file.
+[LICENSE](https://github.com/usbarmory/tamago-example/blob/master/LICENSE) file.
 
 The TamaGo logo is adapted from the Go gopher designed by Renee French and
 licensed under the Creative Commons 3.0 Attributions license. Go Gopher vector
