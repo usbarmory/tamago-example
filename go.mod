@@ -28,5 +28,5 @@ require (
 	golang.org/x/tools v0.1.6-0.20210726203631-07bc1bf47fb2 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gvisor.dev/gvisor v0.0.0-20210609031239-2d7fb745b248 // indirect
+	gvisor.dev/gvisor v0.0.0-20210805222911-e8e12c2ea577 // indirect
 )
