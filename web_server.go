@@ -1,7 +1,7 @@
 // https://github.com/usbarmory/tamago-example
 //
-// Copyright (c) F-Secure Corporation
-// https://foundry.f-secure.com
+// Copyright (c) WithSecure Corporation
+// https://foundry.withsecure.com
 //
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
@@ -42,7 +42,7 @@ func generateTLSCerts(address net.IP) ([]byte, []byte, error) {
 	certTemplate := x509.Certificate{
 		SerialNumber: serial,
 		Subject: pkix.Name{
-			Organization:       []string{"F-Secure Foundry"},
+			Organization:       []string{"TamaGo Example"},
 			OrganizationalUnit: []string{"TamaGo test certificates"},
 			CommonName:         address.String(),
 		},
