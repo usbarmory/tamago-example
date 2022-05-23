@@ -52,7 +52,7 @@ check_hab_keys:
 
 dcd:
 	@if test "${TARGET}" = "usbarmory"; then \
-		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/board/f-secure/usbarmory/mark-two/imximage.cfg $(APP).dcd; \
+		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/board/usbarmory/mk2/imximage.cfg $(APP).dcd; \
 	elif test "${TARGET}" = "mx6ullevk"; then \
 		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/board/nxp/mx6ullevk/imximage.cfg $(APP).dcd; \
 	else \
@@ -113,6 +113,7 @@ $(APP)-signed.imx: check_hab_keys $(APP).imx
 		-b ${HAB_KEYS}/IMG_1_crt.pem \
 		-t ${HAB_KEYS}/SRK_1_2_3_4_table.bin \
 		-x 1 \
+		-s \
 		-i $(APP).imx \
 		-o $(APP).csf && \
 	cat $(APP).imx $(APP).csf > $(APP)-signed.imx
