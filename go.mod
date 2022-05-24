@@ -7,9 +7,9 @@ require (
 	github.com/btcsuite/btcd v0.22.0-beta
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/miekg/dns v1.1.47
-	github.com/usbarmory/crucible v0.0.0-20220316101547-a86e9a8ae6b5
+	github.com/usbarmory/crucible v0.0.0-20220412125126-837bdb65a20d
 	github.com/usbarmory/imx-usbnet v0.0.0-20220316102640-287b9ba6e72d
-	github.com/usbarmory/tamago v0.0.0-20220316100121-e9baee61883d
+	github.com/usbarmory/tamago v0.0.0-20220523113853-2cf301ace971
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
 )
