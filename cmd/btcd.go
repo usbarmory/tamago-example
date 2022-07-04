@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE at
 // github.com/btcsuite/btcd
 
-package main
+package cmd
 
 import (
 	"encoding/hex"
@@ -180,4 +180,12 @@ func ExampleSignTxOutput() {
 
 	// Output:
 	// Transaction successfully signed
+}
+
+func btcdTest() {
+	msg("btcd")
+
+	ExamplePayToAddrScript()
+	ExampleExtractPkScriptAddrs()
+	ExampleSignTxOutput()
 }

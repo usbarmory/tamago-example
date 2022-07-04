@@ -30,3 +30,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gvisor.dev/gvisor v0.0.0-20210805222911-e8e12c2ea577 // indirect
 )
+
+replace github.com/usbarmory/tamago => /mnt/git/public/tamago

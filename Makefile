@@ -17,7 +17,7 @@ SHELL = /bin/bash
 APP := example
 TARGET ?= "usbarmory"
 GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARM=7 GOARCH=arm
-TEXT_START := 0x80010000 # ramStart (defined in imx6/imx6ul/memory.go) + 0x10000
+TEXT_START := 0x80010000 # ramStart (defined in imx6/imx6ul/mem.go) + 0x10000
 GOFLAGS := -tags ${TARGET} -trimpath -ldflags "-s -w -T $(TEXT_START) -E _rt0_arm_tamago -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
 QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -nographic -monitor none -serial null -serial stdio -net none \
@@ -61,8 +61,7 @@ dcd:
 	fi
 
 clean:
-	rm -f $(APP)
-	@rm -fr $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd IMX6ULL.yaml
+	@rm -fr $(APP) $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd cmd/IMX6ULL.yaml
 
 qemu: $(APP)
 	$(QEMU) -kernel $(APP)
@@ -100,7 +99,7 @@ IMX6ULL.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
 IMX6ULL.yaml: CRUCIBLE_PKG=$(shell grep "github.com/usbarmory/crucible v" go.mod | awk '{print $$1"@"$$2}')
 IMX6ULL.yaml:
 	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool
-	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX6ULL.yaml IMX6ULL.yaml
+	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX6ULL.yaml cmd/IMX6ULL.yaml
 
 #### secure boot ####
 

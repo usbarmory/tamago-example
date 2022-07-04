@@ -6,7 +6,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-package main
+package network
 
 import (
 	"bytes"
@@ -26,6 +26,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/usbarmory/tamago-example/cmd"
 )
 
 func generateTLSCerts(address net.IP) ([]byte, []byte, error) {
@@ -90,7 +92,7 @@ func flushingHandler(h http.Handler) http.HandlerFunc {
 		w.Header().Set("Pragma", "no-cache")
 		w.Header().Set("Expires", "Fri, 07 Jan 1981 00:00:00 GMT")
 
-		logFile.Sync()
+		journal.Sync()
 
 		h.ServeHTTP(w, r)
 	}
@@ -105,7 +107,7 @@ func setupStaticWebAssets() {
 	defer file.Close()
 
 	file.WriteString("<html><body>")
-	file.WriteString(fmt.Sprintf("<p>%s</p><ul>", html.EscapeString(banner)))
+	file.WriteString(fmt.Sprintf("<p>%s</p><ul>", html.EscapeString(cmd.Banner)))
 	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/tamago-example.log", "/tamago-example.log"))
 	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/dir", "/dir"))
 	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/debug/pprof", "/debug/pprof"))

@@ -6,24 +6,53 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-package main
+//go:build mx6ullevk || usbarmory
+// +build mx6ullevk usbarmory
+
+package cmd
 
 import (
+	"encoding/binary"
+	"encoding/hex"
+	"fmt"
 	"log"
+	mathrand "math/rand"
+	"regexp"
 	"runtime"
+	"strconv"
 
-	"github.com/usbarmory/tamago/arm"
+	"golang.org/x/term"
+
 	"github.com/usbarmory/tamago/dma"
-	"github.com/usbarmory/tamago/soc/imx6"
 )
 
-func mem(start uint32, size int, w []byte) (b []byte) {
-	// temporarily map page zero if required
-	if z := uint32(1 << 20); start < z {
-		imx6.ARM.ConfigureMMU(0, z, (arm.TTE_AP_001<<10)|arm.TTE_SECTION)
-		defer imx6.ARM.ConfigureMMU(0, z, 0)
-	}
+const (
+	runs      = 9
+	chunksMax = 50
+	fillSize  = 160 * 1024 * 1024
+)
 
+func init() {
+	Add(Cmd{
+		Name: "md",
+		Args: 2,
+		Pattern: regexp.MustCompile(`^md ([[:xdigit:]]+) (\d+)`),
+		Syntax: "<hex offset> <size>",
+		Help: "memory display (use with caution)",
+		Fn: memReadCmd,
+	})
+
+	Add(Cmd{
+		Name: "mw",
+		Args: 2,
+		Pattern: regexp.MustCompile(`^mw ([[:xdigit:]]+) ([[:xdigit:]]+)`),
+		Syntax: "<hex offset> <hex value>",
+		Help: "memory write (use with caution)",
+		Fn: memWriteCmd,
+	})
+}
+
+func memCopy(start uint32, size int, w []byte) (b []byte) {
 	mem := &dma.Region{
 		Start: uint32(start),
 		Size:  size,
@@ -43,8 +72,56 @@ func mem(start uint32, size int, w []byte) (b []byte) {
 	return
 }
 
-func testAlloc(runs int, chunks int, chunkSize int) {
+func memReadCmd(_ *term.Terminal, arg []string) (res string, err error) {
+	addr, err := strconv.ParseUint(arg[0], 16, 32)
+
+	if err != nil {
+		return "", fmt.Errorf("invalid address, %v", err)
+	}
+
+	size, err := strconv.ParseUint(arg[1], 10, 32)
+
+	if err != nil {
+		return "", fmt.Errorf("invalid size, %v", err)
+	}
+
+	if (addr%4) != 0 || (size%4) != 0 {
+		return "", fmt.Errorf("only 32-bit aligned accesses are supported")
+	}
+
+	if size > maxBufferSize {
+		return "", fmt.Errorf("size argument must be <= %d", maxBufferSize)
+	}
+
+	return hex.Dump(mem(uint32(addr), int(size), nil)), nil
+}
+
+func memWriteCmd(_ *term.Terminal, arg []string) (res string, err error) {
+	addr, err := strconv.ParseUint(arg[0], 16, 32)
+
+	if err != nil {
+		return "", fmt.Errorf("invalid address, %v", err)
+	}
+
+	val, err := strconv.ParseUint(arg[1], 16, 32)
+
+	if err != nil {
+		return "", fmt.Errorf("invalid data, %v", err)
+	}
+
+	buf := make([]byte, 4)
+	binary.BigEndian.PutUint32(buf, uint32(val))
+
+	mem(uint32(addr), 4, buf)
+
+	return
+}
+
+func memTest() {
 	var memstats runtime.MemStats
+
+	chunks := mathrand.Intn(chunksMax) + 1
+	chunkSize := fillSize / chunks
 
 	// Instead of forcing runtime.GC() as shown in the loop, gcpercent can
 	// be tuned to a value sufficiently low to prevent the next GC target
@@ -57,6 +134,8 @@ func testAlloc(runs int, chunks int, chunkSize int) {
 	//
 	//gcpercent := 80
 	//debug.SetGCPercent(gcpercent)
+
+	msg("memory allocation (%d runs)", runs)
 
 	for run := 1; run <= runs; run++ {
 		log.Printf("allocating %d * %d MiB chunks (%d/%d)", chunks, chunkSize/(1024*1024), run, runs)
@@ -79,6 +158,7 @@ func testAlloc(runs int, chunks int, chunkSize int) {
 
 	runtime.ReadMemStats(&memstats)
 	totalAllocated := uint64(runs) * uint64(chunks) * uint64(chunkSize)
+
 	log.Printf("%d MiB allocated (Mallocs: %d Frees: %d HeapSys: %d NumGC:%d)",
 		totalAllocated/(1024*1024), memstats.Mallocs, memstats.Frees, memstats.HeapSys, memstats.NumGC)
 }

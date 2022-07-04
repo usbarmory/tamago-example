@@ -6,22 +6,77 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-package main
+//go:build mx6ullevk || usbarmory
+// +build mx6ullevk usbarmory
+
+package cmd
 
 import (
 	"crypto/aes"
+	"errors"
 	"fmt"
 	"log"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/soc/imx6"
 	"github.com/usbarmory/tamago/soc/imx6/dcp"
 )
 
-const testVector = "\x75\xf9\x02\x2d\x5a\x86\x7a\xd4\x30\x44\x0f\xee\xc6\x61\x1f\x0a"
-const zeroVector = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-const diversifier = "\xde\xad\xbe\xef"
+const (
+	testVector  = "\x75\xf9\x02\x2d\x5a\x86\x7a\xd4\x30\x44\x0f\xee\xc6\x61\x1f\x0a"
+	zeroVector  = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+	diversifier = "\xde\xad\xbe\xef"
+)
+
+func init() {
+	Add(Cmd{
+		Name: "dcp",
+		Args: 2,
+		Pattern: regexp.MustCompile(`^dcp (\d+) (\d+)`),
+		Syntax: "<size> <sec>",
+		Help: "benchmark hardware encryption",
+		Fn: dcpCmd,
+	})
+
+	if !(imx6.Native && imx6.Family == imx6.IMX6ULL) {
+		return
+	}
+
+	dcp.Init()
+}
+
+func dcpCmd(_ *term.Terminal, arg []string) (res string, err error) {
+	if !(imx6.Native && imx6.Family == imx6.IMX6ULL) {
+		return "", errors.New("unsupported under emulation")
+	}
+
+	size, err := strconv.Atoi(arg[0])
+
+	if err != nil {
+		return "", fmt.Errorf("invalid size, %v", err)
+	}
+
+	sec, err := strconv.Atoi(arg[1])
+
+	if err != nil {
+		return "", fmt.Errorf("invalid duration, %v", err)
+	}
+
+	log.Printf("Doing aes-128 cbc for %ds on %d blocks", sec, size)
+
+	n, d, err := testDecryption(size, sec)
+
+	if err != nil {
+		return
+	}
+
+	return fmt.Sprintf("%d aes-128 cbc's in %s", n, d), nil
+}
 
 func testKeyDerivation() (err error) {
 	iv := make([]byte, aes.BlockSize)
@@ -33,8 +88,7 @@ func testKeyDerivation() (err error) {
 	}
 
 	if strings.Compare(string(key), zeroVector) == 0 {
-		err = fmt.Errorf("derivedKey all zeros")
-		return
+		return fmt.Errorf("derivedKey all zeros")
 	}
 
 	// if the SoC is secure booted we can only print the result
@@ -52,8 +106,7 @@ func testKeyDerivation() (err error) {
 	// be manually modified to skip the SNVS() check within DeriveKey().
 
 	if strings.Compare(string(key), testVector) != 0 {
-		err = fmt.Errorf("derivedKey:%x != testVector:%x", key, testVector)
-		return
+		return fmt.Errorf("derivedKey:%x != testVector:%x", key, testVector)
 	}
 
 	log.Printf("imx6_dcp: derived test key %x", key)
@@ -74,9 +127,7 @@ func testDecryption(size int, sec int) (n int, d time.Duration, err error) {
 	start := time.Now()
 
 	for run, timeout := true, time.After(time.Duration(sec)*time.Second); run; {
-		err = dcp.Decrypt(buf, 0, iv)
-
-		if err != nil {
+		if err = dcp.Decrypt(buf, 0, iv); err != nil {
 			return
 		}
 
@@ -92,8 +143,13 @@ func testDecryption(size int, sec int) (n int, d time.Duration, err error) {
 	return n, time.Since(start), err
 }
 
-func TestDCP() {
-	dcp.Init()
+func dcpTest() {
+	msg("imx6_dcp")
+
+	if !(imx6.Native && imx6.Family == imx6.IMX6ULL) {
+		log.Printf("skipping imx6_dcp tests under emulation")
+		return
+	}
 
 	// derive twice to ensure consistency across repeated operations
 

@@ -4,7 +4,7 @@
 //
 // Adapted from go/src/crypto/ecdsa/ecdsa_test.go
 
-package main
+package cmd
 
 import (
 	"crypto/ecdsa"
@@ -39,7 +39,8 @@ func testSignAndVerify(c elliptic.Curve, tag string) {
 	log.Printf("ECDSA sign and verify with p%d took %s", c.Params().BitSize, time.Since(start))
 }
 
-func TestSignAndVerify() {
+func ecdsaTest() {
+	msg("ecdsa")
 	testSignAndVerify(elliptic.P224(), "p224")
 	testSignAndVerify(elliptic.P256(), "p256")
 }

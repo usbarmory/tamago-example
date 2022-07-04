@@ -9,58 +9,44 @@
 //go:build usbarmory
 // +build usbarmory
 
-package main
+package cmd
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
+	"regexp"
 	"runtime"
-	"time"
 
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 
-	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
 	"github.com/usbarmory/tamago/soc/imx6"
+	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
 )
 
 const CR = 0x0d
 
-var boardName = "USB armory Mk II"
-
 func init() {
-	i2c = append(i2c, imx6.I2C1)
+	Add(Cmd{
+		Name: "ble",
+		Args: 0,
+		Pattern: regexp.MustCompile(`^ble`),
+		Help: "BLE serial console",
+		Fn: bleCmd,
+	})
+}
 
-	cards = append(cards, usbarmory.SD)
-	cards = append(cards, usbarmory.MMC)
-
-	LED = usbarmory.LED
-
-	if imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL) {
-		boardName = usbarmory.Model()
-
-		// On the USB armory Mk II the standard serial console (UART2) is
-		// exposed through the debug accessory, which needs to be enabled.
-		debugConsole, _ := usbarmory.DetectDebugAccessory(250 * time.Millisecond)
-		<-debugConsole
-
-		log.Println("-- i.mx6 ble ---------------------------------------------------------")
-		usbarmory.BLE.Init()
-		log.Println("ANNA-B112 BLE module initialized")
+func bleCmd(term *term.Terminal, _ []string) (_ string, err error) {
+	if !imx6.Native {
+		return "", errors.New("unsupported under emulation")
 	}
-}
-
-func reset() {
-	usbarmory.Reset()
-}
-
-func bleConsole(term *terminal.Terminal) (err error) {
-	log.Printf("switching to BLE console, type `quit` to exit")
 
 	if usbarmory.BLE.UART == nil {
-		log.Printf("BLE module is not initialized")
-		return io.EOF
+		return "", errors.New("BLE module is not initialized")
 	}
+
+	log.Printf("switching to BLE console, type `quit` to exit")
 
 	defer func() {
 		log.Printf("resetting BLE module")
@@ -80,7 +66,7 @@ func bleConsole(term *terminal.Terminal) (err error) {
 			default:
 			}
 
-			c, valid := imx6.UART1.Rx()
+			c, valid := usbarmory.UART1.Rx()
 
 			if !valid || c == CR {
 				runtime.Gosched()
@@ -91,9 +77,9 @@ func bleConsole(term *terminal.Terminal) (err error) {
 		}
 	}()
 
-	for {
-		var tx string
+	var tx string
 
+	for {
 		tx, err = term.ReadLine()
 
 		if err == io.EOF {

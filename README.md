@@ -21,7 +21,7 @@ Introduction
 ============
 
 TamaGo is a framework that enables compilation and execution of unencumbered Go
-applications on bare metal ARM System-on-Chip (SoC) components.
+applications on bare metal ARM/RISC-V System-on-Chip (SoC) components.
 
 This example Go application illustrates use of the
 [tamago](https://github.com/usbarmory/tamago) package
@@ -66,9 +66,9 @@ its separate goroutine:
 
   9. Large memory allocation.
 
-Once all tests are completed, and only on non-emulated hardware, the following
-network services are started on [Ethernet over USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication)
-(ECM protocol, supported on Linux and macOS hosts).
+On non-emulated hardware the following network services are started on
+[Ethernet over USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication) (ECM
+protocol, supported on Linux and macOS hosts).
 
   * SSH server on 10.0.0.1:22
   * HTTP server on 10.0.0.1:80
@@ -78,35 +78,35 @@ The web servers expose the following routes:
 
   * `/`: a welcome message
   * `/tamago-example.log`: log output
-  * `/dir`: in-memory filesystem test directory
+  * `/dir`: in-memory filesystem test directory (available after `test` is issued)
   * `/debug/pprof`: Go runtime profiling data through [pprof](https://golang.org/pkg/net/http/pprof/)
   * `/debug/statsviz`: Go runtime profiling data through [statsviz](https://github.com/arl/statsviz)
 
-The SSH server exposes a basic shell with the following commands:
+The SSH server exposes a console with the following commands:
 
 ```
-  help                                   # this help
-  exit, quit                             # close session
-  info                                   # SoC/board information
-  rand                                   # gather 32 bytes from TRNG
-  reboot                                 # reset the SoC/board
-  stack                                  # stack trace of current goroutine
-  stackall                               # stack trace of all goroutines
-  date                                   # show   runtime date and time
-  date <time in RFC3339 format>          # change runtime date and time
-  dns  <fqdn>                            # resolve domain (requires routing)
-
-  test                                   # launch example code
-
-  ble                                    # enter BLE serial console
-  i2c <n> <hex slave> <hex addr> <size>  # I²C bus read
-  mmc <n> <hex offset> <size>            # internal MMC/SD card read
-  md  <hex offset> <size>                # memory display (use with caution)
-  mw  <hex offset> <hex value>           # memory write   (use with caution)
-  led (white|blue) (on|off)              # LED control
-  dcp <size> <sec>                       # benchmark hardware encryption
-  otp <bank> <word>                      # OTP fuse display
+ble                                                     # BLE serial console
+date            (time in RFC339 format)?                # show/change runtime date and time
+dcp             <size> <sec>                            # benchmark hardware encryption
+dns             <fqdn>                                  # resolve domain (requires routing)
+exit, quit                                              # close session
+help                                                    # this help
+i2c             <n> <hex target> <hex addr> <size>      # I²C bus read
+info                                                    # device information
+led             (white|blue) (on|off)                   # LED control
+md              <hex offset> <size>                     # memory display (use with caution)
+mmc             <n> <hex offset> <size>                 # MMC/SD card read
+mw              <hex offset> <hex value>                # memory write (use with caution)
+otp             <bank> <word>                           # OTP fuses display
+rand                                                    # gather 32 bytes from TRNG
+reboot                                                  # reset device
+stack                                                   # stack trace of current goroutine
+stackall                                                # stack trace of all goroutines
+test                                                    # launch tests
 ```
+
+On emulated runs (e.g. `make qemu`) the console is exposed directly on the
+terminal.
 
 Compiling
 =========
@@ -210,9 +210,8 @@ The target can be executed under emulation as follows:
 cd tamago-example && make qemu
 ```
 
-The emulated target can be debugged with GDB by adding the `-S -s` flags to the
-previous execution command, this will make qemu waiting for a GDB connection
-that can be launched as follows:
+The emulated target can be debugged with GDB using `make qemu-gdb`, this will
+make qemu waiting for a GDB connection that can be launched as follows:
 
 ```
 arm-none-eabi-gdb -ex "target remote 127.0.0.1:1234" example

@@ -6,20 +6,37 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-package main
+//go:build mx6ullevk || usbarmory
+// +build mx6ullevk usbarmory
+
+package cmd
 
 import (
 	_ "embed"
 	"errors"
 	"fmt"
+	"regexp"
+	"strconv"
+
+	"golang.org/x/term"
 
 	"github.com/usbarmory/crucible/fusemap"
 	"github.com/usbarmory/crucible/otp"
 )
 
+func init() {
+	Add(Cmd{
+		Name: "otp",
+		Args: 2,
+		Pattern: regexp.MustCompile(`^otp (\d+) (\d+)`),
+		Syntax: "<bank> <word>",
+		Help: "OTP fuses display",
+		Fn: otpCmd,
+	})
+}
+
 //go:embed IMX6ULL.yaml
 var IMX6ULLFusemapYAML []byte
-
 var IMX6ULLFusemap *fusemap.FuseMap
 
 func loadFuseMap() (err error) {
@@ -39,14 +56,14 @@ func loadFuseMap() (err error) {
 func readOTP(bank int, word int) (res string, err error) {
 	var reg *fusemap.Register
 
-	if err := loadFuseMap(); err != nil {
-		return "", err
+	if err = loadFuseMap(); err != nil {
+		return
 	}
 
 	val, err := otp.ReadOCOTP(bank, word, 0, 32)
 
 	if err != nil {
-		return "", err
+		return
 	}
 
 	for _, reg = range IMX6ULLFusemap.Registers {
@@ -58,4 +75,20 @@ func readOTP(bank int, word int) (res string, err error) {
 	}
 
 	return "", errors.New("invalid OTP register")
+}
+
+func otpCmd(_ *term.Terminal, arg []string) (res string, err error) {
+	bank, err := strconv.Atoi(arg[0])
+
+	if err != nil {
+		return "", fmt.Errorf("invalid bank, %v", err)
+	}
+
+	word, err := strconv.Atoi(arg[1])
+
+	if err != nil {
+		return "", fmt.Errorf("invalid word, %v", err)
+	}
+
+	return readOTP(bank, word)
 }

@@ -6,7 +6,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-package main
+package network
 
 import (
 	"crypto/ecdsa"
@@ -21,7 +21,11 @@ import (
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
+
+	"github.com/usbarmory/tamago-example/cmd"
 )
+
+var journal *os.File
 
 func handleChannel(newChannel ssh.NewChannel) {
 	if t := newChannel.ChannelType(); t != "session" {
@@ -42,34 +46,10 @@ func handleChannel(newChannel ssh.NewChannel) {
 	go func() {
 		defer conn.Close()
 
-		log.SetOutput(io.MultiWriter(os.Stdout, logFile, term))
-		defer log.SetOutput(io.MultiWriter(os.Stdout, logFile))
+		log.SetOutput(io.MultiWriter(os.Stdout, journal, term))
+		defer log.SetOutput(io.MultiWriter(os.Stdout, journal))
 
-		fmt.Fprintf(term, "%s\n", banner)
-		fmt.Fprintf(term, "%s\n", string(term.Escape.Cyan)+help+string(term.Escape.Reset))
-
-		for {
-			cmd, err := term.ReadLine()
-
-			if err == io.EOF {
-				break
-			}
-
-			if err != nil {
-				log.Printf("readline error: %v", err)
-				continue
-			}
-
-			if cmd == "ble" {
-				err = bleConsole(term)
-			} else {
-				err = handleCommand(term, cmd)
-			}
-
-			if err == io.EOF {
-				break
-			}
-		}
+		cmd.Console(term)
 
 		log.Printf("closing ssh connection")
 	}()
