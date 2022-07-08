@@ -14,24 +14,28 @@ REV = $(shell git rev-parse --short HEAD 2> /dev/null)
 
 SHELL = /bin/bash
 
-ifeq ($(TARGET),usbarmory)
-UART1 := null
-UART2 := stdio
-else
-UART1 := stdio
-UART2 := null
-endif
+APP := example
+TARGET ?= "usbarmory"
+TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
 
 ifeq ($(TARGET),sifive_u)
 
 GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARCH=riscv64
 ENTRY_POINT := _rt0_riscv64_tamago
 QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
-        -nographic -monitor none -serial $(UART1) -serial $(UART2) -net none \
+        -nographic -monitor none -serial stdio -net none \
         -semihosting \
         -dtb $(CURDIR)/qemu.dtb \
         -bios $(CURDIR)/bios/bios.bin
 else
+
+ifeq ($(TARGET),mx6ullevk)
+UART1 := stdio
+UART2 := null
+else
+UART1 := null
+UART2 := stdio
+endif
 
 GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARM=7 GOARCH=arm
 ENTRY_POINT := _rt0_arm_tamago
@@ -41,9 +45,6 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
 
 endif
 
-APP := example
-TARGET ?= "usbarmory"
-TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
 GOFLAGS := -tags ${TARGET},native -trimpath -ldflags "-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
 
 .PHONY: clean qemu qemu-gdb
