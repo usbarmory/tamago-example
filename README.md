@@ -138,17 +138,17 @@ as well as emulated execution (e.g. `make qemu`).
 Building and executing on RISC-V targets
 ========================================
 
-Available targets:
-
-| `TARGET`    | Board            | Executing and debugging                                                                                  |
-|-------------|------------------|----------------------------------------------------------------------------------------------------------|
-| `sifive_u`  | QEMU sifive_u    | [sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u#executing-and-debugging)  |
-
 Build the application executables as follows:
 
 ```
 make TARGET=sifive_u
 ```
+
+Available targets:
+
+| `TARGET`    | Board            | Executing and debugging                                                                                  |
+|-------------|------------------|----------------------------------------------------------------------------------------------------------|
+| `sifive_u`  | QEMU sifive_u    | [sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u#executing-and-debugging)  |
 
 The target has only been tested with emulated execution (e.g. `make qemu`)
 
