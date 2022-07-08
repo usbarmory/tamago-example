@@ -23,7 +23,7 @@ const boardName = "MCIMX6ULL-EVK"
 func init() {
 	console = mx6ullevk.UART1
 
-	if !(imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL)) {
+	if !imx6.Native {
 		return
 	}
 

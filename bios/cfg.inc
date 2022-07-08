@@ -1,0 +1,1 @@
+.equ RT0_RISCV64_TAMAGO, 0x8006eaa0

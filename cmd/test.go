@@ -72,9 +72,7 @@ func testCmd(t *term.Terminal, _ []string) (_ string, _ error) {
 	spawn(sleepTest)
 	spawn(fsTest)
 	spawn(rngTest)
-	spawn(ecdsaTest)
-	spawn(btcdTest)
-	spawn(dcpTest)
+	spawn(cryptoTest)
 
 	msg("launched %d test goroutines", gr)
 

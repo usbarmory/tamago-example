@@ -49,7 +49,7 @@ func Add(cmd Cmd) {
 }
 
 func msg(format string, args ...interface{}) {
-	s := strings.Repeat(separator, 2)
+	s := strings.Repeat(separator, 2) + " "
 	s += fmt.Sprintf(format, args...)
 	s += strings.Repeat(separator, separatorSize - len(s))
 
@@ -69,7 +69,7 @@ func Help() string {
 	sort.Strings(names)
 
 	for _, name := range names {
-		_, _ = fmt.Fprintf(t, "%s\t%s\t# %s\n", cmds[name].Name, cmds[name].Syntax, cmds[name].Help)
+		_, _ = fmt.Fprintf(t, "%s\t%s\t # %s\n", cmds[name].Name, cmds[name].Syntax, cmds[name].Help)
 	}
 
 	_ = t.Flush()

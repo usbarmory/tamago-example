@@ -14,28 +14,39 @@ REV = $(shell git rev-parse --short HEAD 2> /dev/null)
 
 SHELL = /bin/bash
 
+ifeq ($(TARGET),usbarmory)
+UART1 := null
+UART2 := stdio
+else
+UART1 := stdio
+UART2 := null
+endif
+
+ifeq ($(TARGET),sifive_u)
+
+GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARCH=riscv64
+ENTRY_POINT := _rt0_riscv64_tamago
+QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
+        -nographic -monitor none -serial $(UART1) -serial $(UART2) -net none \
+        -semihosting \
+        -dtb $(CURDIR)/qemu.dtb \
+        -bios $(CURDIR)/bios/bios.bin
+else
+
+GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARM=7 GOARCH=arm
+ENTRY_POINT := _rt0_arm_tamago
+QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
+        -nographic -monitor none -serial $(UART1) -serial $(UART2) -net none \
+        -semihosting
+
+endif
+
 APP := example
 TARGET ?= "usbarmory"
-GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARM=7 GOARCH=arm
-TEXT_START := 0x80010000 # ramStart (defined in imx6/imx6ul/mem.go) + 0x10000
-GOFLAGS := -tags ${TARGET} -trimpath -ldflags "-s -w -T $(TEXT_START) -E _rt0_arm_tamago -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
-QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
-        -nographic -monitor none -serial null -serial stdio -net none \
-        -semihosting -d unimp
+TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
+GOFLAGS := -tags ${TARGET},native -trimpath -ldflags "-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
 
 .PHONY: clean qemu qemu-gdb
-
-#### primary targets ####
-
-all: $(APP)
-
-imx: $(APP).imx
-
-imx_signed: $(APP)-signed.imx
-
-elf: $(APP)
-
-#### utilities ####
 
 check_tamago:
 	@if [ "${TAMAGO}" == "" ] || [ ! -f "${TAMAGO}" ]; then \
@@ -43,43 +54,37 @@ check_tamago:
 		exit 1; \
 	fi
 
+clean:
+	@rm -fr $(APP) $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd cmd/IMX6ULL.yaml qemu.dtb bios/bios.bin
+
+#### generic targets ####
+
+all: $(APP)
+
+elf: $(APP)
+
+qemu: GOFLAGS := $(GOFLAGS:native=semihosting)
+qemu: $(APP)
+	$(QEMU) -kernel $(APP)
+
+qemu-gdb: GOFLAGS := $(GOFLAGS:native=semihosting)
+qemu-gdb: GOFLAGS := $(GOFLAGS:-w=)
+qemu-gdb: GOFLAGS := $(GOFLAGS:-s=)
+qemu-gdb: $(APP)
+	$(QEMU) -kernel $(APP) -S -s
+
+#### ARM targets ####
+
+imx: $(APP).imx
+
+imx_signed: $(APP)-signed.imx
+
 check_hab_keys:
 	@if [ "${HAB_KEYS}" == "" ]; then \
 		echo 'You need to set the HAB_KEYS variable to the path of secure boot keys'; \
 		echo 'See https://github.com/usbarmory/usbarmory/wiki/Secure-boot-(Mk-II)'; \
 		exit 1; \
 	fi
-
-dcd:
-	@if test "${TARGET}" = "usbarmory"; then \
-		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/board/usbarmory/mk2/imximage.cfg $(APP).dcd; \
-	elif test "${TARGET}" = "mx6ullevk"; then \
-		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/board/nxp/mx6ullevk/imximage.cfg $(APP).dcd; \
-	else \
-		echo "invalid target - options are: usbarmory, mx6ullevk"; \
-		exit 1; \
-	fi
-
-clean:
-	@rm -fr $(APP) $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd cmd/IMX6ULL.yaml
-
-qemu: $(APP)
-	$(QEMU) -kernel $(APP)
-
-qemu-gdb: GOFLAGS := $(GOFLAGS:-s=)
-qemu-gdb: GOFLAGS := $(GOFLAGS:-w=)
-qemu-gdb: $(APP)
-	$(QEMU) -kernel $(APP) -S -s
-
-#### dependencies ####
-
-$(APP): check_tamago IMX6ULL.yaml
-	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
-
-$(APP).dcd: check_tamago
-$(APP).dcd: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
-$(APP).dcd: TAMAGO_PKG=$(shell grep "github.com/usbarmory/tamago v" go.mod | awk '{print $$1"@"$$2}')
-$(APP).dcd: dcd
 
 $(APP).bin: CROSS_COMPILE=arm-none-eabi-
 $(APP).bin: $(APP)
@@ -101,9 +106,48 @@ IMX6ULL.yaml:
 	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool
 	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX6ULL.yaml cmd/IMX6ULL.yaml
 
-#### secure boot ####
+$(APP).dcd: check_tamago
+$(APP).dcd: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
+$(APP).dcd: TAMAGO_PKG=$(shell grep "github.com/usbarmory/tamago v" go.mod | awk '{print $$1"@"$$2}')
+$(APP).dcd:
+	@if test "${TARGET}" = "usbarmory"; then \
+		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/board/usbarmory/mk2/imximage.cfg $(APP).dcd; \
+	elif test "${TARGET}" = "mx6ullevk"; then \
+		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/board/nxp/mx6ullevk/imximage.cfg $(APP).dcd; \
+	else \
+		echo "invalid target - options are: usbarmory, mx6ullevk"; \
+		exit 1; \
+	fi
 
-$(APP)-signed.imx: check_hab_keys $(APP).imx
+#### RISC-V targets ####
+
+qemu.dtb: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
+qemu.dtb: TAMAGO_PKG=$(shell grep "github.com/usbarmory/tamago v" go.mod | awk '{print $$1"@"$$2}')
+qemu.dtb:
+	echo $(GOMODCACHE)
+	echo $(TAMAGO_PKG)
+	dtc -I dts -O dtb $(GOMODCACHE)/$(TAMAGO_PKG)/board/qemu/sifive_u/qemu-riscv64-sifive_u.dts -o $(CURDIR)/qemu.dtb 2> /dev/null
+
+#### application target ####
+
+ifeq ($(TARGET),sifive_u)
+
+$(APP): check_tamago qemu.dtb
+	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP} && \
+	RT0=$$(riscv64-linux-gnu-readelf -a $(APP)|grep -i 'Entry point' | cut -dx -f2) && \
+	echo ".equ RT0_RISCV64_TAMAGO, 0x$$RT0" > $(CURDIR)/bios/cfg.inc && \
+	cd $(CURDIR)/bios && ./build.sh
+
+else
+
+$(APP): check_tamago IMX6ULL.yaml
+	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
+
+endif
+
+#### HAB secure boot ####
+
+$(APP)-signed.imx: check_tamago check_hab_keys $(APP).imx
 	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool
 	$(shell ${TAMAGO} env GOPATH)/bin/habtool \
 		-A ${HAB_KEYS}/CSF_1_key.pem \

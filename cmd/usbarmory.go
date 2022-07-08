@@ -27,7 +27,7 @@ func init() {
 	boardName = usbarmory.Model()
 	console = usbarmory.UART2
 
-	if !(imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL)) {
+	if !imx6.Native {
 		return
 	}
 

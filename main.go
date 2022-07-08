@@ -16,6 +16,7 @@ import (
 	"runtime"
 
 	"github.com/usbarmory/tamago-example/cmd"
+	"github.com/usbarmory/tamago-example/internal/semihosting"
 	"github.com/usbarmory/tamago-example/network"
 )
 
@@ -44,7 +45,6 @@ func main() {
 		network.Start(logFile)
 	} else {
 		cmd.SerialConsole()
+		semihosting.Exit()
 	}
-
-	log.Println("Goodbye from tamago/arm")
 }

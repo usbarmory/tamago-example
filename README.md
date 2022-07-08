@@ -1,5 +1,5 @@
-TamaGo - bare metal Go for ARM SoCs - example application
-=========================================================
+TamaGo - bare metal Go for ARM/RISCV-V SoCs - example application
+=================================================================
 
 tamago | https://github.com/usbarmory/tamago  
 
@@ -27,11 +27,11 @@ This example Go application illustrates use of the
 [tamago](https://github.com/usbarmory/tamago) package
 execute bare metal Go code on the following platforms:
 
-| SoC          | Board                                                                                                                                                                                | SoC package                                                      | Board package                                                                         |
-|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| NXP i.MX6ULZ | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki)                                                                                                                      | [imx6](https://github.com/usbarmory/tamago/tree/master/soc/imx6) | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)      |
-| NXP i.MX6ULL | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6](https://github.com/usbarmory/tamago/tree/master/soc/imx6) | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk)  |
-
+| SoC          | Board                                                                                                                                                                                | SoC package                                                        | Board package                                                                         |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| NXP i.MX6ULZ | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki)                                                                                                                      | [imx6](https://github.com/usbarmory/tamago/tree/master/soc/imx6)   | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)      |
+| NXP i.MX6ULL | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6](https://github.com/usbarmory/tamago/tree/master/soc/imx6)   | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk)  |
+| SiFive FU540 | [QEMU sifive_u](https://www.qemu.org/docs/master/system/riscv/sifive_u.html)                                                                                                         | [fu540](https://github.com/usbarmory/tamago/tree/master/soc/fu540) | [qemu/sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u)  |
 
 Documentation
 =============
@@ -46,25 +46,19 @@ Operation
 ![Example screenshot](https://github.com/usbarmory/tamago/wiki/images/ssh.png)
 
 The example application performs a variety of simple test procedures, each in
-its separate goroutine:
+its separate goroutine, to demonstrate bare metal execution of Go standard and
+external libraries:
 
-  1. Directory and file write/read from an in-memory filesystem.
-
-  2. SD/MMC card detection and read (only on non-emulated runs).
-
-  3. Timer operation.
-
-  4. Sleep operation.
-
-  5. Random bytes collection (gathered from SoC TRNG on non-emulated runs).
-
-  6. ECDSA signing and verification.
-
-  7. Test BTC transaction creation and signing.
-
-  8. Key derivation with SoC DCP (only on non emulated secure booted devices).
-
-  9. Large memory allocation.
+  * Directory and file write/read from an in-memory filesystem.
+  * SD/MMC card detection and read (only on non-emulated runs).
+  * Timer operation.
+  * Sleep operation.
+  * Random bytes collection (gathered from SoC TRNG on non-emulated runs).
+  * ECDSA signing and verification.
+  * Test BTC transaction creation and signing.
+  * Test post-quantum key encapsulation (KEM).
+  * Hardware key derivation (only on non-emulated runs).
+  * Large memory allocation.
 
 On non-emulated hardware the following network services are started on
 [Ethernet over USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication) (ECM
@@ -93,12 +87,13 @@ exit, quit                                              # close session
 help                                                    # this help
 i2c             <n> <hex target> <hex addr> <size>      # I²C bus read
 info                                                    # device information
+kem                                                     # benchmark post-quantum KEM
 led             (white|blue) (on|off)                   # LED control
 md              <hex offset> <size>                     # memory display (use with caution)
 mmc             <n> <hex offset> <size>                 # MMC/SD card read
 mw              <hex offset> <hex value>                # memory write (use with caution)
 otp             <bank> <word>                           # OTP fuses display
-rand                                                    # gather 32 bytes from TRNG
+rand                                                    # gather 32 random bytes
 reboot                                                  # reset device
 stack                                                   # stack trace of current goroutine
 stackall                                                # stack trace of all goroutines
@@ -108,8 +103,8 @@ test                                                    # launch tests
 On emulated runs (e.g. `make qemu`) the console is exposed directly on the
 terminal.
 
-Compiling
-=========
+Building the compiler
+=====================
 
 Build the [TamaGo compiler](https://github.com/usbarmory/tamago-go)
 (or use the [latest binary release](https://github.com/usbarmory/tamago-go/releases/latest)):
@@ -121,100 +116,60 @@ cd tamago-go-latest/src && ./all.bash
 cd ../bin && export TAMAGO=`pwd`/go
 ```
 
-Build the `example.imx` application executable:
+Building and executing on ARM targets
+=====================================
+
+Build the application executables as follows:
 
 ```
-git clone https://github.com/usbarmory/tamago-example
-cd tamago-example && make CROSS_COMPILE=arm-none-eabi- TARGET=usbarmory imx
+make imx TARGET=usbarmory
 ```
 
-The supported targets for the `TARGET` environment variable are:
-  * `usbarmory` - USB armory Mk II (default)
-  * `mx6ullevk` - MCIMX6ULL-EVK
+The following targets are available:
 
-When cross compiling from a non-arm host, as shown in the example, ensure that
-the `CROSS_COMPILE` variable is set according to the available toolchain (e.g.
-`gcc-arm-none-eabi` package on Debian/Ubuntu).
+| `TARGET`    | Board            | Executing and debugging                                                                                  |
+|-------------|------------------|----------------------------------------------------------------------------------------------------------|
+| `usbarmory` | USB armory Mk II | [usbarmory](https://github.com/usbarmory/tamago/tree/master/board/usbarmory#executing-and-debugging)     |
+| `mx6ullevk` | MCIMX6ULL-EVK    | [mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk#executing-and-debugging) |
 
-The imx target also requires the `mkimage` tool from U-Boot (e.g.
-`u-boot-tools` on Debian/Ubuntu).
+The targets support native (see relevant documentation links in the table above)
+as well as emulated execution (e.g. `make qemu`).
 
-Executing and debugging
-=======================
+Building and executing on RISC-V targets
+========================================
 
-Native hardware: imx image
---------------------------
+Available targets:
 
-Follow [these instructions](https://github.com/usbarmory/usbarmory/wiki/Boot-Modes-(Mk-II)#flashing-bootable-images-on-externalinternal-media)
-using the built `example.imx` image.
+| `TARGET`    | Board            | Executing and debugging                                                                                  |
+|-------------|------------------|----------------------------------------------------------------------------------------------------------|
+| `sifive_u`  | QEMU sifive_u    | [sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u#executing-and-debugging)  |
 
-Native hardware: existing bootloader
-------------------------------------
-
-Copy the built `example` binary on an external microSD card (replace `$dev`
-with `0`) or the internal eMMC (replace `$dev` with `1`), then launch it from
-the U-Boot console as follows:
+Build the application executables as follows:
 
 ```
-ext2load mmc $dev:1 0x90000000 example
-bootelf -p 0x90000000
+make TARGET=sifive_u
 ```
 
-For non-interactive execution modify the U-Boot configuration accordingly.
+The target has only been tested with emulated execution (e.g. `make qemu`)
 
-Standard output
----------------
+Emulated hardware with QEMU
+===========================
 
-The built in SSH server, once connected to, will redirect all logs to the
-established session.
-
-Alternatively the standard output can be accessed through the
-[debug accessory](https://github.com/usbarmory/usbarmory/tree/master/hardware/mark-two-debug-accessory)
-and the following `picocom` configuration:
+All targets can be executed under emulation as follows:
 
 ```
-picocom -b 115200 -eb /dev/ttyUSB2 --imap lfcrlf
+make qemu
 ```
 
-Debugging
----------
-
-The application can be debugged with GDB over JTAG using `openocd` and the
-`imx6ull.cfg` and `gdbinit` debugging helpers published
-[here](https://github.com/usbarmory/tamago/tree/master/_dev).
-
-```
-# start openocd daemon
-openocd -f interface/ftdi/jtagkey.cfg -f imx6ull.cfg
-
-# connect to the OpenOCD command line
-telnet localhost 4444
-
-# debug with GDB
-arm-none-eabi-gdb -x gdbinit example
-```
-
-Hardware breakpoints can be set in the usual way:
-
-```
-hb ecdsa.Verify
-continue
-```
-
-QEMU
-----
-
-The target can be executed under emulation as follows:
-
-```
-cd tamago-example && make qemu
-```
-
-The emulated target can be debugged with GDB using `make qemu-gdb`, this will
+An emulated target can be debugged with GDB using `make qemu-gdb`, this will
 make qemu waiting for a GDB connection that can be launched as follows:
 
 ```
+# ARM targets
 arm-none-eabi-gdb -ex "target remote 127.0.0.1:1234" example
+
+# RISC-V targets
+riscv64-elf-gdb -ex "target remote 127.0.0.1:1234" example
 ```
 
 Breakpoints can be set in the usual way:

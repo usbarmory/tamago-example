@@ -6,9 +6,6 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build mx6ullevk || usbarmory
-// +build mx6ullevk usbarmory
-
 package cmd
 
 import (
@@ -132,8 +129,8 @@ func memTest() {
 	// This is not something unique to `GOOS=tamago` but more evident as,
 	// when running on bare metal, there is no swap or OS virtual memory.
 	//
-	//gcpercent := 80
-	//debug.SetGCPercent(gcpercent)
+	// gcpercent := 80
+	// debug.SetGCPercent(gcpercent)
 
 	msg("memory allocation (%d runs)", runs)
 

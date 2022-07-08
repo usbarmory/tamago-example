@@ -34,7 +34,7 @@ func Remote() bool {
 }
 
 func Target() (t string) {
-	t = fmt.Sprintf("%s %d MHz", imx6.Model(), imx6.ARMFreq()/1000000)
+	t = fmt.Sprintf("%s %v MHz", imx6.Model(), float32(imx6.ARMFreq())/1000000)
 
 	if !imx6.Native {
 		t += " (emulated)"
@@ -44,7 +44,7 @@ func Target() (t string) {
 }
 
 func date(epoch int64) {
-	imx6.ARM.SetTimerOffset(epoch)
+	imx6.ARM.SetTimer(epoch)
 }
 
 func mem(start uint32, size int, w []byte) (b []byte) {
@@ -70,4 +70,11 @@ func infoCmd(_ *term.Terminal, _ []string) (string, error) {
 	res.WriteString(fmt.Sprintf("Boot ROM hash : %x\n", sha256.Sum256(rom)))
 
 	return res.String(), nil
+}
+
+func cryptoTest() {
+	spawn(ecdsaTest)
+	spawn(btcdTest)
+	spawn(kyberTest)
+	spawn(dcpTest)
 }

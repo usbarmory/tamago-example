@@ -12,7 +12,9 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"regexp"
+	"runtime"
 	"runtime/debug"
 	"runtime/pprof"
 	"time"
@@ -86,6 +88,7 @@ func helpCmd(t *term.Terminal, _ []string) (string, error) {
 }
 
 func exitCmd(_ *term.Terminal, _ []string) (string, error) {
+	log.Printf("Goodbye from %s/%s\n", runtime.GOOS, runtime.GOARCH)
 	return "logout", io.EOF
 }
 

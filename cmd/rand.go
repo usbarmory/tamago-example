@@ -32,7 +32,7 @@ func init() {
 		Name: "rand",
 		Args: 0,
 		Pattern: regexp.MustCompile(`^rand`),
-		Help: "gather 32 bytes from TRNG",
+		Help: "gather 32 random bytes",
 		Fn: randCmd,
 	})
 }
