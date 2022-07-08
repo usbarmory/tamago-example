@@ -4,12 +4,6 @@
 // See LICENSE at:
 //   https://github.com/cloudflare/circl/blob/v1.2.0/LICENSE
 
-// The build restriction is required as golang.org/x/sys/cpu is missing riscv64
-// stubs (see https://github.com/golang/go/issues/53698).
-//
-//go:build mx6ullevk || usbarmory
-// +build mx6ullevk usbarmory
-
 package cmd
 
 import (
