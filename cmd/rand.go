@@ -40,7 +40,7 @@ func init() {
 func randCmd(t *term.Terminal, _ []string) (string, error) {
 	buf := make([]byte, 32)
 	rand.Read(buf)
-	return string(t.Escape.Cyan) + fmt.Sprintf("%x", buf) + string(t.Escape.Reset), nil
+	return fmt.Sprintf("%x", buf), nil
 }
 
 func rngTest() {

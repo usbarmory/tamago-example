@@ -24,7 +24,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/soc/imx6"
-	"github.com/usbarmory/tamago/soc/imx6/dcp"
+	"github.com/usbarmory/tamago/soc/imx6/imx6ul"
 )
 
 const (
@@ -47,7 +47,7 @@ func init() {
 		return
 	}
 
-	dcp.Init()
+	imx6ul.DCP.Init()
 }
 
 func dcpCmd(_ *term.Terminal, arg []string) (res string, err error) {
@@ -81,7 +81,7 @@ func dcpCmd(_ *term.Terminal, arg []string) (res string, err error) {
 func testKeyDerivation() (err error) {
 	iv := make([]byte, aes.BlockSize)
 
-	key, err := dcp.DeriveKey([]byte(diversifier), iv, -1)
+	key, err := imx6ul.DCP.DeriveKey([]byte(diversifier), iv, -1)
 
 	if err != nil {
 		return
@@ -118,7 +118,7 @@ func testDecryption(size int, sec int) (n int, d time.Duration, err error) {
 	iv := make([]byte, aes.BlockSize)
 	buf := make([]byte, size)
 
-	_, err = dcp.DeriveKey([]byte(diversifier), iv, 0)
+	_, err = imx6ul.DCP.DeriveKey([]byte(diversifier), iv, 0)
 
 	if err != nil {
 		return
@@ -127,7 +127,7 @@ func testDecryption(size int, sec int) (n int, d time.Duration, err error) {
 	start := time.Now()
 
 	for run, timeout := true, time.After(time.Duration(sec)*time.Second); run; {
-		if err = dcp.Decrypt(buf, 0, iv); err != nil {
+		if err = imx6ul.DCP.Decrypt(buf, 0, iv); err != nil {
 			return
 		}
 
