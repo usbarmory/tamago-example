@@ -57,7 +57,7 @@ func resolve(s string) (r *dns.Msg, rtt time.Duration, err error) {
 	return c.ExchangeWithConn(msg, conn)
 }
 
-func dnsCmd(t *term.Terminal, arg []string) (res string, err error) {
+func dnsCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	if iface == nil {
 		return "", errors.New("network is unavailable")
 	}

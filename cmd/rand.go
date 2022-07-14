@@ -37,7 +37,7 @@ func init() {
 	})
 }
 
-func randCmd(t *term.Terminal, _ []string) (string, error) {
+func randCmd(_ *term.Terminal, _ []string) (string, error) {
 	buf := make([]byte, 32)
 	rand.Read(buf)
 	return fmt.Sprintf("%x", buf), nil

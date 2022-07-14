@@ -56,7 +56,7 @@ func msg(format string, args ...interface{}) {
 	log.Println(s)
 }
 
-func Help() string {
+func Help(term *term.Terminal) string {
 	var help bytes.Buffer
 	var names []string
 
@@ -74,7 +74,7 @@ func Help() string {
 
 	_ = t.Flush()
 
-	return help.String()
+	return string(term.Escape.Cyan) + help.String() + string(term.Escape.Reset)
 }
 
 func Handle(term *term.Terminal, line string) (err error) {
@@ -110,7 +110,7 @@ func Handle(term *term.Terminal, line string) (err error) {
 
 func Console(term *term.Terminal) {
 	fmt.Fprintf(term, "%s\n\n", Banner)
-	fmt.Fprintf(term, "%s\n", string(term.Escape.Cyan)+Help()+string(term.Escape.Reset))
+	fmt.Fprintf(term, "%s\n", Help(term))
 
 	for {
 		s, err := term.ReadLine()

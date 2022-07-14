@@ -83,8 +83,8 @@ func init() {
 
 }
 
-func helpCmd(t *term.Terminal, _ []string) (string, error) {
-	return string(t.Escape.Cyan) + Help() + string(t.Escape.Reset), nil
+func helpCmd(term *term.Terminal, _ []string) (string, error) {
+	return Help(term), nil
 }
 
 func exitCmd(_ *term.Terminal, _ []string) (string, error) {
