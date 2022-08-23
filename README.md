@@ -27,11 +27,11 @@ This example Go application illustrates use of the
 [tamago](https://github.com/usbarmory/tamago) package
 execute bare metal Go code on the following platforms:
 
-| SoC          | Board                                                                                                                                                                                | SoC package                                                        | Board package                                                                         |
-|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| NXP i.MX6ULZ | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki)                                                                                                                      | [imx6](https://github.com/usbarmory/tamago/tree/master/soc/imx6)   | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)      |
-| NXP i.MX6ULL | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6](https://github.com/usbarmory/tamago/tree/master/soc/imx6)   | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk)  |
-| SiFive FU540 | [QEMU sifive_u](https://www.qemu.org/docs/master/system/riscv/sifive_u.html)                                                                                                         | [fu540](https://github.com/usbarmory/tamago/tree/master/soc/fu540) | [qemu/sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u)  |
+| SoC          | Board                                                                                                                                                                                | SoC package                                                               | Board package                                                                         |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| NXP i.MX6ULZ | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki)                                                                                                                      | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)      |
+| NXP i.MX6ULL | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk)  |
+| SiFive FU540 | [QEMU sifive_u](https://www.qemu.org/docs/master/system/riscv/sifive_u.html)                                                                                                         | [fu540](https://github.com/usbarmory/tamago/tree/master/soc/sifive/fu540) | [qemu/sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u)  |
 
 Documentation
 =============
@@ -79,25 +79,26 @@ The web servers expose the following routes:
 The SSH server exposes a console with the following commands:
 
 ```
-ble                                                     # BLE serial console
-date            (time in RFC339 format)?                # show/change runtime date and time
-dcp             <size> <sec>                            # benchmark hardware encryption
-dns             <fqdn>                                  # resolve domain (requires routing)
-exit, quit                                              # close session
-help                                                    # this help
-i2c             <n> <hex target> <hex addr> <size>      # I²C bus read
-info                                                    # device information
-kem                                                     # benchmark post-quantum KEM
-led             (white|blue) (on|off)                   # LED control
-md              <hex offset> <size>                     # memory display (use with caution)
-mmc             <n> <hex offset> <size>                 # MMC/SD card read
-mw              <hex offset> <hex value>                # memory write (use with caution)
-otp             <bank> <word>                           # OTP fuses display
-rand                                                    # gather 32 random bytes
-reboot                                                  # reset device
-stack                                                   # stack trace of current goroutine
-stackall                                                # stack trace of all goroutines
-test                                                    # launch tests
+
+ble                                                      # BLE serial console
+date            (time in RFC339 format)?                 # show/change runtime date and time
+dcp             <size> <sec>                             # benchmark hardware encryption
+dns             <fqdn>                                   # resolve domain (requires routing)
+exit, quit                                               # close session
+help                                                     # this help
+i2c             <n> <hex target> <hex addr> <size>       # I²C bus read
+info                                                     # device information
+kem                                                      # benchmark post-quantum KEM
+led             (white|blue) (on|off)                    # LED control
+mmc             <n> <hex offset> <size>                  # MMC/SD card read
+otp             <bank> <word>                            # OTP fuses display
+peek            <hex offset> <size>                      # memory display (use with caution)
+poke            <hex offset> <hex value>                 # memory write   (use with caution)
+rand                                                     # gather 32 random bytes
+reboot                                                   # reset device
+stack                                                    # stack trace of current goroutine
+stackall                                                 # stack trace of all goroutines
+test                                                     # launch tests
 ```
 
 On emulated runs (e.g. `make qemu`) the console is exposed directly on the

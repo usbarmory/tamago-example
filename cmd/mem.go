@@ -13,9 +13,11 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
-	mathrand "math/rand"
+	"math"
+	"math/rand"
 	"regexp"
 	"runtime"
+	"runtime/debug"
 	"strconv"
 
 	"golang.org/x/term"
@@ -31,30 +33,30 @@ const (
 
 func init() {
 	Add(Cmd{
-		Name: "md",
+		Name: "peek",
 		Args: 2,
-		Pattern: regexp.MustCompile(`^md ([[:xdigit:]]+) (\d+)`),
+		Pattern: regexp.MustCompile(`^peek ([[:xdigit:]]+) (\d+)`),
 		Syntax: "<hex offset> <size>",
 		Help: "memory display (use with caution)",
 		Fn: memReadCmd,
 	})
 
 	Add(Cmd{
-		Name: "mw",
+		Name: "poke",
 		Args: 2,
-		Pattern: regexp.MustCompile(`^mw ([[:xdigit:]]+) ([[:xdigit:]]+)`),
+		Pattern: regexp.MustCompile(`^poke ([[:xdigit:]]+) ([[:xdigit:]]+)`),
 		Syntax: "<hex offset> <hex value>",
-		Help: "memory write (use with caution)",
+		Help: "memory write   (use with caution)",
 		Fn: memWriteCmd,
 	})
 }
 
 func memCopy(start uint32, size int, w []byte) (b []byte) {
-	mem := &dma.Region{
-		Start: uint32(start),
-		Size:  size,
+	mem, err := dma.NewRegion(start, size, true)
+
+	if err != nil {
+		panic("could not allocate memory copy DMA")
 	}
-	mem.Init()
 
 	start, buf := mem.Reserve(size, 0)
 	defer mem.Release(start)
@@ -117,20 +119,18 @@ func memWriteCmd(_ *term.Terminal, arg []string) (res string, err error) {
 func memTest() {
 	var memstats runtime.MemStats
 
-	chunks := mathrand.Intn(chunksMax) + 1
+	chunks := rand.Intn(chunksMax) + 1
 	chunkSize := fillSize / chunks
 
-	// Instead of forcing runtime.GC() as shown in the loop, gcpercent can
-	// be tuned to a value sufficiently low to prevent the next GC target
-	// being set beyond the end of available RAM. A lower than default
-	// (100) value (such as 80 for this example) triggers GC more
-	// frequently and avoids forced GC runs.
+	// This test gets close to the end of available RAM, for this reason we
+	// take advantage of Go soft memory limit to avoid running out of
+	// memory.
 	//
 	// This is not something unique to `GOOS=tamago` but more evident as,
 	// when running on bare metal, there is no swap or OS virtual memory.
-	//
-	// gcpercent := 80
-	// debug.SetGCPercent(gcpercent)
+	ramStart, ramEnd := runtime.MemRegion()
+	memoryLimit := float64(ramEnd - ramStart) * 0.90
+	debug.SetMemoryLimit(int64(math.Round(memoryLimit)))
 
 	msg("memory allocation (%d runs)", runs)
 
@@ -142,15 +142,6 @@ func memTest() {
 		for i := 0; i <= chunks-1; i++ {
 			buf[i] = make([]byte, chunkSize)
 		}
-
-		// When getting close to the end of available RAM, the next GC
-		// target might be set beyond it. Therfore in this specific
-		// test it is best to force a GC run.
-		//
-		// This is not something unique to `GOOS=tamago` but more
-		// evident as when running bare metal we have no swap or OS
-		// virtual memory.
-		runtime.GC()
 	}
 
 	runtime.ReadMemStats(&memstats)

@@ -21,13 +21,11 @@ import (
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
-
-	"github.com/usbarmory/tamago-example/cmd"
 )
 
-var journal *os.File
+type consoleHandler func(term *term.Terminal)
 
-func handleChannel(newChannel ssh.NewChannel) {
+func handleChannel(newChannel ssh.NewChannel, handler consoleHandler) {
 	if t := newChannel.ChannelType(); t != "session" {
 		newChannel.Reject(ssh.UnknownChannelType, fmt.Sprintf("unknown channel type: %s", t))
 		return
@@ -49,7 +47,7 @@ func handleChannel(newChannel ssh.NewChannel) {
 		log.SetOutput(io.MultiWriter(os.Stdout, journal, term))
 		defer log.SetOutput(io.MultiWriter(os.Stdout, journal))
 
-		cmd.Console(term)
+		handler(term)
 
 		log.Printf("closing ssh connection")
 	}()
@@ -81,7 +79,6 @@ func handleChannel(newChannel ssh.NewChannel) {
 				w := binary.BigEndian.Uint32(req.Payload[4+termVariableSize:])
 				h := binary.BigEndian.Uint32(req.Payload[4+termVariableSize+4:])
 
-				log.Printf("resizing terminal (%s:%dx%d)", req.Type, w, h)
 				term.SetSize(int(w), int(h))
 
 				req.Reply(true, nil)
@@ -95,20 +92,19 @@ func handleChannel(newChannel ssh.NewChannel) {
 				w := binary.BigEndian.Uint32(req.Payload)
 				h := binary.BigEndian.Uint32(req.Payload[4:])
 
-				log.Printf("resizing terminal (%s:%dx%d)", req.Type, w, h)
 				term.SetSize(int(w), int(h))
 			}
 		}
 	}()
 }
 
-func handleChannels(chans <-chan ssh.NewChannel) {
+func handleChannels(chans <-chan ssh.NewChannel, handler consoleHandler) {
 	for newChannel := range chans {
-		go handleChannel(newChannel)
+		go handleChannel(newChannel, handler)
 	}
 }
 
-func startSSHServer(listener net.Listener, addr string, port uint16) {
+func startSSHServer(listener net.Listener, addr string, port uint16, handler consoleHandler) {
 	srv := &ssh.ServerConfig{
 		NoClientAuth: true,
 	}
@@ -147,6 +143,6 @@ func startSSHServer(listener net.Listener, addr string, port uint16) {
 		log.Printf("new ssh connection from %s (%s)", sshConn.RemoteAddr(), sshConn.ClientVersion())
 
 		go ssh.DiscardRequests(reqs)
-		go handleChannels(chans)
+		go handleChannels(chans, handler)
 	}
 }

@@ -42,7 +42,7 @@ func main() {
 	log.Println(banner)
 
 	if cmd.Remote() {
-		network.Start(logFile)
+		network.Start(cmd.Console, logFile)
 	} else {
 		cmd.SerialConsole()
 		semihosting.Exit()

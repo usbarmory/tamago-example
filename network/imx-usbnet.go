@@ -16,12 +16,15 @@ import (
 	"os"
 
 	"github.com/usbarmory/imx-usbnet"
-	"github.com/usbarmory/tamago/soc/imx6/imx6ul"
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
-var iface *usbnet.Interface
+var (
+	iface *usbnet.Interface
+	journal *os.File
+)
 
-func Start(journalFile *os.File) {
+func Start(console consoleHandler, journalFile *os.File) {
 	var err error
 
 	iface, err = usbnet.Init(deviceIP, deviceMAC, hostMAC, 1)
@@ -32,10 +35,16 @@ func Start(journalFile *os.File) {
 
 	iface.EnableICMP()
 
-	listenerSSH, err := iface.ListenerTCP4(22)
+	if console != nil {
+		listenerSSH, err := iface.ListenerTCP4(22)
 
-	if err != nil {
-		log.Fatalf("could not initialize SSH listener, %v", err)
+		if err != nil {
+			log.Fatalf("could not initialize SSH listener, %v", err)
+		}
+
+		go func() {
+			startSSHServer(listenerSSH, deviceIP, 22, console)
+		}()
 	}
 
 	listenerHTTP, err := iface.ListenerTCP4(80)
@@ -53,12 +62,6 @@ func Start(journalFile *os.File) {
 	// create index.html
 	setupStaticWebAssets()
 
-	journal = journalFile
-
-	go func() {
-		startSSHServer(listenerSSH, deviceIP, 22)
-	}()
-
 	go func() {
 		startWebServer(listenerHTTP, deviceIP, 80, false)
 	}()
@@ -66,6 +69,8 @@ func Start(journalFile *os.File) {
 	go func() {
 		startWebServer(listenerHTTPS, deviceIP, 443, true)
 	}()
+
+	journal = journalFile
 
 	imx6ul.USB1.Init()
 	imx6ul.USB1.DeviceMode()

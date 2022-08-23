@@ -15,7 +15,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/board/nxp/mx6ullevk"
-	"github.com/usbarmory/tamago/soc/imx6"
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 const boardName = "MCIMX6ULL-EVK"
@@ -23,7 +23,7 @@ const boardName = "MCIMX6ULL-EVK"
 func init() {
 	console = mx6ullevk.UART1
 
-	if !imx6.Native {
+	if !imx6ul.Native {
 		return
 	}
 

@@ -20,8 +20,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/arm"
-	"github.com/usbarmory/tamago/soc/imx6"
-	"github.com/usbarmory/tamago/soc/imx6/imx6ul"
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 const (
@@ -30,13 +29,13 @@ const (
 )
 
 func Remote() bool {
-	return imx6.Native && (imx6.Family == imx6.IMX6UL || imx6.Family == imx6.IMX6ULL)
+	return imx6ul.Native && (imx6ul.Family == imx6ul.IMX6UL || imx6ul.Family == imx6ul.IMX6ULL)
 }
 
 func Target() (t string) {
-	t = fmt.Sprintf("%s %v MHz", imx6.Model(), float32(imx6.ARMFreq())/1000000)
+	t = fmt.Sprintf("%s %v MHz", imx6ul.Model(), float32(imx6ul.ARMFreq())/1000000)
 
-	if !imx6.Native {
+	if !imx6ul.Native {
 		t += " (emulated)"
 	}
 
@@ -44,14 +43,14 @@ func Target() (t string) {
 }
 
 func date(epoch int64) {
-	imx6.ARM.SetTimer(epoch)
+	imx6ul.ARM.SetTimer(epoch)
 }
 
 func mem(start uint32, size int, w []byte) (b []byte) {
 	// temporarily map page zero if required
 	if z := uint32(1 << 20); start < z {
-		imx6.ARM.ConfigureMMU(0, z, (arm.TTE_AP_001<<10)|arm.TTE_SECTION)
-		defer imx6.ARM.ConfigureMMU(0, z, 0)
+		imx6ul.ARM.ConfigureMMU(0, z, (arm.TTE_AP_001<<10)|arm.TTE_SECTION)
+		defer imx6ul.ARM.ConfigureMMU(0, z, 0)
 	}
 
 	return memCopy(start, size, w)
@@ -65,9 +64,13 @@ func infoCmd(_ *term.Terminal, _ []string) (string, error) {
 	res.WriteString(fmt.Sprintf("Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH))
 	res.WriteString(fmt.Sprintf("Board ........: %s\n", boardName))
 	res.WriteString(fmt.Sprintf("SoC ..........: %s\n", Target()))
-	res.WriteString(fmt.Sprintf("SDP ..........: %v\n", imx6ul.SDP()))
-	res.WriteString(fmt.Sprintf("Secure boot ..: %v\n", imx6.SNVS()))
+	res.WriteString(fmt.Sprintf("SDP ..........: %v\n", imx6ul.SDP))
+	res.WriteString(fmt.Sprintf("Secure boot ..: %v\n", imx6ul.HAB()))
 	res.WriteString(fmt.Sprintf("Boot ROM hash : %x\n", sha256.Sum256(rom)))
+
+	if imx6ul.Native {
+		res.WriteString(fmt.Sprintf("Unique ID ....: %X\n", imx6ul.UniqueID()))
+	}
 
 	return res.String(), nil
 }

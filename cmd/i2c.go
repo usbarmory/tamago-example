@@ -19,7 +19,7 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/usbarmory/tamago/soc/imx6/i2c"
+	"github.com/usbarmory/tamago/soc/nxp/i2c"
 )
 
 var I2C []*i2c.I2C

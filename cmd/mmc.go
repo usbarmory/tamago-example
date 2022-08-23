@@ -22,9 +22,9 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/dma"
-	"github.com/usbarmory/tamago/soc/imx6"
-	"github.com/usbarmory/tamago/soc/imx6/usb"
-	"github.com/usbarmory/tamago/soc/imx6/usdhc"
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
+	"github.com/usbarmory/tamago/soc/nxp/usb"
+	"github.com/usbarmory/tamago/soc/nxp/usdhc"
 )
 
 const (
@@ -135,7 +135,7 @@ func mmcRead(card *usdhc.USDHC, size int, readSize int) {
 func mmcTest() {
 	msg("imx6_usdhc")
 
-	if !imx6.Native {
+	if !imx6ul.Native {
 		log.Printf("skipping imx6_usdhc tests under emulation")
 	}
 

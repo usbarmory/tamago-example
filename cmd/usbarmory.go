@@ -18,7 +18,7 @@ import (
 	"golang.org/x/term"
 
 	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
-	"github.com/usbarmory/tamago/soc/imx6"
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 var boardName = "USB armory Mk II"
@@ -27,13 +27,11 @@ func init() {
 	boardName = usbarmory.Model()
 	console = usbarmory.UART2
 
-	if !imx6.Native {
+	if !imx6ul.Native {
 		return
 	}
 
-	if err := imx6.SetARMFreq(900); err != nil {
-		log.Printf("WARNING: error setting ARM frequency: %v", err)
-	}
+	imx6ul.SetARMFreq(900)
 
 	I2C = append(I2C, usbarmory.I2C1)
 

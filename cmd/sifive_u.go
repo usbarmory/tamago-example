@@ -20,7 +20,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/board/qemu/sifive_u"
-	"github.com/usbarmory/tamago/soc/fu540"
+	"github.com/usbarmory/tamago/soc/sifive/fu540"
 )
 
 var boardName = "qemu-system-riscv64 (sifive_u)"
@@ -38,7 +38,7 @@ func Target() (t string) {
 }
 
 func date(epoch int64) {
-	fu540.SetTimer(epoch)
+	fu540.CLINT.SetTimer(epoch)
 }
 
 func mem(start uint32, size int, w []byte) (b []byte) {

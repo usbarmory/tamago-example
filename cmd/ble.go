@@ -21,7 +21,7 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/usbarmory/tamago/soc/imx6"
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
 )
 
@@ -38,7 +38,7 @@ func init() {
 }
 
 func bleCmd(term *term.Terminal, _ []string) (_ string, err error) {
-	if !imx6.Native {
+	if !imx6ul.Native {
 		return "", errors.New("unsupported under emulation")
 	}
 

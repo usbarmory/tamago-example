@@ -23,8 +23,7 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/usbarmory/tamago/soc/imx6"
-	"github.com/usbarmory/tamago/soc/imx6/imx6ul"
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 const (
@@ -43,7 +42,7 @@ func init() {
 		Fn: dcpCmd,
 	})
 
-	if !(imx6.Native && imx6.Family == imx6.IMX6ULL) {
+	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
 		return
 	}
 
@@ -51,7 +50,7 @@ func init() {
 }
 
 func dcpCmd(_ *term.Terminal, arg []string) (res string, err error) {
-	if !(imx6.Native && imx6.Family == imx6.IMX6ULL) {
+	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
 		return "", errors.New("unsupported under emulation")
 	}
 
@@ -92,18 +91,10 @@ func testKeyDerivation() (err error) {
 	}
 
 	// if the SoC is secure booted we can only print the result
-	if imx6.SNVS() {
+	if imx6ul.HAB() {
 		log.Printf("imx6_dcp: derived SNVS key %x", key)
 		return
 	}
-
-	// The test vector comparison is left for reference as on non secure
-	// booted units it is never reached, as the earlier DeriveKey()
-	// invocation returns an error to ensure that no key is derived with
-	// public test vectors.
-	//
-	// Therefore to get here for testing purposes the imx6 package needs to
-	// be manually modified to skip the SNVS() check within DeriveKey().
 
 	if strings.Compare(string(key), testVector) != 0 {
 		return fmt.Errorf("derivedKey:%x != testVector:%x", key, testVector)
@@ -146,7 +137,7 @@ func testDecryption(size int, sec int) (n int, d time.Duration, err error) {
 func dcpTest() {
 	msg("imx6_dcp")
 
-	if !(imx6.Native && imx6.Family == imx6.IMX6ULL) {
+	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
 		log.Printf("skipping imx6_dcp tests under emulation")
 		return
 	}
