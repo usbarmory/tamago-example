@@ -16,6 +16,8 @@ import (
 	"os"
 )
 
-func Start(_ *os.File) {
+var journal *os.File
+
+func Start(_ consoleHandler, _ *os.File) {
 	log.Fatal("unsupported")
 }
