@@ -33,25 +33,25 @@ const (
 
 func init() {
 	Add(Cmd{
-		Name: "peek",
-		Args: 2,
+		Name:    "peek",
+		Args:    2,
 		Pattern: regexp.MustCompile(`^peek ([[:xdigit:]]+) (\d+)`),
-		Syntax: "<hex offset> <size>",
-		Help: "memory display (use with caution)",
-		Fn: memReadCmd,
+		Syntax:  "<hex offset> <size>",
+		Help:    "memory display (use with caution)",
+		Fn:      memReadCmd,
 	})
 
 	Add(Cmd{
-		Name: "poke",
-		Args: 2,
+		Name:    "poke",
+		Args:    2,
 		Pattern: regexp.MustCompile(`^poke ([[:xdigit:]]+) ([[:xdigit:]]+)`),
-		Syntax: "<hex offset> <hex value>",
-		Help: "memory write   (use with caution)",
-		Fn: memWriteCmd,
+		Syntax:  "<hex offset> <hex value>",
+		Help:    "memory write   (use with caution)",
+		Fn:      memWriteCmd,
 	})
 }
 
-func memCopy(start uint32, size int, w []byte) (b []byte) {
+func memCopy(start uint, size int, w []byte) (b []byte) {
 	mem, err := dma.NewRegion(start, size, true)
 
 	if err != nil {
@@ -92,7 +92,7 @@ func memReadCmd(_ *term.Terminal, arg []string) (res string, err error) {
 		return "", fmt.Errorf("size argument must be <= %d", maxBufferSize)
 	}
 
-	return hex.Dump(mem(uint32(addr), int(size), nil)), nil
+	return hex.Dump(mem(uint(addr), int(size), nil)), nil
 }
 
 func memWriteCmd(_ *term.Terminal, arg []string) (res string, err error) {
@@ -111,7 +111,7 @@ func memWriteCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	buf := make([]byte, 4)
 	binary.BigEndian.PutUint32(buf, uint32(val))
 
-	mem(uint32(addr), 4, buf)
+	mem(uint(addr), 4, buf)
 
 	return
 }
@@ -129,7 +129,7 @@ func memTest() {
 	// This is not something unique to `GOOS=tamago` but more evident as,
 	// when running on bare metal, there is no swap or OS virtual memory.
 	ramStart, ramEnd := runtime.MemRegion()
-	memoryLimit := float64(ramEnd - ramStart) * 0.90
+	memoryLimit := float64(ramEnd-ramStart) * 0.90
 	debug.SetMemoryLimit(int64(math.Round(memoryLimit)))
 
 	msg("memory allocation (%d runs)", runs)

@@ -30,16 +30,26 @@ const (
 	testVector  = "\x75\xf9\x02\x2d\x5a\x86\x7a\xd4\x30\x44\x0f\xee\xc6\x61\x1f\x0a"
 	zeroVector  = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 	diversifier = "\xde\xad\xbe\xef"
+	keySlot     = 0
 )
 
 func init() {
 	Add(Cmd{
-		Name: "dcp",
-		Args: 2,
-		Pattern: regexp.MustCompile(`^dcp (\d+) (\d+)`),
-		Syntax: "<size> <sec>",
-		Help: "benchmark hardware encryption",
-		Fn: dcpCmd,
+		Name:    "aes",
+		Args:    2,
+		Pattern: regexp.MustCompile(`^aes (\d+) (\d+)`),
+		Syntax:  "<size> <sec>",
+		Help:    "benchmark DCP hardware encryption",
+		Fn:      aesCmd,
+	})
+
+	Add(Cmd{
+		Name:    "sha",
+		Args:    2,
+		Pattern: regexp.MustCompile(`^sha (\d+) (\d+)`),
+		Syntax:  "<size> <sec>",
+		Help:    "benchmark DCP hardware hashing",
+		Fn:      shaCmd,
 	})
 
 	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
@@ -49,7 +59,30 @@ func init() {
 	imx6ul.DCP.Init()
 }
 
-func dcpCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
+	iv := make([]byte, aes.BlockSize)
+
+	if _, err = imx6ul.DCP.DeriveKey([]byte(diversifier), iv, keySlot); err != nil {
+		return
+	}
+
+	fn := func(b []byte) error {
+		return imx6ul.DCP.Decrypt(b, keySlot, iv)
+	}
+
+	return dcpCmd(arg, "aes-128 cbc", fn)
+}
+
+func shaCmd(_ *term.Terminal, arg []string) (res string, err error) {
+	fn := func(buf []byte) (err error) {
+		_, err = imx6ul.DCP.Sum256(buf)
+		return
+	}
+
+	return dcpCmd(arg, "sha256", fn)
+}
+
+func dcpCmd(arg []string, tag string, fn func(buf []byte) error) (res string, err error) {
 	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
 		return "", errors.New("unsupported under emulation")
 	}
@@ -66,15 +99,27 @@ func dcpCmd(_ *term.Terminal, arg []string) (res string, err error) {
 		return "", fmt.Errorf("invalid duration, %v", err)
 	}
 
-	log.Printf("Doing aes-128 cbc for %ds on %d blocks", sec, size)
+	log.Printf("Doing %s for %ds on %d blocks", tag, sec, size)
 
-	n, d, err := testDecryption(size, sec)
+	n := 0
+	buf := make([]byte, size)
+	start := time.Now()
 
-	if err != nil {
-		return
+	for run, timeout := true, time.After(time.Duration(sec)*time.Second); run; {
+		if err = fn(buf); err != nil {
+			return
+		}
+
+		n++
+
+		select {
+		case <-timeout:
+			run = false
+		default:
+		}
 	}
 
-	return fmt.Sprintf("%d aes-128 cbc's in %s", n, d), nil
+	return fmt.Sprintf("%d %s's in %s", n, tag, time.Since(start)), nil
 }
 
 func testKeyDerivation() (err error) {
@@ -103,35 +148,6 @@ func testKeyDerivation() (err error) {
 	log.Printf("imx6_dcp: derived test key %x", key)
 
 	return
-}
-
-func testDecryption(size int, sec int) (n int, d time.Duration, err error) {
-	iv := make([]byte, aes.BlockSize)
-	buf := make([]byte, size)
-
-	_, err = imx6ul.DCP.DeriveKey([]byte(diversifier), iv, 0)
-
-	if err != nil {
-		return
-	}
-
-	start := time.Now()
-
-	for run, timeout := true, time.After(time.Duration(sec)*time.Second); run; {
-		if err = imx6ul.DCP.Decrypt(buf, 0, iv); err != nil {
-			return
-		}
-
-		n++
-
-		select {
-		case <-timeout:
-			run = false
-		default:
-		}
-	}
-
-	return n, time.Since(start), err
 }
 
 func dcpTest() {

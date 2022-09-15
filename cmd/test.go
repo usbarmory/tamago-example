@@ -23,7 +23,7 @@ func init() {
 	Add(Cmd{
 		Name: "test",
 		Help: "launch tests",
-		Fn: testCmd,
+		Fn:   testCmd,
 	})
 }
 

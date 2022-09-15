@@ -31,7 +31,7 @@ const (
 	// We could use the entire iRAM before USB activation,
 	// accounting for required dTD alignment which takes
 	// additional space (readSize = 0x20000 - 4096).
-	readSize = 0x7fff
+	readSize      = 0x7fff
 	totalReadSize = 10 * 1024 * 1024
 )
 
@@ -39,12 +39,12 @@ var MMC []*usdhc.USDHC
 
 func init() {
 	Add(Cmd{
-		Name: "mmc",
-		Args: 3,
+		Name:    "mmc",
+		Args:    3,
 		Pattern: regexp.MustCompile(`^mmc (\d) ([[:xdigit:]]+) (\d+)`),
-		Syntax: "<n> <hex offset> <size>",
-		Help: "MMC/SD card read",
-		Fn: mmcCmd,
+		Syntax:  "<n> <hex offset> <size>",
+		Help:    "MMC/SD card read",
+		Fn:      mmcCmd,
 	})
 }
 

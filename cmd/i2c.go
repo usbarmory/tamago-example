@@ -26,12 +26,12 @@ var I2C []*i2c.I2C
 
 func init() {
 	Add(Cmd{
-		Name: "i2c",
-		Args: 4,
+		Name:    "i2c",
+		Args:    4,
 		Pattern: regexp.MustCompile(`^i2c (\d) ([[:xdigit:]]+) ([[:xdigit:]]+) (\d+)`),
-		Syntax: "<n> <hex target> <hex addr> <size>",
-		Help: "I²C bus read",
-		Fn: i2cCmd,
+		Syntax:  "<n> <hex target> <hex addr> <size>",
+		Help:    "I²C bus read",
+		Fn:      i2cCmd,
 	})
 }
 

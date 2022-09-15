@@ -3,16 +3,16 @@ module github.com/usbarmory/tamago-example
 go 1.19
 
 require (
-	github.com/arl/statsviz v0.4.1
+	github.com/arl/statsviz v0.5.0
 	github.com/btcsuite/btcd v0.22.0-beta
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/cloudflare/circl v1.2.0
 	github.com/miekg/dns v1.1.50
 	github.com/usbarmory/crucible v0.0.0-20220823085715-c9e97b45a8b2
 	github.com/usbarmory/imx-usbnet v0.0.0-20220823085604-c95a75bed426
-	github.com/usbarmory/tamago v0.0.0-20220823080407-04f05cf2a5a3
+	github.com/usbarmory/tamago v0.0.0-20220915152253-099f7888fe70
 	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
-	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467
+	golang.org/x/term v0.0.0-20220722155259-a9ba230a4035
 )
 
 require (

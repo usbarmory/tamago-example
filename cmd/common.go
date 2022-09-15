@@ -24,61 +24,61 @@ import (
 
 func init() {
 	Add(Cmd{
-		Name: "help",
-		Args: 0,
+		Name:    "help",
+		Args:    0,
 		Pattern: regexp.MustCompile(`^help`),
-		Help: "this help",
-		Fn: helpCmd,
+		Help:    "this help",
+		Fn:      helpCmd,
 	})
 
 	Add(Cmd{
-		Name: "exit, quit",
-		Args: 1,
+		Name:    "exit, quit",
+		Args:    1,
 		Pattern: regexp.MustCompile(`^(exit|quit)`),
-		Help: "close session",
-		Fn: exitCmd,
+		Help:    "close session",
+		Fn:      exitCmd,
 	})
 
 	Add(Cmd{
-		Name: "stack",
-		Args: 0,
+		Name:    "stack",
+		Args:    0,
 		Pattern: regexp.MustCompile(`^stack$`),
- 		Help: "stack trace of current goroutine",
-		Fn: stackCmd,
+		Help:    "stack trace of current goroutine",
+		Fn:      stackCmd,
 	})
 
 	Add(Cmd{
-		Name: "stackall",
-		Args: 0,
+		Name:    "stackall",
+		Args:    0,
 		Pattern: regexp.MustCompile(`^stackall`),
-		Help: "stack trace of all goroutines",
-		Fn: stackallCmd,
+		Help:    "stack trace of all goroutines",
+		Fn:      stackallCmd,
 	})
 
 	Add(Cmd{
-		Name: "date",
-		Args: 1,
+		Name:    "date",
+		Args:    1,
 		Pattern: regexp.MustCompile(`^date(.*)`),
-		Syntax: "(time in RFC339 format)?",
-		Help: "show/change runtime date and time",
-		Fn: dateCmd,
+		Syntax:  "(time in RFC339 format)?",
+		Help:    "show/change runtime date and time",
+		Fn:      dateCmd,
 	})
 
 	// The following commands are board specific, therefore their Fn
 	// pointers are defined elsewhere in the respective target files.
 
 	Add(Cmd{
-		Name: "info",
-		Args: 0,
+		Name:    "info",
+		Args:    0,
 		Pattern: regexp.MustCompile(`^info`),
-		Help: "device information",
-		Fn: infoCmd,
+		Help:    "device information",
+		Fn:      infoCmd,
 	})
 
 	Add(Cmd{
 		Name: "reboot",
 		Help: "reset device",
-		Fn: rebootCmd,
+		Fn:   rebootCmd,
 	})
 
 }

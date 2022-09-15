@@ -41,7 +41,7 @@ func date(epoch int64) {
 	fu540.CLINT.SetTimer(epoch)
 }
 
-func mem(start uint32, size int, w []byte) (b []byte) {
+func mem(start uint, size int, w []byte) (b []byte) {
 	return memCopy(start, size, w)
 }
 

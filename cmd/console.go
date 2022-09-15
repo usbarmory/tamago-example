@@ -25,7 +25,7 @@ import (
 const maxBufferSize = 102400
 
 const (
-	separator = "-"
+	separator     = "-"
 	separatorSize = 80
 )
 
@@ -51,7 +51,7 @@ func Add(cmd Cmd) {
 func msg(format string, args ...interface{}) {
 	s := strings.Repeat(separator, 2) + " "
 	s += fmt.Sprintf(format, args...)
-	s += strings.Repeat(separator, separatorSize - len(s))
+	s += strings.Repeat(separator, separatorSize-len(s))
 
 	log.Println(s)
 }
@@ -88,7 +88,7 @@ func Handle(term *term.Terminal, line string) (err error) {
 				match = cmd
 				break
 			}
-		} else if m := cmd.Pattern.FindStringSubmatch(line); len(m) > 0  && (len(m) - 1 == cmd.Args) {
+		} else if m := cmd.Pattern.FindStringSubmatch(line); len(m) > 0 && (len(m)-1 == cmd.Args) {
 			match = cmd
 			arg = m[1:]
 			break

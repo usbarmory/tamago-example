@@ -21,19 +21,19 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 const CR = 0x0d
 
 func init() {
 	Add(Cmd{
-		Name: "ble",
-		Args: 0,
+		Name:    "ble",
+		Args:    0,
 		Pattern: regexp.MustCompile(`^ble`),
-		Help: "BLE serial console",
-		Fn: bleCmd,
+		Help:    "BLE serial console",
+		Fn:      bleCmd,
 	})
 }
 

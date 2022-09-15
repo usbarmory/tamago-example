@@ -79,10 +79,9 @@ The web servers expose the following routes:
 The SSH server exposes a console with the following commands:
 
 ```
-
+aes             <size> <sec>                             # benchmark DCP hardware encryption
 ble                                                      # BLE serial console
 date            (time in RFC339 format)?                 # show/change runtime date and time
-dcp             <size> <sec>                             # benchmark hardware encryption
 dns             <fqdn>                                   # resolve domain (requires routing)
 exit, quit                                               # close session
 help                                                     # this help
@@ -96,6 +95,7 @@ peek            <hex offset> <size>                      # memory display (use w
 poke            <hex offset> <hex value>                 # memory write   (use with caution)
 rand                                                     # gather 32 random bytes
 reboot                                                   # reset device
+sha             <size> <sec>                             # benchmark DCP hardware hashing
 stack                                                    # stack trace of current goroutine
 stackall                                                 # stack trace of all goroutines
 test                                                     # launch tests

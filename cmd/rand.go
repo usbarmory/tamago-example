@@ -29,11 +29,11 @@ const (
 
 func init() {
 	Add(Cmd{
-		Name: "rand",
-		Args: 0,
+		Name:    "rand",
+		Args:    0,
 		Pattern: regexp.MustCompile(`^rand`),
-		Help: "gather 32 random bytes",
-		Fn: randCmd,
+		Help:    "gather 32 random bytes",
+		Fn:      randCmd,
 	})
 }
 

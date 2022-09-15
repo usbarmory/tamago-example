@@ -21,12 +21,12 @@ import (
 
 func init() {
 	Add(Cmd{
-		Name: "led",
-		Args: 2,
+		Name:    "led",
+		Args:    2,
 		Pattern: regexp.MustCompile(`^led (white|blue) (on|off)`),
-		Syntax: "(white|blue) (on|off)",
-		Help: "LED control",
-		Fn: ledCmd,
+		Syntax:  "(white|blue) (on|off)",
+		Help:    "LED control",
+		Fn:      ledCmd,
 	})
 }
 
