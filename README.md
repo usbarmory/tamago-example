@@ -76,7 +76,7 @@ The web servers expose the following routes:
   * `/debug/pprof`: Go runtime profiling data through [pprof](https://golang.org/pkg/net/http/pprof/)
   * `/debug/statsviz`: Go runtime profiling data through [statsviz](https://github.com/arl/statsviz)
 
-The SSH server exposes a console with the following commands:
+The SSH server exposes a console with the following commands (i.MX6UL boards):
 
 ```
 aes             <size> <sec>                             # benchmark DCP hardware encryption
