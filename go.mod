@@ -10,7 +10,7 @@ require (
 	github.com/miekg/dns v1.1.50
 	github.com/usbarmory/crucible v0.0.0-20220823085715-c9e97b45a8b2
 	github.com/usbarmory/imx-usbnet v0.0.0-20220823085604-c95a75bed426
-	github.com/usbarmory/tamago v0.0.0-20220915152253-099f7888fe70
+	github.com/usbarmory/tamago v0.0.0-20220919125506-41c6a5bbdca3
 	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
 	golang.org/x/term v0.0.0-20220722155259-a9ba230a4035
 )

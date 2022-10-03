@@ -49,6 +49,8 @@ github.com/usbarmory/imx-usbnet v0.0.0-20220823085604-c95a75bed426 h1:Kofow8IwWu
 github.com/usbarmory/imx-usbnet v0.0.0-20220823085604-c95a75bed426/go.mod h1:yJiDKgtOyXn3uH5RXB/MvaGTFDuX0O4Xkl6t+8GRg2Q=
 github.com/usbarmory/tamago v0.0.0-20220915152253-099f7888fe70 h1:a3tyz28TLgDxEJlCM4AQbrWJzJTv5TAs8hyemeaOlRg=
 github.com/usbarmory/tamago v0.0.0-20220915152253-099f7888fe70/go.mod h1:Lok79mjbJnhoBGqhX5cCUsZtSemsQF5FNZW+2R1dRr8=
+github.com/usbarmory/tamago v0.0.0-20220919125506-41c6a5bbdca3 h1:nWhbM/W6FWHsS/xGSfkzATl8xdS6mhsmY7NftRPHWRM=
+github.com/usbarmory/tamago v0.0.0-20220919125506-41c6a5bbdca3/go.mod h1:Lok79mjbJnhoBGqhX5cCUsZtSemsQF5FNZW+2R1dRr8=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
 go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 h1:CCriYyAfq1Br1aIYettdHZTy8mBTIPo7We18TuO/bak=
 go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352/go.mod h1:SNgMg+EgDFwmvSmLRTNKC5fegJjB7v23qTQ0XLGUNHk=

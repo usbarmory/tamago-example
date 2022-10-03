@@ -26,7 +26,7 @@ import (
 var boardName = "qemu-system-riscv64 (sifive_u)"
 
 func init() {
-	console = sifive_u.UART1
+	console = sifive_u.UART0
 }
 
 func Remote() bool {
