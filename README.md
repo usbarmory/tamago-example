@@ -60,13 +60,17 @@ external libraries:
   * Hardware key derivation (only on non-emulated runs).
   * Large memory allocation.
 
-On non-emulated hardware the following network services are started on
-[Ethernet over USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication) (ECM
-protocol, supported on Linux and macOS hosts).
+On non-emulated hardware the following network services are started:
 
   * SSH server on 10.0.0.1:22
   * HTTP server on 10.0.0.1:80
   * HTTPS server on 10.0.0.1:443
+
+For the USB armory Mk II the network interface is exposed over
+[Ethernet over USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication)
+(ECM protocol, supported on Linux and macOS hosts).
+
+For the MCIMX6ULL-EVK the first standard Ethernet port is used.
 
 The web servers expose the following routes:
 

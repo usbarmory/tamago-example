@@ -41,7 +41,7 @@ func main() {
 	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 	log.Println(banner)
 
-	if cmd.Remote() {
+	if cmd.HasNetwork() {
 		network.Start(cmd.Console, logFile)
 	} else {
 		cmd.SerialConsole()

@@ -6,8 +6,8 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build usbarmory
-// +build usbarmory
+//go:build mx6ullevk
+// +build mx6ullevk
 
 package network
 
@@ -15,24 +15,24 @@ import (
 	"log"
 	"os"
 
-	"github.com/usbarmory/imx-usbnet"
+	"github.com/usbarmory/imx-enet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
-const hostMAC = "1a:55:89:a2:69:42"
+const Gateway = "10.0.0.2"
 
 var (
-	iface *usbnet.Interface
+	iface *enet.Interface
 	journal *os.File
 )
 
 func Start(console consoleHandler, journalFile *os.File) {
 	var err error
 
-	iface, err = usbnet.Init(IP, MAC, hostMAC, 1)
+	iface, err = enet.Init(imx6ul.ENET1, IP, MAC, Gateway, 1)
 
 	if err != nil {
-		log.Fatalf("could not initialize USB networking, %v", err)
+		log.Fatalf("could not initialize Ethernet networking, %v", err)
 	}
 
 	iface.EnableICMP()
@@ -74,10 +74,6 @@ func Start(console consoleHandler, journalFile *os.File) {
 
 	journal = journalFile
 
-	imx6ul.USB1.Init()
-	imx6ul.USB1.DeviceMode()
-	imx6ul.USB1.Reset()
-
 	// never returns
-	imx6ul.USB1.Start(iface.NIC.Device)
+	iface.NIC.Device.Start()
 }

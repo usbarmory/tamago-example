@@ -60,6 +60,10 @@ func init() {
 }
 
 func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
+	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
+		return "", errors.New("unsupported under emulation")
+	}
+
 	iv := make([]byte, aes.BlockSize)
 
 	if _, err = imx6ul.DCP.DeriveKey([]byte(diversifier), iv, keySlot); err != nil {
@@ -74,6 +78,10 @@ func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
 }
 
 func shaCmd(_ *term.Terminal, arg []string) (res string, err error) {
+	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
+		return "", errors.New("unsupported under emulation")
+	}
+
 	fn := func(buf []byte) (err error) {
 		_, err = imx6ul.DCP.Sum256(buf)
 		return
@@ -83,10 +91,6 @@ func shaCmd(_ *term.Terminal, arg []string) (res string, err error) {
 }
 
 func dcpCmd(arg []string, tag string, fn func(buf []byte) error) (res string, err error) {
-	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
-		return "", errors.New("unsupported under emulation")
-	}
-
 	size, err := strconv.Atoi(arg[0])
 
 	if err != nil {

@@ -28,10 +28,6 @@ const (
 	romSize  = 0x17000
 )
 
-func Remote() bool {
-	return imx6ul.Native && (imx6ul.Family == imx6ul.IMX6UL || imx6ul.Family == imx6ul.IMX6ULL)
-}
-
 func Target() (t string) {
 	t = fmt.Sprintf("%s %v MHz", imx6ul.Model(), float32(imx6ul.ARMFreq())/1000000)
 
@@ -40,6 +36,10 @@ func Target() (t string) {
 	}
 
 	return
+}
+
+func HasNetwork() bool {
+	return imx6ul.Native
 }
 
 func date(epoch int64) {

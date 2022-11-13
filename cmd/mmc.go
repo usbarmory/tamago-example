@@ -23,7 +23,6 @@ import (
 
 	"github.com/usbarmory/tamago/dma"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
-	"github.com/usbarmory/tamago/soc/nxp/usb"
 	"github.com/usbarmory/tamago/soc/nxp/usdhc"
 )
 
@@ -105,7 +104,7 @@ func mmcRead(card *usdhc.USDHC, size int, readSize int) {
 
 	log.Printf("%d GB/%d GiB card detected %+v", giga, gibi, info)
 
-	addr, buf := dma.Reserve(blocks*info.BlockSize, usb.DTD_PAGE_SIZE)
+	addr, buf := dma.Reserve(blocks*info.BlockSize, 4096)
 	defer dma.Release(addr)
 
 	var lba int

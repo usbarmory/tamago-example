@@ -3,16 +3,17 @@ module github.com/usbarmory/tamago-example
 go 1.19
 
 require (
-	github.com/arl/statsviz v0.5.0
+	github.com/arl/statsviz v0.5.1
 	github.com/btcsuite/btcd v0.22.0-beta
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/cloudflare/circl v1.2.0
 	github.com/miekg/dns v1.1.50
 	github.com/usbarmory/crucible v0.0.0-20220823085715-c9e97b45a8b2
-	github.com/usbarmory/imx-usbnet v0.0.0-20220823085604-c95a75bed426
-	github.com/usbarmory/tamago v0.0.0-20220919125506-41c6a5bbdca3
+	github.com/usbarmory/imx-enet v0.0.0-20221027092028-bbd696aa1f82
+	github.com/usbarmory/imx-usbnet v0.0.0-20221026081907-d1ce3f5c5eee
+	github.com/usbarmory/tamago v0.0.0-20221027121058-5df7fa74824f
 	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
-	golang.org/x/term v0.0.0-20220722155259-a9ba230a4035
+	golang.org/x/term v0.1.0
 )
 
 require (
@@ -29,5 +30,5 @@ require (
 	golang.org/x/tools v0.1.9 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gvisor.dev/gvisor v0.0.0-20220714043431-1868ba74ac26 // indirect
+	gvisor.dev/gvisor v0.0.0-20220920171436-4e7fd140e8d0 // indirect
 )

@@ -48,7 +48,7 @@ func resolve(s string) (r *dns.Msg, rtt time.Duration, err error) {
 
 	conn := new(dns.Conn)
 
-	if conn.Conn, err = iface.DialTCP4(resolver); err != nil {
+	if conn.Conn, err = iface.DialTCP4(Resolver); err != nil {
 		return
 	}
 
