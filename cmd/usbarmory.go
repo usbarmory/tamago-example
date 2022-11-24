@@ -12,7 +12,6 @@
 package cmd
 
 import (
-	"log"
 	"time"
 
 	"golang.org/x/term"
@@ -44,7 +43,6 @@ func init() {
 	<-debugConsole
 
 	usbarmory.BLE.Init()
-	log.Println("ANNA-B112 BLE module initialized")
 }
 
 func rebootCmd(_ *term.Terminal, _ []string) (_ string, _ error) {
