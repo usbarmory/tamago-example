@@ -48,7 +48,10 @@ func mem(start uint, size int, w []byte) (b []byte) {
 func infoCmd(_ *term.Terminal, _ []string) (string, error) {
 	var res bytes.Buffer
 
+	ramStart, ramEnd := runtime.MemRegion()
+
 	res.WriteString(fmt.Sprintf("Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH))
+	res.WriteString(fmt.Sprintf("RAM ..........: %#x - %#x (%d MiB)\n", ramStart, ramEnd, (ramEnd - ramStart) / (1024*1024)))
 	res.WriteString(fmt.Sprintf("Board ........: %s\n", boardName))
 	res.WriteString(fmt.Sprintf("SoC ..........: %s\n", Target()))
 
