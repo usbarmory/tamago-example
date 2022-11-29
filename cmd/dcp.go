@@ -52,16 +52,14 @@ func init() {
 		Fn:      shaCmd,
 	})
 
-	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
-		return
+	if imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL {
+		imx6ul.DCP.Init()
 	}
-
-	imx6ul.DCP.Init()
 }
 
 func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
-		return "", errors.New("unsupported under emulation")
+		return "", errors.New("unsupported under emulation or incompatible hardware")
 	}
 
 	iv := make([]byte, aes.BlockSize)
@@ -79,7 +77,7 @@ func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
 
 func shaCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
-		return "", errors.New("unsupported under emulation")
+		return "", errors.New("unsupported under emulation or incompatible hardware")
 	}
 
 	fn := func(buf []byte) (err error) {
@@ -158,17 +156,17 @@ func dcpTest() {
 	msg("imx6_dcp")
 
 	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6ULL) {
-		log.Printf("skipping imx6_dcp tests under emulation")
+		log.Printf("skipping imx6_dcp tests under emulation or incompatible hardware")
 		return
 	}
 
 	// derive twice to ensure consistency across repeated operations
 
 	if err := testKeyDerivation(); err != nil {
-		log.Printf("imx6_dcp: error, %v", err)
+		log.Printf("key derivation error, %v", err)
 	}
 
 	if err := testKeyDerivation(); err != nil {
-		log.Printf("imx6_dcp: error, %v", err)
+		log.Printf("key derivation error, %v", err)
 	}
 }

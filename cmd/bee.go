@@ -33,15 +33,15 @@ func init() {
 		Help:    "BEE OTF AES memory encryption",
 		Fn:      beeCmd,
 	})
+
+	if imx6ul.Native && imx6ul.Family == imx6ul.IMX6UL {
+		imx6ul.BEE.Init()
+	}
 }
 
 func beeCmd(_ *term.Terminal, arg []string) (res string, err error) {
-	if !imx6ul.Native {
-		return "", errors.New("unsupported under emulation")
-	}
-
-	if model := imx6ul.Model(); model != "i.MX6UL" {
-		return "", fmt.Errorf("unsupported on %s", model)
+	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6UL) {
+		return "", errors.New("unsupported under emulation or incompatible hardware")
 	}
 
 	region0, err := strconv.ParseUint(arg[0], 16, 32)
@@ -55,8 +55,6 @@ func beeCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	if err != nil {
 		return "", fmt.Errorf("invalid address, %v", err)
 	}
-
-	imx6ul.BEE.Init()
 
 	if err = imx6ul.BEE.Enable(uint32(region0), uint32(region1)); err != nil {
 		return

@@ -85,12 +85,8 @@ github.com/usbarmory/imx-enet v0.0.0-20221104094414-36968a4d8e91 h1:YEFUnbj/x7kI
 github.com/usbarmory/imx-enet v0.0.0-20221104094414-36968a4d8e91/go.mod h1:C7P+Oia++kLuk16QOKt4+mWdIM10VTKhHXG9QzJBE88=
 github.com/usbarmory/imx-usbnet v0.0.0-20221104094421-46b506d5ae9b h1:JZ3n4fyAWQE/rRTk4Od00WRH8d/4SRLOG5JXy0eaPwE=
 github.com/usbarmory/imx-usbnet v0.0.0-20221104094421-46b506d5ae9b/go.mod h1:BiPX/gKxzCT2Z4ftym18tcArnAipQ+Rh86tCk7KLrjQ=
-github.com/usbarmory/tamago v0.0.0-20221104085030-4122a878196a h1:tgkI+WH2ueA2q2aVbhsnH/39uw9cIJh+jB8Wq9HAITY=
-github.com/usbarmory/tamago v0.0.0-20221104085030-4122a878196a/go.mod h1:0TRKk2QXwB24gVi0TgQrvu1yGyiiLDCIBE87UMAmZHE=
-github.com/usbarmory/tamago v0.0.0-20221128095437-a288f0ee35d9 h1:rf85txmJCXcRrgFugbvgBdH/4h7tXxMwGZySnVXANPg=
-github.com/usbarmory/tamago v0.0.0-20221128095437-a288f0ee35d9/go.mod h1:0TRKk2QXwB24gVi0TgQrvu1yGyiiLDCIBE87UMAmZHE=
-github.com/usbarmory/tamago v0.0.0-20221129133529-8546bd268930 h1:lH3MUxeRE97c1MENiBWaU1mHOMLFE68BccTvoogrmm8=
-github.com/usbarmory/tamago v0.0.0-20221129133529-8546bd268930/go.mod h1:0TRKk2QXwB24gVi0TgQrvu1yGyiiLDCIBE87UMAmZHE=
+github.com/usbarmory/tamago v0.0.0-20221129212038-dd3441a99459 h1:ZuOqFxlW4+hntH+24NwLRidAtvNf3kemoXEaCvovucc=
+github.com/usbarmory/tamago v0.0.0-20221129212038-dd3441a99459/go.mod h1:0TRKk2QXwB24gVi0TgQrvu1yGyiiLDCIBE87UMAmZHE=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
 go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 h1:CCriYyAfq1Br1aIYettdHZTy8mBTIPo7We18TuO/bak=
 go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352/go.mod h1:SNgMg+EgDFwmvSmLRTNKC5fegJjB7v23qTQ0XLGUNHk=
