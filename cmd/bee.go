@@ -24,8 +24,6 @@ import (
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
-const regionSize = 0x1fffffff
-
 func init() {
 	Add(Cmd{
 		Name:    "bee",
