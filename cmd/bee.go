@@ -20,6 +20,7 @@ import (
 
 	"golang.org/x/term"
 
+	"github.com/usbarmory/tamago/arm"
 	"github.com/usbarmory/tamago/soc/nxp/bee"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
@@ -59,6 +60,11 @@ func beeCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	if err = imx6ul.BEE.Enable(uint32(region0), uint32(region1)); err != nil {
 		return
 	}
+
+	// Caching must be enabled to ensure that BEE hardware limitations in
+	// access size are enforced.
+	imx6ul.ARM.ConfigureMMU(bee.AliasRegion0, bee.AliasRegion1 + bee.AliasRegionSize + 1,
+		(arm.TTE_AP_001 & 0b11) <<10 | arm.TTE_CACHEABLE | arm.TTE_BUFFERABLE | arm.TTE_SECTION)
 
 	log.Printf("OTF AES 128 CTR encryption enabled:")
 	log.Printf("  %#08x-%#08x aliased at %#08x-%#08x",
