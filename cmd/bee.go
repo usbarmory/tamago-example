@@ -61,10 +61,13 @@ func beeCmd(_ *term.Terminal, arg []string) (res string, err error) {
 		return
 	}
 
-	// Caching must be enabled to ensure that BEE hardware limitations in
-	// access size are enforced.
-	imx6ul.ARM.ConfigureMMU(bee.AliasRegion0, bee.AliasRegion1 + bee.AliasRegionSize + 1,
-		(arm.TTE_AP_001 & 0b11) <<10 | arm.TTE_CACHEABLE | arm.TTE_BUFFERABLE | arm.TTE_SECTION)
+	// Caching must be enabled to ensure that BEE hardware limitations
+	// concerning access size are respected.
+	memAttr := (arm.TTE_AP_001 & 0b11) <<10 | arm.TTE_CACHEABLE | arm.TTE_BUFFERABLE | arm.TTE_SECTION
+	imx6ul.ARM.ConfigureMMU(
+		bee.AliasRegion0,
+		bee.AliasRegion1 + bee.AliasRegionSize + 1,
+		memAttr)
 
 	log.Printf("OTF AES 128 CTR encryption enabled:")
 	log.Printf("  %#08x-%#08x aliased at %#08x-%#08x",
