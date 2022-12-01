@@ -66,16 +66,16 @@ func beeCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	memAttr := (arm.TTE_AP_001 & 0b11) <<10 | arm.TTE_CACHEABLE | arm.TTE_BUFFERABLE | arm.TTE_SECTION
 	imx6ul.ARM.ConfigureMMU(
 		bee.AliasRegion0,
-		bee.AliasRegion1 + bee.AliasRegionSize + 1,
+		bee.AliasRegion1 + bee.AliasRegionSize,
 		memAttr)
 
 	log.Printf("OTF AES 128 CTR encryption enabled:")
 	log.Printf("  %#08x-%#08x aliased at %#08x-%#08x",
-		region0, region0 + bee.AliasRegionSize,
+		region0, region0 + bee.AliasRegionSize - 1,
 		bee.AliasRegion0, bee.AliasRegion0 + bee.AliasRegionSize)
 
 	log.Printf("  %#08x-%#08x aliased at %#08x-%#08x",
-		region1, region1 + bee.AliasRegionSize,
+		region1, region1 + bee.AliasRegionSize - 1,
 		bee.AliasRegion1, bee.AliasRegion1 + bee.AliasRegionSize)
 
 	return
