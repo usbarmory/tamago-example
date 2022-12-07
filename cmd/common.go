@@ -80,7 +80,6 @@ func init() {
 		Help: "reset device",
 		Fn:   rebootCmd,
 	})
-
 }
 
 func helpCmd(term *term.Terminal, _ []string) (string, error) {

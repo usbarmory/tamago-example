@@ -22,7 +22,6 @@ import (
 
 var Build string
 var Revision string
-var banner string
 
 var exit chan bool
 
@@ -39,7 +38,6 @@ func init() {
 func main() {
 	logFile, _ := os.OpenFile("/tamago-example.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
-	log.Println(banner)
 
 	if cmd.HasNetwork() {
 		network.Start(cmd.Console, logFile)
