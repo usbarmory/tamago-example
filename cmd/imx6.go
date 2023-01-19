@@ -72,6 +72,7 @@ func infoCmd(_ *term.Terminal, _ []string) (string, error) {
 
 	if imx6ul.Native {
 		res.WriteString(fmt.Sprintf("Unique ID ....: %X\n", imx6ul.UniqueID()))
+		res.WriteString(fmt.Sprintf("Temperature ..: %f\n", imx6ul.TEMPMON.Read()))
 	}
 
 	return res.String(), nil
