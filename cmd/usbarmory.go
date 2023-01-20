@@ -54,3 +54,7 @@ func rebootCmd(_ *term.Terminal, _ []string) (_ string, _ error) {
 	usbarmory.Reset()
 	return
 }
+
+func HasNetwork() bool {
+	return imx6ul.Native
+}

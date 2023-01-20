@@ -38,10 +38,6 @@ func Target() (t string) {
 	return
 }
 
-func HasNetwork() bool {
-	return imx6ul.Native
-}
-
 func date(epoch int64) {
 	imx6ul.ARM.SetTimer(epoch)
 }

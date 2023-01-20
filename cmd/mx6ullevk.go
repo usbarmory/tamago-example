@@ -41,3 +41,7 @@ func rebootCmd(_ *term.Terminal, _ []string) (_ string, _ error) {
 	mx6ullevk.Reset()
 	return
 }
+
+func HasNetwork() bool {
+	return true
+}

@@ -29,14 +29,6 @@ func init() {
 	console = sifive_u.UART0
 }
 
-func HasNetwork() bool {
-	return false
-}
-
-func Target() (t string) {
-	return fmt.Sprintf("%s %v MHz", fu540.Model(), float32(fu540.Freq())/1000000)
-}
-
 func date(epoch int64) {
 	fu540.CLINT.SetTimer(epoch)
 }
@@ -69,4 +61,12 @@ func cryptoTest() {
 
 func mmcTest() {
 	return
+}
+
+func HasNetwork() bool {
+	return false
+}
+
+func Target() (t string) {
+	return fmt.Sprintf("%s %v MHz", fu540.Model(), float32(fu540.Freq())/1000000)
 }
