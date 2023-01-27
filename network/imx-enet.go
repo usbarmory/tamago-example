@@ -75,5 +75,5 @@ func Start(console consoleHandler, journalFile *os.File) {
 	journal = journalFile
 
 	// never returns
-	iface.NIC.Device.Start()
+	iface.NIC.Device.Start(true)
 }
