@@ -86,8 +86,8 @@ github.com/usbarmory/imx-enet v0.0.0-20230119085435-ec33dd65bde9 h1:UbyBvmNF7GyG
 github.com/usbarmory/imx-enet v0.0.0-20230119085435-ec33dd65bde9/go.mod h1:oa7S6vwmh5KtGcZDluDIZ6P2xjI/hzVTB2SNohFYd58=
 github.com/usbarmory/imx-usbnet v0.0.0-20230119085031-3e0bbf3997fc h1:gTPeHZJR5UapT4XiB4iOaZB6HQkstTsuvc9qIYzgXWo=
 github.com/usbarmory/imx-usbnet v0.0.0-20230119085031-3e0bbf3997fc/go.mod h1:YXyzKJjNHITXD27EPRheWXPXD+WHRVQSNiT8ihrj8j0=
-github.com/usbarmory/tamago v0.0.0-20230118100654-0e5cc664e695 h1:lDcwMbKA0pO5d0cnfIP/OE2qsc4fUdBeJWahDtv/AFg=
-github.com/usbarmory/tamago v0.0.0-20230118100654-0e5cc664e695/go.mod h1:0TRKk2QXwB24gVi0TgQrvu1yGyiiLDCIBE87UMAmZHE=
+github.com/usbarmory/tamago v0.0.0-20230127110902-64d99dad7d7f h1:ht9BkBdJGF7Wibr5WgunpgHBOv2jyHBoSnyK3QXG17k=
+github.com/usbarmory/tamago v0.0.0-20230127110902-64d99dad7d7f/go.mod h1:0TRKk2QXwB24gVi0TgQrvu1yGyiiLDCIBE87UMAmZHE=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
 go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 h1:CCriYyAfq1Br1aIYettdHZTy8mBTIPo7We18TuO/bak=
 go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352/go.mod h1:SNgMg+EgDFwmvSmLRTNKC5fegJjB7v23qTQ0XLGUNHk=
