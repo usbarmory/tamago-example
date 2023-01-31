@@ -19,6 +19,7 @@ import (
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
+const Netmask = "255.255.255.0"
 const Gateway = "10.0.0.2"
 
 var (
@@ -29,7 +30,7 @@ var (
 func Start(console consoleHandler, journalFile *os.File) {
 	var err error
 
-	iface, err = enet.Init(imx6ul.ENET1, IP, MAC, Gateway, 1)
+	iface, err = enet.Init(imx6ul.ENET1, IP, Netmask, MAC, Gateway, 1)
 
 	if err != nil {
 		log.Fatalf("could not initialize Ethernet networking, %v", err)
