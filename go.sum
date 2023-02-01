@@ -84,6 +84,8 @@ github.com/usbarmory/crucible v0.0.0-20230117112356-5e0805300e15 h1:voT5yzHVfit3
 github.com/usbarmory/crucible v0.0.0-20230117112356-5e0805300e15/go.mod h1:8CtxsBNuSD2E0f23kH74XcHlenwMnn/RmTQ1wn4Lwtw=
 github.com/usbarmory/imx-enet v0.0.0-20230131144818-2a9aa6b185f3 h1:1b9mbPVsZ0QP1MOrGvwlfVKIYQlYWIANttdJUYQk9t0=
 github.com/usbarmory/imx-enet v0.0.0-20230131144818-2a9aa6b185f3/go.mod h1:oa7S6vwmh5KtGcZDluDIZ6P2xjI/hzVTB2SNohFYd58=
+github.com/usbarmory/imx-enet v0.0.0-20230201104339-7b1ca10608a7 h1:tj/ycdTFxJdsDtEgXhVzWXFW4dZbaMEYHJefgPrqkTs=
+github.com/usbarmory/imx-enet v0.0.0-20230201104339-7b1ca10608a7/go.mod h1:oa7S6vwmh5KtGcZDluDIZ6P2xjI/hzVTB2SNohFYd58=
 github.com/usbarmory/imx-usbnet v0.0.0-20230119085031-3e0bbf3997fc h1:gTPeHZJR5UapT4XiB4iOaZB6HQkstTsuvc9qIYzgXWo=
 github.com/usbarmory/imx-usbnet v0.0.0-20230119085031-3e0bbf3997fc/go.mod h1:YXyzKJjNHITXD27EPRheWXPXD+WHRVQSNiT8ihrj8j0=
 github.com/usbarmory/tamago v0.0.0-20230127110902-64d99dad7d7f h1:ht9BkBdJGF7Wibr5WgunpgHBOv2jyHBoSnyK3QXG17k=
