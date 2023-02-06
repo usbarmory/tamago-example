@@ -12,9 +12,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"log"
-	"math"
-	"math/big"
-	mathrand "math/rand"
 	"regexp"
 	"time"
 
@@ -62,7 +59,4 @@ func rngTest() {
 	}
 
 	log.Printf("retrieved %d random bytes in %s", rngSize*rngCount, time.Since(start))
-
-	seed, _ := rand.Int(rand.Reader, big.NewInt(int64(math.MaxInt64)))
-	mathrand.Seed(seed.Int64())
 }
