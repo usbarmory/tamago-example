@@ -15,7 +15,7 @@ require (
 	github.com/usbarmory/imx-usbnet v0.0.0-20230119085031-3e0bbf3997fc
 	github.com/usbarmory/tamago v0.0.0-20230127110902-64d99dad7d7f
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
-	golang.org/x/term v0.4.0
+	golang.org/x/term v0.5.0
 )
 
 require (
@@ -25,11 +25,10 @@ require (
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
-	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect
 	golang.org/x/mod v0.6.0-dev // indirect
-	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.1.9 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
