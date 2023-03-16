@@ -11,9 +11,9 @@ require (
 	github.com/cloudflare/circl v1.3.1
 	github.com/miekg/dns v1.1.50
 	github.com/usbarmory/crucible v0.0.0-20230117112356-5e0805300e15
-	github.com/usbarmory/imx-enet v0.0.0-20230201104339-7b1ca10608a7
+	github.com/usbarmory/imx-enet v0.0.0-20230210123530-18463adc40b7
 	github.com/usbarmory/imx-usbnet v0.0.0-20230119085031-3e0bbf3997fc
-	github.com/usbarmory/tamago v0.0.0-20230127110902-64d99dad7d7f
+	github.com/usbarmory/tamago v0.0.0-20230316081228-9a859e52392c
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
 	golang.org/x/term v0.5.0
 )
@@ -25,6 +25,7 @@ require (
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
+	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect
 	golang.org/x/mod v0.6.0-dev // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
