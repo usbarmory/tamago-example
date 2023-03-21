@@ -30,13 +30,6 @@ func init() {
 		return
 	}
 
-	switch imx6ul.Model() {
-	case "i.MX6ULL", "i.MX6ULZ":
-		imx6ul.SetARMFreq(900)
-	case "i.MX6UL":
-		imx6ul.SetARMFreq(528)
-	}
-
 	I2C = append(I2C, usbarmory.I2C1)
 
 	MMC = append(MMC, usbarmory.SD)

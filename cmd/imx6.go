@@ -38,6 +38,19 @@ func Target() (t string) {
 	return
 }
 
+func init() {
+	if !imx6ul.Native {
+		return
+	}
+
+	switch imx6ul.Model() {
+	case "i.MX6ULL", "i.MX6ULZ":
+		imx6ul.SetARMFreq(900)
+	case "i.MX6UL":
+		imx6ul.SetARMFreq(528)
+	}
+}
+
 func date(epoch int64) {
 	imx6ul.ARM.SetTimer(epoch)
 }
