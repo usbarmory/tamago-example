@@ -26,7 +26,7 @@ func init() {
 	Add(Cmd{
 		Name:    "help",
 		Args:    0,
-		Pattern: regexp.MustCompile(`^help`),
+		Pattern: regexp.MustCompile(`^help$`),
 		Help:    "this help",
 		Fn:      helpCmd,
 	})
@@ -34,7 +34,7 @@ func init() {
 	Add(Cmd{
 		Name:    "exit, quit",
 		Args:    1,
-		Pattern: regexp.MustCompile(`^(exit|quit)`),
+		Pattern: regexp.MustCompile(`^(exit|quit)$`),
 		Help:    "close session",
 		Fn:      exitCmd,
 	})
@@ -50,7 +50,7 @@ func init() {
 	Add(Cmd{
 		Name:    "stackall",
 		Args:    0,
-		Pattern: regexp.MustCompile(`^stackall`),
+		Pattern: regexp.MustCompile(`^stackall$`),
 		Help:    "stack trace of all goroutines",
 		Fn:      stackallCmd,
 	})
@@ -70,7 +70,7 @@ func init() {
 	Add(Cmd{
 		Name:    "info",
 		Args:    0,
-		Pattern: regexp.MustCompile(`^info`),
+		Pattern: regexp.MustCompile(`^info$`),
 		Help:    "device information",
 		Fn:      infoCmd,
 	})

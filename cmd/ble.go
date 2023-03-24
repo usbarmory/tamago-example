@@ -31,7 +31,7 @@ func init() {
 	Add(Cmd{
 		Name:    "ble",
 		Args:    0,
-		Pattern: regexp.MustCompile(`^ble`),
+		Pattern: regexp.MustCompile(`^ble$`),
 		Help:    "BLE serial console",
 		Fn:      bleCmd,
 	})

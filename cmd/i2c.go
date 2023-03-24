@@ -28,7 +28,7 @@ func init() {
 	Add(Cmd{
 		Name:    "i2c",
 		Args:    4,
-		Pattern: regexp.MustCompile(`^i2c (\d) ([[:xdigit:]]+) ([[:xdigit:]]+) (\d+)`),
+		Pattern: regexp.MustCompile(`^i2c (\d) ([[:xdigit:]]+) ([[:xdigit:]]+) (\d+)$`),
 		Syntax:  "<n> <hex target> <hex addr> <size>",
 		Help:    "I²C bus read",
 		Fn:      i2cCmd,

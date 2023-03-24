@@ -82,9 +82,7 @@ func Start(console consoleHandler, journalFile *os.File) {
 			log.Fatalf("could not initialize SSH listener, %v", err)
 		}
 
-		go func() {
-			startSSHServer(listenerSSH, IP, 22, console)
-		}()
+		go startSSHServer(listenerSSH, IP, 22, console)
 	}
 
 	listenerHTTP, err := iface.ListenerTCP4(80)
@@ -102,13 +100,8 @@ func Start(console consoleHandler, journalFile *os.File) {
 	// create index.html
 	setupStaticWebAssets()
 
-	go func() {
-		startWebServer(listenerHTTP, IP, 80, false)
-	}()
-
-	go func() {
-		startWebServer(listenerHTTPS, IP, 443, true)
-	}()
+	go startWebServer(listenerHTTP, IP, 80, false)
+	go startWebServer(listenerHTTPS, IP, 443, true)
 
 	journal = journalFile
 

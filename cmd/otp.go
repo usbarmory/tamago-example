@@ -28,7 +28,7 @@ func init() {
 	Add(Cmd{
 		Name:    "otp",
 		Args:    2,
-		Pattern: regexp.MustCompile(`^otp (\d+) (\d+)`),
+		Pattern: regexp.MustCompile(`^otp (\d+) (\d+)$`),
 		Syntax:  "<bank> <word>",
 		Help:    "OTP fuses display",
 		Fn:      otpCmd,

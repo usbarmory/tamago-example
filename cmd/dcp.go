@@ -37,7 +37,7 @@ func init() {
 	Add(Cmd{
 		Name:    "aes",
 		Args:    2,
-		Pattern: regexp.MustCompile(`^aes (\d+) (\d+)`),
+		Pattern: regexp.MustCompile(`^aes (\d+) (\d+)$`),
 		Syntax:  "<size> <sec>",
 		Help:    "benchmark DCP hardware encryption",
 		Fn:      aesCmd,
@@ -46,7 +46,7 @@ func init() {
 	Add(Cmd{
 		Name:    "sha",
 		Args:    2,
-		Pattern: regexp.MustCompile(`^sha (\d+) (\d+)`),
+		Pattern: regexp.MustCompile(`^sha (\d+) (\d+)$`),
 		Syntax:  "<size> <sec>",
 		Help:    "benchmark DCP hardware hashing",
 		Fn:      shaCmd,

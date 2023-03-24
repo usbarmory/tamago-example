@@ -23,7 +23,7 @@ func init() {
 	Add(Cmd{
 		Name:    "led",
 		Args:    2,
-		Pattern: regexp.MustCompile(`^led (white|blue) (on|off)`),
+		Pattern: regexp.MustCompile(`^led (white|blue) (on|off)$`),
 		Syntax:  "(white|blue) (on|off)",
 		Help:    "LED control",
 		Fn:      ledCmd,

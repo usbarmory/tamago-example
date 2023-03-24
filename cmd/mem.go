@@ -35,7 +35,7 @@ func init() {
 	Add(Cmd{
 		Name:    "peek",
 		Args:    2,
-		Pattern: regexp.MustCompile(`^peek ([[:xdigit:]]+) (\d+)`),
+		Pattern: regexp.MustCompile(`^peek ([[:xdigit:]]+) (\d+)$`),
 		Syntax:  "<hex offset> <size>",
 		Help:    "memory display (use with caution)",
 		Fn:      memReadCmd,
@@ -44,7 +44,7 @@ func init() {
 	Add(Cmd{
 		Name:    "poke",
 		Args:    2,
-		Pattern: regexp.MustCompile(`^poke ([[:xdigit:]]+) ([[:xdigit:]]+)`),
+		Pattern: regexp.MustCompile(`^poke ([[:xdigit:]]+) ([[:xdigit:]]+)$`),
 		Syntax:  "<hex offset> <hex value>",
 		Help:    "memory write   (use with caution)",
 		Fn:      memWriteCmd,

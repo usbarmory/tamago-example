@@ -29,7 +29,7 @@ func init() {
 	Add(Cmd{
 		Name:    "bee",
 		Args:    2,
-		Pattern: regexp.MustCompile(`^bee ([[:xdigit:]]+) ([[:xdigit:]]+)`),
+		Pattern: regexp.MustCompile(`^bee ([[:xdigit:]]+) ([[:xdigit:]]+)$`),
 		Syntax:  "<hex region0> <hex region1>",
 		Help:    "BEE OTF AES memory encryption",
 		Fn:      beeCmd,

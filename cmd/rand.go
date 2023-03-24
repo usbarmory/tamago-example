@@ -28,7 +28,7 @@ func init() {
 	Add(Cmd{
 		Name:    "rand",
 		Args:    0,
-		Pattern: regexp.MustCompile(`^rand`),
+		Pattern: regexp.MustCompile(`^rand$`),
 		Help:    "gather 32 random bytes",
 		Fn:      randCmd,
 	})
