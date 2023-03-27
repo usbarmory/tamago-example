@@ -94,7 +94,7 @@ i2c             <n> <hex target> <hex addr> <size>       # I²C bus read
 info                                                     # device information
 kem                                                      # benchmark post-quantum KEM
 led             (white|blue) (on|off)                    # LED control
-mmc             <n> <hex offset> <size>                  # MMC/SD card read
+mmc             <n> <hex offset> <size>                  # SD/MMC card read
 otp             <bank> <word>                            # OTP fuses display
 peek            <hex offset> <size>                      # memory display (use with caution)
 poke            <hex offset> <hex value>                 # memory write   (use with caution)
