@@ -42,7 +42,7 @@ func init() {
 		Args:    3,
 		Pattern: regexp.MustCompile(`^mmc (\d) ([[:xdigit:]]+) (\d+)$`),
 		Syntax:  "<n> <hex offset> <size>",
-		Help:    "MMC/SD card read",
+		Help:    "SD/MMC card read",
 		Fn:      mmcCmd,
 	})
 }
