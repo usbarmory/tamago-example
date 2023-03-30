@@ -42,6 +42,6 @@ func rebootCmd(_ *term.Terminal, _ []string) (_ string, _ error) {
 	return
 }
 
-func HasNetwork() bool {
-	return true
+func HasNetwork() (usb bool, eth bool) {
+	return imx6ul.Native, true
 }

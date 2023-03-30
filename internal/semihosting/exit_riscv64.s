@@ -1,5 +1,3 @@
-// https://github.com/usbarmory/tamago
-//
 // Copyright (c) WithSecure Corporation
 // https://foundry.withsecure.com
 //
