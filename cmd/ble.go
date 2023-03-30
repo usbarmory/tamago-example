@@ -16,7 +16,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"regexp"
 	"runtime"
 
 	"golang.org/x/term"
@@ -29,11 +28,9 @@ const CR = 0x0d
 
 func init() {
 	Add(Cmd{
-		Name:    "ble",
-		Args:    0,
-		Pattern: regexp.MustCompile(`^ble$`),
-		Help:    "BLE serial console",
-		Fn:      bleCmd,
+		Name: "ble",
+		Help: "BLE serial console",
+		Fn:   bleCmd,
 	})
 }
 

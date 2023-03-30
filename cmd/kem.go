@@ -22,7 +22,6 @@ import (
 func init() {
 	Add(Cmd{
 		Name: "kem",
-		Args: 0,
 		Help: "benchmark post-quantum KEM",
 		Fn:   kemCmd,
 	})

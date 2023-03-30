@@ -24,11 +24,9 @@ import (
 
 func init() {
 	Add(Cmd{
-		Name:    "help",
-		Args:    0,
-		Pattern: regexp.MustCompile(`^help$`),
-		Help:    "this help",
-		Fn:      helpCmd,
+		Name: "help",
+		Help: "this help",
+		Fn:   helpCmd,
 	})
 
 	Add(Cmd{
@@ -40,19 +38,15 @@ func init() {
 	})
 
 	Add(Cmd{
-		Name:    "stack",
-		Args:    0,
-		Pattern: regexp.MustCompile(`^stack$`),
-		Help:    "stack trace of current goroutine",
-		Fn:      stackCmd,
+		Name: "stack",
+		Help: "stack trace of current goroutine",
+		Fn:   stackCmd,
 	})
 
 	Add(Cmd{
-		Name:    "stackall",
-		Args:    0,
-		Pattern: regexp.MustCompile(`^stackall$`),
-		Help:    "stack trace of all goroutines",
-		Fn:      stackallCmd,
+		Name: "stackall",
+		Help: "stack trace of all goroutines",
+		Fn:   stackallCmd,
 	})
 
 	Add(Cmd{
@@ -68,11 +62,9 @@ func init() {
 	// pointers are defined elsewhere in the respective target files.
 
 	Add(Cmd{
-		Name:    "info",
-		Args:    0,
-		Pattern: regexp.MustCompile(`^info$`),
-		Help:    "device information",
-		Fn:      infoCmd,
+		Name: "info",
+		Help: "device information",
+		Fn:   infoCmd,
 	})
 
 	Add(Cmd{
