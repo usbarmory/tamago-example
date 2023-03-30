@@ -77,7 +77,7 @@ func Help(term *term.Terminal) string {
 	return string(term.Escape.Cyan) + help.String() + string(term.Escape.Reset)
 }
 
-func Handle(term *term.Terminal, line string) (err error) {
+func handle(term *term.Terminal, line string) (err error) {
 	var match *Cmd
 	var arg []string
 	var res string
@@ -108,7 +108,7 @@ func Handle(term *term.Terminal, line string) (err error) {
 	return
 }
 
-func Console(term *term.Terminal) {
+func Handler(term *term.Terminal) {
 	fmt.Fprintf(term, "%s\n\n", Banner)
 	fmt.Fprintf(term, "%s\n", Help(term))
 
@@ -124,7 +124,7 @@ func Console(term *term.Terminal) {
 			continue
 		}
 
-		if err = Handle(term, s); err != nil {
+		if err = handle(term, s); err != nil {
 			if err == io.EOF {
 				break
 			}
@@ -138,5 +138,5 @@ func SerialConsole() {
 	term := term.NewTerminal(console, "")
 	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
 
-	Console(term)
+	Handler(term)
 }

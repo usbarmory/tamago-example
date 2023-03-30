@@ -20,7 +20,7 @@ import (
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
-var boardName = "USB armory Mk II"
+var boardName string
 
 func init() {
 	boardName = usbarmory.Model()
@@ -32,15 +32,20 @@ func init() {
 
 	I2C = append(I2C, usbarmory.I2C1)
 
-	MMC = append(MMC, usbarmory.SD)
+	switch boardName {
+	case "UA-MKII-β", "UA-MKII-γ":
+		// On these models the standard serial console (UART2) is
+		// exposed through the debug accessory, which needs to be
+		// enabled.
+		debugConsole, _ := usbarmory.DetectDebugAccessory(250 * time.Millisecond)
+		<-debugConsole
+
+		usbarmory.BLE.Init()
+
+		MMC = append(MMC, usbarmory.SD)
+	}
+
 	MMC = append(MMC, usbarmory.MMC)
-
-	// On the USB armory Mk II the standard serial console (UART2) is
-	// exposed through the debug accessory, which needs to be enabled.
-	debugConsole, _ := usbarmory.DetectDebugAccessory(250 * time.Millisecond)
-	<-debugConsole
-
-	usbarmory.BLE.Init()
 }
 
 func rebootCmd(_ *term.Terminal, _ []string) (_ string, _ error) {
@@ -48,6 +53,6 @@ func rebootCmd(_ *term.Terminal, _ []string) (_ string, _ error) {
 	return
 }
 
-func HasNetwork() bool {
-	return imx6ul.Native
+func HasNetwork() (usb bool, eth bool) {
+	return imx6ul.Native, false
 }

@@ -25,6 +25,8 @@ import (
 
 type consoleHandler func(term *term.Terminal)
 
+var journal *os.File
+
 func handleChannel(newChannel ssh.NewChannel, handler consoleHandler) {
 	if t := newChannel.ChannelType(); t != "session" {
 		newChannel.Reject(ssh.UnknownChannelType, fmt.Sprintf("unknown channel type: %s", t))

@@ -14,6 +14,7 @@ package network
 import (
 	"errors"
 	"fmt"
+	"net"
 	"regexp"
 	"time"
 
@@ -23,14 +24,16 @@ import (
 	"github.com/usbarmory/tamago-example/cmd"
 )
 
+var dialTCP4 func(string) (net.Conn, error)
+
 func init() {
 	cmd.Add(cmd.Cmd{
-		Name: "dns",
-		Args: 1,
+		Name:    "dns",
+		Args:    1,
 		Pattern: regexp.MustCompile(`^dns (.*)`),
-		Syntax: "<fqdn>",
-		Help: "resolve domain (requires routing)",
-		Fn: dnsCmd,
+		Syntax:  "<fqdn>",
+		Help:    "resolve domain (requires routing)",
+		Fn:      dnsCmd,
 	})
 }
 
@@ -48,7 +51,7 @@ func resolve(s string) (r *dns.Msg, rtt time.Duration, err error) {
 
 	conn := new(dns.Conn)
 
-	if conn.Conn, err = iface.DialTCP4(Resolver); err != nil {
+	if conn.Conn, err = dialTCP4(Resolver); err != nil {
 		return
 	}
 
@@ -58,8 +61,8 @@ func resolve(s string) (r *dns.Msg, rtt time.Duration, err error) {
 }
 
 func dnsCmd(_ *term.Terminal, arg []string) (res string, err error) {
-	if iface == nil {
-		return "", errors.New("network is unavailable")
+	if dialTCP4 == nil {
+		return "", errors.New("network not available")
 	}
 
 	r, _, err := resolve(arg[0])

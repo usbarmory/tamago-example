@@ -16,8 +16,10 @@ import (
 	"os"
 )
 
-var journal *os.File
+func StartEth(_ consoleHandler, _ *os.File) {
+	log.Fatal("unsupported")
+}
 
-func Start(_ consoleHandler, _ *os.File) {
+func StartUSB(_ consoleHandler, _ *os.File) {
 	log.Fatal("unsupported")
 }

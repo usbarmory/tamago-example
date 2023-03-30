@@ -70,7 +70,7 @@ For the USB armory Mk II the network interface is exposed over
 [Ethernet over USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication)
 (ECM protocol, supported on Linux and macOS hosts).
 
-For the MCIMX6ULL-EVK the first standard Ethernet port is used.
+For the MCIMX6ULL-EVK the second Ethernet port is used.
 
 The web servers expose the following routes:
 
@@ -94,6 +94,7 @@ i2c             <n> <hex target> <hex addr> <size>       # I²C bus read
 info                                                     # device information
 kem                                                      # benchmark post-quantum KEM
 led             (white|blue) (on|off)                    # LED control
+mii             <hex pa> <hex ra> (hex data)?            # Ethernet IEEE 802.3 MII access
 mmc             <n> <hex offset> <size>                  # SD/MMC card read
 otp             <bank> <word>                            # OTP fuses display
 peek            <hex offset> <size>                      # memory display (use with caution)

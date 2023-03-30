@@ -12,7 +12,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"log"
-	"regexp"
 	"time"
 
 	"golang.org/x/term"
@@ -26,11 +25,9 @@ const (
 
 func init() {
 	Add(Cmd{
-		Name:    "rand",
-		Args:    0,
-		Pattern: regexp.MustCompile(`^rand$`),
-		Help:    "gather 32 random bytes",
-		Fn:      randCmd,
+		Name: "rand",
+		Help: "gather 32 random bytes",
+		Fn:   randCmd,
 	})
 }
 

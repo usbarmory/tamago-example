@@ -14,6 +14,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"sync"
 
 	"github.com/usbarmory/tamago-example/cmd"
 	"github.com/usbarmory/tamago-example/internal/semihosting"
@@ -22,8 +23,6 @@ import (
 
 var Build string
 var Revision string
-
-var exit chan bool
 
 func init() {
 	log.SetFlags(0)
@@ -36,13 +35,35 @@ func init() {
 }
 
 func main() {
+	var wg sync.WaitGroup
+
 	logFile, _ := os.OpenFile("/tamago-example.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 
-	if cmd.HasNetwork() {
-		network.Start(cmd.Console, logFile)
-	} else {
-		cmd.SerialConsole()
-		semihosting.Exit()
+	usb, eth := cmd.HasNetwork()
+
+	if usb || eth {
+		network.SetupStaticWebAssets()
 	}
+
+	wg.Add(2)
+
+	go func() {
+		if eth {
+			network.StartEth(cmd.Handler, logFile)
+		}
+		wg.Done()
+	}()
+
+	go func() {
+		if usb {
+			network.StartUSB(cmd.Handler, logFile)
+		}
+		wg.Done()
+	}()
+
+	wg.Wait()
+
+	cmd.SerialConsole()
+	semihosting.Exit()
 }
