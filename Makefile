@@ -32,14 +32,15 @@ else
 ifeq ($(TARGET),mx6ullevk)
 UART1 := stdio
 UART2 := null
+NET   := nic,model=imx.enet,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 else
 UART1 := null
 UART2 := stdio
+NET   := none
 endif
 
 GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARM=7 GOARCH=arm
 ENTRY_POINT := _rt0_arm_tamago
-NET  := nic,model=imx.enet,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -nographic -monitor none -serial $(UART1) -serial $(UART2) -net $(NET) \
         -semihosting
