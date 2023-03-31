@@ -40,7 +40,7 @@ func init() {
 	cmd.Add(cmd.Cmd{
 		Name:    "mii",
 		Args:    3,
-		Pattern: regexp.MustCompile(`^mii ([[:xdigit:]]+) ([[:xdigit:]]+)( [[:xdigit:]]+)?`),
+		Pattern: regexp.MustCompile(`^mii ([[:xdigit:]]+) ([[:xdigit:]]+)(?: )?([[:xdigit:]]+)?`),
 		Syntax:  "<hex pa> <hex ra> (hex data)?",
 		Help:    "Ethernet IEEE 802.3 MII access",
 		Fn:      miiCmd,
