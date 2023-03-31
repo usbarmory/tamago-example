@@ -13,7 +13,7 @@ require (
 	github.com/usbarmory/crucible v0.0.0-20230117112356-5e0805300e15
 	github.com/usbarmory/imx-enet v0.0.0-20230210123530-18463adc40b7
 	github.com/usbarmory/imx-usbnet v0.0.0-20230119085031-3e0bbf3997fc
-	github.com/usbarmory/tamago v0.0.0-20230331083533-6cc3ec7f81d5
+	github.com/usbarmory/tamago v0.0.0-20230331135306-9590d684ae4f
 	golang.org/x/crypto v0.7.0
 	golang.org/x/term v0.6.0
 )
