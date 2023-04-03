@@ -12,14 +12,8 @@
 package network
 
 import (
-	"errors"
-	"fmt"
 	"log"
 	"os"
-	"regexp"
-	"strconv"
-
-	"golang.org/x/term"
 
 	imxenet "github.com/usbarmory/imx-enet"
 	"github.com/usbarmory/tamago/arm"
@@ -33,51 +27,6 @@ const (
 	Netmask = "255.255.255.0"
 	Gateway = "10.0.0.2"
 )
-
-var miiDevice *enet.ENET
-
-func init() {
-	cmd.Add(cmd.Cmd{
-		Name:    "mii",
-		Args:    3,
-		Pattern: regexp.MustCompile(`^mii ([[:xdigit:]]+) ([[:xdigit:]]+)(?: )?([[:xdigit:]]+)?`),
-		Syntax:  "<hex pa> <hex ra> (hex data)?",
-		Help:    "show/change eth PHY standard registers",
-		Fn:      miiCmd,
-	})
-}
-
-func miiCmd(_ *term.Terminal, arg []string) (res string, err error) {
-	if miiDevice == nil {
-		return "", errors.New("MII device not available")
-	}
-
-	pa, err := strconv.ParseUint(arg[0], 16, 5)
-
-	if err != nil {
-		return "", fmt.Errorf("invalid physical address, %v", err)
-	}
-
-	ra, err := strconv.ParseUint(arg[1], 16, 5)
-
-	if err != nil {
-		return "", fmt.Errorf("invalid address, %v", err)
-	}
-
-	if len(arg[2]) > 0 {
-		data, err := strconv.ParseUint(arg[2], 16, 16)
-
-		if err != nil {
-			return "", fmt.Errorf("invalid data, %v", err)
-		}
-
-		miiDevice.WritePHYRegister(int(pa), int(ra), uint16(data))
-	} else {
-		res = fmt.Sprintf("%#x", miiDevice.ReadPHYRegister(int(pa), int(ra)))
-	}
-
-	return
-}
 
 func handleInterrupt(eth *enet.ENET) {
 	irq, end := imx6ul.GIC.GetInterrupt(true)
@@ -153,8 +102,10 @@ func StartEth(console consoleHandler, journalFile *os.File) {
 	go startWebServer(listenerHTTPS, IP, 443, true)
 
 	journal = journalFile
-	dialTCP4 = iface.DialTCP4
-	miiDevice = iface.NIC.Device
+
+	cmd.DialTCP4 = iface.DialTCP4
+	cmd.ENET = iface.NIC.Device
+	cmd.Resolver = Resolver
 
 	// never returns
 	startInterface(iface.NIC.Device)

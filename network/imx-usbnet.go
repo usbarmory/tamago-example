@@ -17,6 +17,8 @@ import (
 
 	"github.com/usbarmory/imx-usbnet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
+
+	"github.com/usbarmory/tamago-example/cmd"
 )
 
 const hostMAC = "1a:55:89:a2:69:42"
@@ -56,7 +58,9 @@ func StartUSB(console consoleHandler, journalFile *os.File) {
 	go startWebServer(listenerHTTPS, IP, 443, true)
 
 	journal = journalFile
-	dialTCP4 = iface.DialTCP4
+
+	cmd.DialTCP4 = iface.DialTCP4
+	cmd.Resolver = Resolver
 
 	imx6ul.USB1.Init()
 	imx6ul.USB1.DeviceMode()
