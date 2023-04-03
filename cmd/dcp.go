@@ -1,5 +1,3 @@
-// https://github.com/usbarmory/tamago-example
-//
 // Copyright (c) WithSecure Corporation
 // https://foundry.withsecure.com
 //
