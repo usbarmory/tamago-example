@@ -20,15 +20,15 @@ import (
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 )
 
-// Clause 22 access to Clause 45 MMD registers - 803.3-2008
+// Clause 22 access to Clause 45 MMD registers (802.3-2008)
 const (
-	// 22.2.4.3.11 MMD access control register (Register 13) - 802.3-2008
+	// 22.2.4.3.11, MMD access control register (Register 13), 802.3-2008
 	REGCR = 13
-	// 22.2.4.3.12 MMD access address data register (Register 14) - 802.3-2008
+	// 22.2.4.3.12, MMD access address data register (Register 14), 802.3-2008
 	ADDAR = 14
 )
 
-// Table 22–9—MMD access control register bit definitions - 802.3-2008
+// Table 22–9, MMD access control register bit definitions, 802.3-2008
 const (
 	ADDR = 0b00
 	DATA = 0b01
@@ -56,7 +56,7 @@ func init() {
 	})
 }
 
-// Clause 22 access to Clause 45 MMD registers - 803.3-2008
+// Clause 22 access to standard management registers (802.3-2008)
 func miiCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	if ENET == nil {
 		return "", errors.New("MII not available")
@@ -89,7 +89,7 @@ func miiCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	return
 }
 
-// Clause 22 access to Clause 45 MMD registers - 803.3-2008
+// Clause 22 access to Clause 45 MMD registers (802.3-2008)
 func mmdCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	if ENET == nil {
 		return "", errors.New("MII not available")
