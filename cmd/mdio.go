@@ -71,7 +71,7 @@ func miiCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	ra, err := strconv.ParseUint(arg[1], 16, 5)
 
 	if err != nil {
-		return "", fmt.Errorf("invalid address, %v", err)
+		return "", fmt.Errorf("invalid register address, %v", err)
 	}
 
 	if len(arg[2]) > 0 {
@@ -104,13 +104,13 @@ func mmdCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	devad, err := strconv.ParseUint(arg[1], 16, 5)
 
 	if err != nil {
-		return "", fmt.Errorf("invalid device address field, %v", err)
+		return "", fmt.Errorf("invalid device address, %v", err)
 	}
 
 	ra, err := strconv.ParseUint(arg[2], 16, 16)
 
 	if err != nil {
-		return "", fmt.Errorf("invalid address, %v", err)
+		return "", fmt.Errorf("invalid register address, %v", err)
 	}
 
 	// set address function and value
