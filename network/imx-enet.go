@@ -42,7 +42,7 @@ func init() {
 		Args:    3,
 		Pattern: regexp.MustCompile(`^mii ([[:xdigit:]]+) ([[:xdigit:]]+)(?: )?([[:xdigit:]]+)?`),
 		Syntax:  "<hex pa> <hex ra> (hex data)?",
-		Help:    "Ethernet IEEE 802.3 MII access",
+		Help:    "show/change eth PHY standard registers",
 		Fn:      miiCmd,
 	})
 }
@@ -71,9 +71,9 @@ func miiCmd(_ *term.Terminal, arg []string) (res string, err error) {
 			return "", fmt.Errorf("invalid data, %v", err)
 		}
 
-		miiDevice.WriteMII(int(pa), int(ra), uint16(data))
+		miiDevice.WritePHYRegister(int(pa), int(ra), uint16(data))
 	} else {
-		res = fmt.Sprintf("%#x", miiDevice.ReadMII(int(pa), int(ra)))
+		res = fmt.Sprintf("%#x", miiDevice.ReadPHYRegister(int(pa), int(ra)))
 	}
 
 	return

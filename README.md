@@ -94,7 +94,7 @@ i2c             <n> <hex target> <hex addr> <size>       # I²C bus read
 info                                                     # device information
 kem                                                      # benchmark post-quantum KEM
 led             (white|blue) (on|off)                    # LED control
-mii             <hex pa> <hex ra> (hex data)?            # Ethernet IEEE 802.3 MII access
+mii             <hex pa> <hex ra> (hex data)?            # show/change eth PHY standard registers
 mmc             <n> <hex offset> <size>                  # SD/MMC card read
 otp             <bank> <word>                            # OTP fuses display
 peek            <hex offset> <size>                      # memory display (use with caution)
