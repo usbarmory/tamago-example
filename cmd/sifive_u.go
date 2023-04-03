@@ -57,7 +57,7 @@ func cryptoTest() {
 	spawn(btcdTest)
 }
 
-func mmcTest() {
+func usdhcTest() {
 	return
 }
 

@@ -95,7 +95,6 @@ info                                                             # device inform
 kem                                                              # benchmark post-quantum KEM
 led             (white|blue) (on|off)                            # LED control
 mii             <hex pa> <hex ra> (hex data)?                    # show/change eth PHY standard registers
-mmc             <n> <hex offset> <size>                          # SD/MMC card read
 mmd             <hex pa> <hex devad> <hex ra> (hex data)?        # show/change eth PHY extended registers
 otp             <bank> <word>                                    # OTP fuses display
 peek            <hex offset> <size>                              # memory display (use with caution)
@@ -106,6 +105,7 @@ sha             <size> <sec>                                     # benchmark DCP
 stack                                                            # stack trace of current goroutine
 stackall                                                         # stack trace of all goroutines
 test                                                             # launch tests
+usdhc           <n> <hex offset> <size>                          # SD/MMC card read
 ```
 
 On emulated runs (e.g. `make qemu`) the console is exposed directly on the

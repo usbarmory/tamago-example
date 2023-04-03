@@ -36,16 +36,16 @@ var MMC []*usdhc.USDHC
 
 func init() {
 	Add(Cmd{
-		Name:    "mmc",
+		Name:    "usdhc",
 		Args:    3,
 		Pattern: regexp.MustCompile(`^mmc (\d) ([[:xdigit:]]+) (\d+)$`),
 		Syntax:  "<n> <hex offset> <size>",
 		Help:    "SD/MMC card read",
-		Fn:      mmcCmd,
+		Fn:      usdhcCmd,
 	})
 }
 
-func mmcCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func usdhcCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	n, err := strconv.ParseUint(arg[0], 10, 8)
 
 	if err != nil {
@@ -87,7 +87,7 @@ func mmcCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	return hex.Dump(buf), nil
 }
 
-func mmcRead(card *usdhc.USDHC, size int, readSize int) {
+func usdhcRead(card *usdhc.USDHC, size int, readSize int) {
 	if err := card.Detect(); err != nil {
 		log.Printf("card error, %v", err)
 		return
@@ -129,7 +129,7 @@ func mmcRead(card *usdhc.USDHC, size int, readSize int) {
 	log.Printf("read %d MiB in %s (%.2f MB/s | %.2f MiB/s)", size/(1024*1024), elapsed, megaps, mebips)
 }
 
-func mmcTest() {
+func usdhcTest() {
 	msg("imx6_usdhc")
 
 	if !imx6ul.Native {
@@ -137,6 +137,6 @@ func mmcTest() {
 	}
 
 	for _, card := range MMC {
-		mmcRead(card, totalReadSize, readSize)
+		usdhcRead(card, totalReadSize, readSize)
 	}
 }

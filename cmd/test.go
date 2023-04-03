@@ -79,7 +79,7 @@ func testCmd(_ *term.Terminal, _ []string) (_ string, _ error) {
 	msg("completed all goroutines (%s)", time.Since(start))
 
 	memTest()
-	mmcTest()
+	usdhcTest()
 
 	return
 }
