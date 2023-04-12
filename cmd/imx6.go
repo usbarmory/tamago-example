@@ -43,9 +43,9 @@ func init() {
 
 	switch imx6ul.Model() {
 	case "i.MX6ULL", "i.MX6ULZ":
-		imx6ul.SetARMFreq(900)
+		imx6ul.SetARMFreq(imx6ul.FreqMax)
 	case "i.MX6UL":
-		imx6ul.SetARMFreq(528)
+		imx6ul.SetARMFreq(imx6ul.Freq528)
 	}
 }
 
