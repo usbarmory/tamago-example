@@ -30,8 +30,8 @@ const (
 
 // Table 22–9, MMD access control register bit definitions, 802.3-2008
 const (
-	ADDR = 0b00
-	DATA = 0b01
+	MMD_FN_ADDR = 0b00
+	MMD_FN_DATA = 0b01
 )
 
 var ENET *enet.ENET
@@ -113,12 +113,12 @@ func mmdCmd(_ *term.Terminal, arg []string) (res string, err error) {
 		return "", fmt.Errorf("invalid register address, %v", err)
 	}
 
-	// set address function and value
-	ENET.WritePHYRegister(int(pa), REGCR, (ADDR << 14) | (uint16(devad) & 0x1f))
+	// set address function
+	ENET.WritePHYRegister(int(pa), REGCR, (MMD_FN_ADDR << 14) | (uint16(devad) & 0x1f))
+	// write address value
 	ENET.WritePHYRegister(int(pa), ADDAR, uint16(ra))
-
 	// set data function
-	ENET.WritePHYRegister(int(pa), REGCR, (DATA << 14) | (uint16(devad) & 0x1f))
+	ENET.WritePHYRegister(int(pa), REGCR, (MMD_FN_DATA << 14) | (uint16(devad) & 0x1f))
 
 	if len(arg[3]) > 0 {
 		data, err := strconv.ParseUint(arg[3], 16, 16)

@@ -10,6 +10,7 @@
 package cmd
 
 import (
+	"fmt"
 	"regexp"
 
 	"golang.org/x/term"
@@ -18,11 +19,17 @@ import (
 )
 
 func init() {
+	leds := "white|blue"
+
+	if usbarmory.Model() == "UA-MKII-LAN" {
+		leds += "|yellow|green"
+	}
+
 	Add(Cmd{
 		Name:    "led",
 		Args:    2,
-		Pattern: regexp.MustCompile(`^led (white|blue) (on|off)$`),
-		Syntax:  "(white|blue) (on|off)",
+		Pattern: regexp.MustCompile(fmt.Sprintf("^led (%s) (on|off)$", leds)),
+		Syntax:  fmt.Sprintf("(%s) (on|off)", leds),
 		Help:    "LED control",
 		Fn:      ledCmd,
 	})
