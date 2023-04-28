@@ -14,7 +14,9 @@ import (
 	"log"
 	"os"
 	"runtime"
-	"sync"
+
+	"github.com/usbarmory/tamago/soc/nxp/enet"
+	"github.com/usbarmory/tamago/soc/nxp/usb"
 
 	"github.com/usbarmory/tamago-example/cmd"
 	"github.com/usbarmory/tamago-example/internal/semihosting"
@@ -35,35 +37,27 @@ func init() {
 }
 
 func main() {
-	var wg sync.WaitGroup
+	var usb *usb.USB
+	var eth *enet.ENET
 
 	logFile, _ := os.OpenFile("/tamago-example.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 
-	usb, eth := cmd.HasNetwork()
+	hasUSB, hasEth := cmd.HasNetwork()
 
-	if usb || eth {
-		network.SetupStaticWebAssets()
+	if hasUSB {
+		usb = network.StartUSB(cmd.Handler, logFile)
 	}
 
-	wg.Add(2)
+	if hasEth {
+		eth = network.StartEth(cmd.Handler, logFile)
+	}
 
-	go func() {
-		if eth {
-			network.StartEth(cmd.Handler, logFile)
-		}
-		wg.Done()
-	}()
-
-	go func() {
-		if usb {
-			network.StartUSB(cmd.Handler, logFile)
-		}
-		wg.Done()
-	}()
-
-	wg.Wait()
-
-	cmd.SerialConsole()
-	semihosting.Exit()
+	if hasUSB || hasEth {
+		network.SetupStaticWebAssets()
+		network.StartInterruptHandler(usb, eth)
+	} else {
+		cmd.SerialConsole()
+		semihosting.Exit()
+	}
 }

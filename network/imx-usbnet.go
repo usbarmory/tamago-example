@@ -17,18 +17,27 @@ import (
 
 	"github.com/usbarmory/imx-usbnet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
+	"github.com/usbarmory/tamago/soc/nxp/usb"
 
 	"github.com/usbarmory/tamago-example/cmd"
 )
 
 const hostMAC = "1a:55:89:a2:69:42"
 
-func StartUSB(console consoleHandler, journalFile *os.File) {
+func handleUSBInterrupt(usb *usb.USB) {
+	usb.ServiceInterrupts()
+}
+
+func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
+	port = imx6ul.USB1
+
 	iface, err := usbnet.Init(IP, MAC, hostMAC, 1)
 
 	if err != nil {
 		log.Fatalf("could not initialize USB networking, %v", err)
 	}
+
+	port.Device = iface.NIC.Device
 
 	iface.EnableICMP()
 
@@ -62,10 +71,13 @@ func StartUSB(console consoleHandler, journalFile *os.File) {
 	cmd.DialTCP4 = iface.DialTCP4
 	cmd.Resolver = Resolver
 
-	imx6ul.USB1.Init()
-	imx6ul.USB1.DeviceMode()
-	imx6ul.USB1.Reset()
+	port.Init()
+	port.DeviceMode()
+	port.Reset()
 
-	// never returns
-	imx6ul.USB1.Start(iface.NIC.Device)
+	port.EnableInterrupt(usb.IRQ_URI) // reset
+	port.EnableInterrupt(usb.IRQ_PCI) // port change detect
+	port.EnableInterrupt(usb.IRQ_UI)  // transfer completion
+
+	return
 }

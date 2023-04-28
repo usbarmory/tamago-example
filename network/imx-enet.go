@@ -16,7 +16,6 @@ import (
 	"os"
 
 	imxenet "github.com/usbarmory/imx-enet"
-	"github.com/usbarmory/tamago/arm"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 
@@ -28,47 +27,21 @@ const (
 	Gateway = "10.0.0.2"
 )
 
-func handleInterrupt(eth *enet.ENET) {
-	irq, end := imx6ul.GIC.GetInterrupt(true)
-
-	if end != nil {
-		end <- true
-	}
-
-	if irq != eth.IRQ {
-		log.Printf("internal error, unexpected IRQ %d", irq)
-		return
-	}
-
+func handleEthernetInterrupt(eth *enet.ENET) {
 	for buf := eth.Rx(); buf != nil; buf = eth.Rx() {
 		eth.RxHandler(buf)
 		eth.ClearInterrupt(enet.IRQ_RXF)
 	}
 }
 
-func startInterface(eth *enet.ENET) {
-	imx6ul.GIC.Init(true, false)
-	imx6ul.GIC.EnableInterrupt(eth.IRQ, true)
-
-	eth.EnableInterrupt(enet.IRQ_RXF)
-	eth.Start(false)
-
-	arm.RegisterInterruptHandler()
-
-	for {
-		arm.WaitInterrupt()
-		handleInterrupt(eth)
-	}
-}
-
-func StartEth(console consoleHandler, journalFile *os.File) {
-	nic := imx6ul.ENET2
+func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
+	eth = imx6ul.ENET2
 
 	if !imx6ul.Native {
-		nic = imx6ul.ENET1
+		eth = imx6ul.ENET1
 	}
 
-	iface, err := imxenet.Init(nic, IP, Netmask, MAC, Gateway, 1)
+	iface, err := imxenet.Init(eth, IP, Netmask, MAC, Gateway, 1)
 
 	if err != nil {
 		log.Fatalf("could not initialize Ethernet networking, %v", err)
@@ -107,6 +80,8 @@ func StartEth(console consoleHandler, journalFile *os.File) {
 	cmd.ENET = iface.NIC.Device
 	cmd.Resolver = Resolver
 
-	// never returns
-	startInterface(iface.NIC.Device)
+	eth.EnableInterrupt(enet.IRQ_RXF)
+	eth.Start(false)
+
+	return
 }
