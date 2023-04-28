@@ -73,7 +73,6 @@ func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 
 	port.Init()
 	port.DeviceMode()
-	port.Reset()
 
 	port.EnableInterrupt(usb.IRQ_URI) // reset
 	port.EnableInterrupt(usb.IRQ_PCI) // port change detect
