@@ -80,6 +80,9 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 	cmd.ENET = iface.NIC.Device
 	cmd.Resolver = Resolver
 
+	// This example illustrates IRQ handling, alternatively a poller can be
+	// used with `eth.Start(true)`.
+
 	eth.EnableInterrupt(enet.IRQ_RXF)
 	eth.Start(false)
 

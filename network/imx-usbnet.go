@@ -74,6 +74,9 @@ func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 	port.Init()
 	port.DeviceMode()
 
+	// This example illustrates IRQ handling, alternatively a poller can be
+	// used with `port.Start(device)`.
+
 	port.EnableInterrupt(usb.IRQ_URI) // reset
 	port.EnableInterrupt(usb.IRQ_PCI) // port change detect
 	port.EnableInterrupt(usb.IRQ_UI)  // transfer completion
