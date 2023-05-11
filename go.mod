@@ -8,7 +8,7 @@ require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/btcsuite/btcd/btcutil v1.1.3
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.2
-	github.com/cloudflare/circl v1.3.2
+	github.com/cloudflare/circl v1.3.3
 	github.com/miekg/dns v1.1.52
 	github.com/usbarmory/crucible v0.0.0-20230412092556-269c90b0067e
 	github.com/usbarmory/imx-enet v0.0.0-20230210123530-18463adc40b7
@@ -25,7 +25,6 @@ require (
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/google/btree v1.0.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
-	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
