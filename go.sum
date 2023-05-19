@@ -90,6 +90,8 @@ github.com/usbarmory/tamago v0.0.0-20230515080748-d77bf7bb2931 h1:4wLz5ZTcy7VCcy
 github.com/usbarmory/tamago v0.0.0-20230515080748-d77bf7bb2931/go.mod h1:uCPXcPo8SZulhZPz8irfVqzwVlPZ45w7CTJxkfxueGA=
 github.com/usbarmory/tamago v0.0.0-20230515203810-9cd3f5151e90 h1:m2l1/C/WcS6AeRhiUHlFmPqYAQi8MBBeeDbYAU9pZZg=
 github.com/usbarmory/tamago v0.0.0-20230515203810-9cd3f5151e90/go.mod h1:uCPXcPo8SZulhZPz8irfVqzwVlPZ45w7CTJxkfxueGA=
+github.com/usbarmory/tamago v0.0.0-20230519092447-a9486f3b1e29 h1:Xt1frBHWdwpER4Ug3nxroGQvo1WpvtkZ6RJV2eLwU+o=
+github.com/usbarmory/tamago v0.0.0-20230519092447-a9486f3b1e29/go.mod h1:uCPXcPo8SZulhZPz8irfVqzwVlPZ45w7CTJxkfxueGA=
 go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 h1:CCriYyAfq1Br1aIYettdHZTy8mBTIPo7We18TuO/bak=
 go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352/go.mod h1:SNgMg+EgDFwmvSmLRTNKC5fegJjB7v23qTQ0XLGUNHk=
 golang.org/x/crypto v0.0.0-20170930174604-9419663f5a44/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=

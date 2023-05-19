@@ -95,6 +95,7 @@ info                                                             # device inform
 kem                                                              # benchmark post-quantum KEM
 led             (white|blue) (on|off)                            # LED control
 mii             <hex pa> <hex ra> (hex data)?                    # show/change eth PHY standard registers
+mkv                                                              # CAAM master key verification
 mmd             <hex pa> <hex devad> <hex ra> (hex data)?        # show/change eth PHY extended registers
 otp             <bank> <word>                                    # OTP fuses display
 peek            <hex offset> <size>                              # memory display (use with caution)
