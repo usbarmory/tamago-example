@@ -114,11 +114,11 @@ func mmdCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	}
 
 	// set address function
-	ENET.WritePHYRegister(int(pa), REGCR, (MMD_FN_ADDR << 14) | (uint16(devad) & 0x1f))
+	ENET.WritePHYRegister(int(pa), REGCR, (MMD_FN_ADDR<<14)|(uint16(devad)&0x1f))
 	// write address value
 	ENET.WritePHYRegister(int(pa), ADDAR, uint16(ra))
 	// set data function
-	ENET.WritePHYRegister(int(pa), REGCR, (MMD_FN_DATA << 14) | (uint16(devad) & 0x1f))
+	ENET.WritePHYRegister(int(pa), REGCR, (MMD_FN_DATA<<14)|(uint16(devad)&0x1f))
 
 	if len(arg[3]) > 0 {
 		data, err := strconv.ParseUint(arg[3], 16, 16)
