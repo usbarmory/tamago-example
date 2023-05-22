@@ -17,12 +17,13 @@ import (
 // Override usbarmory pkg ramSize and `mem` allocation, as having concurrent
 // USB and Ethernet interfaces requires more than what the iRAM can handle.
 
-//go:linkname ramSize runtime.ramSize
-var ramSize uint = 0x10000000 - 0x100000 // 256MB - 1MB
-var dmaStart uint = 0xa0000000 - 0x100000
+const (
+	dmaSize = 0xa00000 // 10MB
+	dmaStart = 0xa0000000 - dmaSize
+)
 
-// 1MB
-var dmaSize = 0x100000
+//go:linkname ramSize runtime.ramSize
+var ramSize uint = 0x10000000 - dmaSize // 256MB - 10MB
 
 func init() {
 	dma.Init(dmaStart, dmaSize)

@@ -89,5 +89,6 @@ func cryptoTest() {
 	spawn(ecdsaTest)
 	spawn(btcdTest)
 	spawn(kyberTest)
+	spawn(caamTest)
 	spawn(dcpTest)
 }

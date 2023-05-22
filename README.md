@@ -83,26 +83,26 @@ The web servers expose the following routes:
 The SSH server exposes a console with the following commands (i.MX6UL boards):
 
 ```
-aes             <size> <sec>                                     # benchmark DCP hardware encryption
+aes             <size> <sec>                                     # benchmark CAAM/DCP hardware encryption
 bee             <hex region0> <hex region1>                      # BEE OTF AES memory encryption
 ble                                                              # BLE serial console
 date            (time in RFC339 format)?                         # show/change runtime date and time
 dns             <fqdn>                                           # resolve domain (requires routing)
 exit, quit                                                       # close session
 help                                                             # this help
+huk                                                              # CAAM/DCP hardware unique key derivation
 i2c             <n> <hex target> <hex addr> <size>               # I²C bus read
 info                                                             # device information
 kem                                                              # benchmark post-quantum KEM
 led             (white|blue) (on|off)                            # LED control
 mii             <hex pa> <hex ra> (hex data)?                    # show/change eth PHY standard registers
-mkv                                                              # CAAM master key verification
 mmd             <hex pa> <hex devad> <hex ra> (hex data)?        # show/change eth PHY extended registers
 otp             <bank> <word>                                    # OTP fuses display
 peek            <hex offset> <size>                              # memory display (use with caution)
 poke            <hex offset> <hex value>                         # memory write   (use with caution)
 rand                                                             # gather 32 random bytes
 reboot                                                           # reset device
-sha             <size> <sec>                                     # benchmark DCP hardware hashing
+sha             <size> <sec>                                     # benchmark CAAM/DCP hardware hashing
 stack                                                            # stack trace of current goroutine
 stackall                                                         # stack trace of all goroutines
 test                                                             # launch tests

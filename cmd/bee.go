@@ -40,7 +40,7 @@ func init() {
 
 func beeCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6UL) {
-		return "", errors.New("unsupported under emulation or incompatible hardware")
+		return "", errors.New("unsupported under emulation or unsupported hardware")
 	}
 
 	region0, err := strconv.ParseUint(arg[0], 16, 32)
