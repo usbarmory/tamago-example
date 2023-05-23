@@ -27,6 +27,43 @@ func init() {
 	}
 }
 
+func testHashDCP() (err error) {
+	// NIST.3 test vector
+	sum, err := imx6ul.DCP.Sum256(bytes.Repeat([]byte("a"), 1000000))
+
+	if err != nil {
+		return
+	}
+
+	if bytes.Compare(sum[:], []byte(testVectorNIST3)) != 0 {
+		return fmt.Errorf("sum:%x != testVector:%x", sum, testVectorNIST3)
+	}
+
+	log.Printf("imx6_dcp: NIST.3 hash %x", sum)
+
+	return
+}
+
+func testCipherDCP() (err error) {
+	buf := make([]byte, aes.BlockSize)
+	key := make([]byte, aes.BlockSize)
+	iv := make([]byte, aes.BlockSize)
+
+	_ = imx6ul.DCP.SetKey(keySlot, key)
+
+	if err = imx6ul.DCP.Encrypt(buf, keySlot, iv); err != nil {
+		return
+	}
+
+	if bytes.Compare(buf, []byte(testVectorZero)) != 0 {
+		return fmt.Errorf("buf:%x != testVector:%x", buf, testVectorZero)
+	}
+
+	log.Printf("imx6_dcp: NIST aes-128 cbc %x", buf)
+
+	return
+}
+
 func testKeyDerivationDCP() (err error) {
 	iv := make([]byte, aes.BlockSize)
 
@@ -63,13 +100,21 @@ func dcpTest() {
 		return
 	}
 
+	if err := testHashDCP(); err != nil {
+		log.Printf("imx6_dcp: hash error, %v", err)
+	}
+
+	if err := testCipherDCP(); err != nil {
+		log.Printf("imx6_dcp: cipher error, %v", err)
+	}
+
 	// derive twice to ensure consistency across repeated operations
 
 	if err := testKeyDerivationDCP(); err != nil {
-		log.Printf("key derivation error, %v", err)
+		log.Printf("imx6_dcp: key derivation error, %v", err)
 	}
 
 	if err := testKeyDerivationDCP(); err != nil {
-		log.Printf("key derivation error, %v", err)
+		log.Printf("imx6_dcp: key derivation error, %v", err)
 	}
 }

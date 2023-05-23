@@ -23,6 +23,8 @@ import (
 
 const keySlot = 0
 
+const testVectorZero = "\x66\xe9\x4b\xd4\xef\x8a\x2c\x3b\x88\x4c\xfa\x59\xca\x34\x2b\x2e"
+
 func init() {
 	Add(Cmd{
 		Name:    "aes",
@@ -54,7 +56,7 @@ func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
 			err = errors.New("unsupported")
 		case imx6ul.DCP != nil:
 			_ = imx6ul.DCP.SetKey(keySlot, key)
-			err = imx6ul.DCP.Decrypt(buf, keySlot, iv)
+			err = imx6ul.DCP.Encrypt(buf, keySlot, iv)
 		default:
 			err = errors.New("unsupported hardware")
 		}

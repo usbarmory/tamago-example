@@ -20,6 +20,23 @@ import (
 
 const testVectorCAAM = "\xc2\x0c\x77\xec\xad\x89\xdc\x96\xb7\x9f\xc8\xf7\xda\xab\x97\xb4\x2a\xe8\xdf\x98\x3d\x74\x1c\x34\xac\xa8\x63\xca\xeb\x5f\xde\xcd"
 
+func testHashCAAM() (err error) {
+	// NIST.3 test vector
+	sum, err := imx6ul.CAAM.Sum256(bytes.Repeat([]byte("a"), 1000000))
+
+	if err != nil {
+		return
+	}
+
+	if bytes.Compare(sum[:], []byte(testVectorNIST3)) != 0 {
+		return fmt.Errorf("sum:%x != testVector:%x", sum, testVectorNIST3)
+	}
+
+	log.Printf("imx6_caam: NIST.3 hash %x", sum)
+
+	return
+}
+
 func testKeyDerivationCAAM() (err error) {
 	key, err := imx6ul.CAAM.MasterKeyVerification()
 
@@ -54,13 +71,17 @@ func caamTest() {
 		return
 	}
 
+	if err := testHashCAAM(); err != nil {
+		log.Printf("imx6_caam: hash error, %v", err)
+	}
+
 	// derive twice to ensure consistency across repeated operations
 
 	if err := testKeyDerivationCAAM(); err != nil {
-		log.Printf("key derivation error, %v", err)
+		log.Printf("imx6_caam: key derivation error, %v", err)
 	}
 
 	if err := testKeyDerivationCAAM(); err != nil {
-		log.Printf("key derivation error, %v", err)
+		log.Printf("imx6_caam: key derivation error, %v", err)
 	}
 }

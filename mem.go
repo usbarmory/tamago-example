@@ -23,7 +23,7 @@ const (
 )
 
 //go:linkname ramSize runtime.ramSize
-var ramSize uint = 0x10000000 - dmaSize // 256MB - 10MB
+var ramSize uint = 0x20000000 - dmaSize // 512MB - 10MB
 
 func init() {
 	dma.Init(dmaStart, dmaSize)
