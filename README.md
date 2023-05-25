@@ -57,7 +57,7 @@ external libraries:
   * ECDSA signing and verification.
   * Test BTC transaction creation and signing.
   * Test post-quantum key encapsulation (KEM).
-  * Hardware key derivation (only on non-emulated runs).
+  * Hardware accelerated encryption, hashing, key derivation (on non-emulated runs).
   * Large memory allocation.
 
 The following network services are started:
