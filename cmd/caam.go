@@ -11,6 +11,7 @@ package cmd
 
 import (
 	"bytes"
+	"crypto/aes"
 	"fmt"
 	"log"
 	"strings"
@@ -22,17 +23,45 @@ const testVectorCAAM = "\xc2\x0c\x77\xec\xad\x89\xdc\x96\xb7\x9f\xc8\xf7\xda\xab
 
 func testHashCAAM() (err error) {
 	// NIST.3 test vector
-	sum, err := imx6ul.CAAM.Sum256(bytes.Repeat([]byte("a"), 1000000))
+	sum256, err := imx6ul.CAAM.Sum256(bytes.Repeat([]byte("a"), 1000000))
 
 	if err != nil {
 		return
 	}
 
-	if bytes.Compare(sum[:], []byte(testVectorNIST3)) != 0 {
-		return fmt.Errorf("sum:%x != testVector:%x", sum, testVectorNIST3)
+	if bytes.Compare(sum256[:], []byte(testVectorNIST3)) != 0 {
+		return fmt.Errorf("sum256:%x != testVector:%x", sum256, testVectorNIST3)
 	}
 
-	log.Printf("imx6_caam: NIST.3 hash %x", sum)
+	log.Printf("imx6_caam: NIST.3 SHA256 %x", sum256)
+
+	return
+}
+
+func testCipherCAAM(keySize int) (err error) {
+	buf := make([]byte, aes.BlockSize)
+	key := make([]byte, keySize/8)
+	iv := make([]byte, aes.BlockSize)
+
+	if err = imx6ul.CAAM.Encrypt(buf, key, iv); err != nil {
+		return
+	}
+
+	if bytes.Compare(buf, []byte(testVector[keySize])) != 0 {
+		return fmt.Errorf("buf:%x != testVector:%x", buf, testVector[keySize])
+	}
+
+	log.Printf("imx6_caam: NIST aes-%d cbc encrypt %x", keySize, buf)
+
+	if err = imx6ul.CAAM.Decrypt(buf, key, iv); err != nil {
+		return
+	}
+
+	if bytes.Compare(buf, make([]byte, aes.BlockSize)) != 0 {
+		return fmt.Errorf("decrypt mismatch (%x)", buf)
+	}
+
+	log.Printf("imx6_caam: NIST aes-%d cbc decrypt %x", keySize, buf)
 
 	return
 }
@@ -73,6 +102,12 @@ func caamTest() {
 
 	if err := testHashCAAM(); err != nil {
 		log.Printf("imx6_caam: hash error, %v", err)
+	}
+
+	for _, n := range []int{128, 192, 256} {
+		if err := testCipherCAAM(n); err != nil {
+			log.Printf("imx6_caam: cipher error, %v", err)
+		}
 	}
 
 	// derive twice to ensure consistency across repeated operations

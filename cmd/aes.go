@@ -23,7 +23,11 @@ import (
 
 const keySlot = 0
 
-const testVectorZero = "\x66\xe9\x4b\xd4\xef\x8a\x2c\x3b\x88\x4c\xfa\x59\xca\x34\x2b\x2e"
+var testVector = map[int]string{
+	128: "\x66\xe9\x4b\xd4\xef\x8a\x2c\x3b\x88\x4c\xfa\x59\xca\x34\x2b\x2e",
+	192: "\xaa\xe0\x69\x92\xac\xbf\x52\xa3\xe8\xf4\xa9\x6e\xc9\x30\x0b\xd7",
+	256: "\xdc\x95\xc0\x78\xa2\x40\x89\x89\xad\x48\xa2\x14\x92\x84\x20\x87",
+}
 
 func init() {
 	Add(Cmd{
@@ -53,7 +57,7 @@ func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
 			cbc.CryptBlocks(buf, buf)
 			runtime.Gosched()
 		case imx6ul.CAAM != nil:
-			err = errors.New("unsupported")
+			err = imx6ul.CAAM.Encrypt(buf, key, iv)
 		case imx6ul.DCP != nil:
 			_ = imx6ul.DCP.SetKey(keySlot, key)
 			err = imx6ul.DCP.Encrypt(buf, keySlot, iv)

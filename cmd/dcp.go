@@ -39,14 +39,14 @@ func testHashDCP() (err error) {
 		return fmt.Errorf("sum:%x != testVector:%x", sum, testVectorNIST3)
 	}
 
-	log.Printf("imx6_dcp: NIST.3 hash %x", sum)
+	log.Printf("imx6_dcp: NIST.3 SHA256 %x", sum)
 
 	return
 }
 
-func testCipherDCP() (err error) {
+func testCipherDCP(keySize int) (err error) {
 	buf := make([]byte, aes.BlockSize)
-	key := make([]byte, aes.BlockSize)
+	key := make([]byte, keySize/8)
 	iv := make([]byte, aes.BlockSize)
 
 	_ = imx6ul.DCP.SetKey(keySlot, key)
@@ -55,11 +55,21 @@ func testCipherDCP() (err error) {
 		return
 	}
 
-	if bytes.Compare(buf, []byte(testVectorZero)) != 0 {
-		return fmt.Errorf("buf:%x != testVector:%x", buf, testVectorZero)
+	if bytes.Compare(buf, []byte(testVector[keySize])) != 0 {
+		return fmt.Errorf("buf:%x != testVector:%x", buf, testVector[keySize])
 	}
 
-	log.Printf("imx6_dcp: NIST aes-128 cbc %x", buf)
+	log.Printf("imx6_dcp: NIST aes-128 cbc encrypt %x", buf)
+
+	if err = imx6ul.DCP.Decrypt(buf, keySlot, iv); err != nil {
+		return
+	}
+
+	if bytes.Compare(buf, make([]byte, aes.BlockSize)) != 0 {
+		return fmt.Errorf("decrypt mismatch (%x)", buf)
+	}
+
+	log.Printf("imx6_dcp: NIST aes-128 cbc decrypt %x", buf)
 
 	return
 }
@@ -104,7 +114,7 @@ func dcpTest() {
 		log.Printf("imx6_dcp: hash error, %v", err)
 	}
 
-	if err := testCipherDCP(); err != nil {
+	if err := testCipherDCP(128); err != nil {
 		log.Printf("imx6_dcp: cipher error, %v", err)
 	}
 
