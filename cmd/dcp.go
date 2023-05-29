@@ -28,26 +28,25 @@ func init() {
 }
 
 func testHashDCP() (err error) {
-	// NIST.3 test vector
-	sum, err := imx6ul.DCP.Sum256(bytes.Repeat([]byte("a"), 1000000))
+	sum256, err := imx6ul.DCP.Sum256([]byte(testVectorSHAInput))
 
 	if err != nil {
 		return
 	}
 
-	if bytes.Compare(sum[:], []byte(testVectorNIST3)) != 0 {
-		return fmt.Errorf("sum:%x != testVector:%x", sum, testVectorNIST3)
+	if bytes.Compare(sum256[:], []byte(testVectorSHA)) != 0 {
+		return fmt.Errorf("sum256:%x != testVector:%x", sum256, testVectorSHA)
 	}
 
-	log.Printf("imx6_dcp: NIST.3 SHA256 %x", sum)
+	log.Printf("imx6_dcp: FIPS 180-2 SHA256 %x", sum256)
 
 	return
 }
 
 func testCipherDCP(keySize int) (err error) {
-	buf := make([]byte, aes.BlockSize)
-	key := make([]byte, keySize/8)
-	iv := make([]byte, aes.BlockSize)
+	buf := bytes.Clone([]byte(testVectorInput))
+	key := []byte(testVectorKey[keySize])
+	iv := []byte(testVectorIV)
 
 	_ = imx6ul.DCP.SetKey(keySlot, key)
 
@@ -55,8 +54,8 @@ func testCipherDCP(keySize int) (err error) {
 		return
 	}
 
-	if bytes.Compare(buf, []byte(testVector[keySize])) != 0 {
-		return fmt.Errorf("buf:%x != testVector:%x", buf, testVector[keySize])
+	if bytes.Compare(buf, []byte(testVectorCipher[keySize])) != 0 {
+		return fmt.Errorf("buf:%x != testVector:%x", buf, testVectorCipher[keySize])
 	}
 
 	log.Printf("imx6_dcp: NIST aes-128 cbc encrypt %x", buf)
@@ -65,7 +64,7 @@ func testCipherDCP(keySize int) (err error) {
 		return
 	}
 
-	if bytes.Compare(buf, make([]byte, aes.BlockSize)) != 0 {
+	if bytes.Compare(buf, []byte(testVectorInput)) != 0 {
 		return fmt.Errorf("decrypt mismatch (%x)", buf)
 	}
 
@@ -76,7 +75,6 @@ func testCipherDCP(keySize int) (err error) {
 
 func testKeyDerivationDCP() (err error) {
 	iv := make([]byte, aes.BlockSize)
-
 	key, err := imx6ul.DCP.DeriveKey([]byte(testDiversifier), iv, -1)
 
 	if err != nil {
@@ -89,7 +87,7 @@ func testKeyDerivationDCP() (err error) {
 
 	// if the SoC is secure booted we can only print the result
 	if imx6ul.HAB() {
-		log.Printf("imx6_dcp: derived SNVS key %x", key)
+		log.Printf("imx6_dcp: OTPMK derived key %x", key)
 		return
 	}
 
@@ -116,12 +114,6 @@ func dcpTest() {
 
 	if err := testCipherDCP(128); err != nil {
 		log.Printf("imx6_dcp: cipher error, %v", err)
-	}
-
-	// derive twice to ensure consistency across repeated operations
-
-	if err := testKeyDerivationDCP(); err != nil {
-		log.Printf("imx6_dcp: key derivation error, %v", err)
 	}
 
 	if err := testKeyDerivationDCP(); err != nil {

@@ -8,6 +8,7 @@ package cmd
 
 import (
 	"crypto/aes"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"log"
@@ -38,8 +39,9 @@ func hukCmd(_ *term.Terminal, arg []string) (res string, err error) {
 
 	switch {
 	case imx6ul.CAAM != nil:
-		key, err = imx6ul.CAAM.MasterKeyVerification()
-		res = "CAAM MKV BKEK"
+		key = make([]byte, sha256.Size)
+		err = imx6ul.CAAM.DeriveKey([]byte(testDiversifier), key)
+		res = "CAAM DeriveKey"
 	case imx6ul.DCP != nil:
 		iv := make([]byte, aes.BlockSize)
 		key, err = imx6ul.DCP.DeriveKey([]byte(testDiversifier), iv, -1)
