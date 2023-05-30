@@ -103,8 +103,8 @@ poke            <hex offset> <hex value>                         # memory write 
 rand                                                             # gather 32 random bytes
 reboot                                                           # reset device
 sha             <size> <sec> (soft)?                             # benchmark CAAM/DCP hardware hashing
-stack                                                            # stack trace of current goroutine
-stackall                                                         # stack trace of all goroutines
+stack                                                            # goroutine stack trace (current)
+stackall                                                         # goroutine stack trace (all)
 test                                                             # launch tests
 usdhc           <n> <hex offset> <size>                          # SD/MMC card read
 ```

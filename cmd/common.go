@@ -37,13 +37,13 @@ func init() {
 
 	Add(Cmd{
 		Name: "stack",
-		Help: "stack trace of current goroutine",
+		Help: "goroutine stack trace (current)",
 		Fn:   stackCmd,
 	})
 
 	Add(Cmd{
 		Name: "stackall",
-		Help: "stack trace of all goroutines",
+		Help: "goroutine stack trace (all)",
 		Fn:   stackallCmd,
 	})
 
