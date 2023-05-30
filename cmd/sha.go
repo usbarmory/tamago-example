@@ -12,7 +12,6 @@ package cmd
 import (
 	"bytes"
 	"crypto/sha256"
-	"errors"
 	"fmt"
 	"regexp"
 	"runtime"
@@ -31,9 +30,9 @@ var (
 func init() {
 	Add(Cmd{
 		Name:    "sha",
-		Args:    2,
-		Pattern: regexp.MustCompile(`^sha (\d+) (\d+)$`),
-		Syntax:  "<size> <sec>",
+		Args:    3,
+		Pattern: regexp.MustCompile(`^sha (\d+) (\d+)( soft)?$`),
+		Syntax:  "<size> <sec> (soft)?",
 		Help:    "benchmark CAAM/DCP hardware hashing",
 		Fn:      shaCmd,
 	})
@@ -44,7 +43,7 @@ func shaCmd(_ *term.Terminal, arg []string) (res string, err error) {
 		var sum [32]byte
 
 		switch {
-		case !imx6ul.Native:
+		case len(arg[2]) > 0:
 			sum = sha256.Sum256(buf)
 			runtime.Gosched()
 		case imx6ul.CAAM != nil:
@@ -52,7 +51,7 @@ func shaCmd(_ *term.Terminal, arg []string) (res string, err error) {
 		case imx6ul.DCP != nil:
 			sum, err = imx6ul.DCP.Sum256(buf)
 		default:
-			err = errors.New("unsupported hardware")
+			err = fmt.Errorf("unsupported hardware, use `sha %s %s soft` to disable hardware acceleration", arg[0], arg[1])
 		}
 
 		return fmt.Sprintf("%x", sum), err

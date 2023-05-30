@@ -12,7 +12,7 @@ package cmd
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"errors"
+	"fmt"
 	"regexp"
 	"runtime"
 
@@ -47,9 +47,9 @@ var (
 func init() {
 	Add(Cmd{
 		Name:    "aes",
-		Args:    2,
-		Pattern: regexp.MustCompile(`^aes (\d+) (\d+)$`),
-		Syntax:  "<size> <sec>",
+		Args:    3,
+		Pattern: regexp.MustCompile(`^aes (\d+) (\d+)( soft)?$`),
+		Syntax:  "<size> <sec> (soft)?",
 		Help:    "benchmark CAAM/DCP hardware encryption",
 		Fn:      aesCmd,
 	})
@@ -67,7 +67,7 @@ func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
 
 	fn := func(buf []byte) (_ string, err error) {
 		switch {
-		case !imx6ul.Native:
+		case len(arg[2]) > 0:
 			cbc := cipher.NewCBCEncrypter(block, iv)
 			cbc.CryptBlocks(buf, buf)
 			runtime.Gosched()
@@ -77,7 +77,7 @@ func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
 			_ = imx6ul.DCP.SetKey(keySlot, key)
 			err = imx6ul.DCP.Encrypt(buf, keySlot, iv)
 		default:
-			err = errors.New("unsupported hardware")
+			err = fmt.Errorf("unsupported hardware, use `aes %s %s soft` to disable hardware acceleration", arg[0], arg[1])
 		}
 
 		return

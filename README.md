@@ -83,7 +83,7 @@ The web servers expose the following routes:
 The SSH server exposes a console with the following commands (i.MX6UL boards):
 
 ```
-aes             <size> <sec>                                     # benchmark CAAM/DCP hardware encryption
+aes             <size> <sec> (soft)?                             # benchmark CAAM/DCP hardware encryption
 bee             <hex region0> <hex region1>                      # BEE OTF AES memory encryption
 ble                                                              # BLE serial console
 date            (time in RFC339 format)?                         # show/change runtime date and time
@@ -102,7 +102,7 @@ peek            <hex offset> <size>                              # memory displa
 poke            <hex offset> <hex value>                         # memory write   (use with caution)
 rand                                                             # gather 32 random bytes
 reboot                                                           # reset device
-sha             <size> <sec>                                     # benchmark CAAM/DCP hardware hashing
+sha             <size> <sec> (soft)?                             # benchmark CAAM/DCP hardware hashing
 stack                                                            # stack trace of current goroutine
 stackall                                                         # stack trace of all goroutines
 test                                                             # launch tests
