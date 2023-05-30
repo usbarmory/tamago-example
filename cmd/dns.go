@@ -46,7 +46,11 @@ func resolve(s string) (r *dns.Msg, rtt time.Duration, err error) {
 	msg.RecursionDesired = true
 
 	msg.Question = make([]dns.Question, 1)
-	msg.Question[0] = dns.Question{s, dns.TypeANY, dns.ClassINET}
+	msg.Question[0] = dns.Question{
+		Name:   s,
+		Qtype:  dns.TypeANY,
+		Qclass: dns.ClassINET,
+	}
 
 	conn := new(dns.Conn)
 
