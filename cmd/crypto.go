@@ -79,7 +79,7 @@ func cipherCmd(arg []string, tag string, fn func(buf []byte) (string, error)) (r
 	var elapsed time.Duration
 
 	for run, timeout := true, time.After(time.Duration(sec)*time.Second); run; {
-		if res, err = fn(buf); err != nil {
+		if _, err = fn(buf); err != nil {
 			return
 		}
 
@@ -93,7 +93,7 @@ func cipherCmd(arg []string, tag string, fn func(buf []byte) (string, error)) (r
 		}
 	}
 
-	kbps := (n * size) / int(elapsed / time.Millisecond)
+	kbps := (n * size) / int(elapsed/time.Millisecond)
 
 	return fmt.Sprintf("%d %s's in %s (%dk)", n, tag, time.Since(start), kbps), nil
 }

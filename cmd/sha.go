@@ -39,22 +39,28 @@ func init() {
 }
 
 func shaCmd(_ *term.Terminal, arg []string) (res string, err error) {
-	fn := func(buf []byte) (res string, err error) {
-		var sum [32]byte
+	var fn func([]byte) (string, error)
 
-		switch {
-		case len(arg[2]) > 0:
-			sum = sha256.Sum256(buf)
+	switch {
+	case len(arg[2]) > 0:
+		fn = func(buf []byte) (res string, err error) {
+			sha256.Sum256(buf)
 			runtime.Gosched()
-		case imx6ul.CAAM != nil:
-			sum, err = imx6ul.CAAM.Sum256(buf)
-		case imx6ul.DCP != nil:
-			sum, err = imx6ul.DCP.Sum256(buf)
-		default:
-			err = fmt.Errorf("unsupported hardware, use `sha %s %s soft` to disable hardware acceleration", arg[0], arg[1])
+			return
 		}
-
-		return fmt.Sprintf("%x", sum), err
+	case imx6ul.CAAM != nil:
+		fn = func(buf []byte) (res string, err error) {
+			_, err = imx6ul.CAAM.Sum256(buf)
+			return
+		}
+	case imx6ul.DCP != nil:
+		fn = func(buf []byte) (res string, err error) {
+			_, err = imx6ul.DCP.Sum256(buf)
+			return
+		}
+	default:
+		err = fmt.Errorf("unsupported hardware, use `sha %s %s soft` to disable hardware acceleration", arg[0], arg[1])
+		return
 	}
 
 	return cipherCmd(arg, "sha256", fn)

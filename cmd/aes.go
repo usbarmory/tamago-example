@@ -65,21 +65,29 @@ func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
 		return
 	}
 
-	fn := func(buf []byte) (_ string, err error) {
-		switch {
-		case len(arg[2]) > 0:
+	var fn func([]byte) (string, error)
+
+	switch {
+	case len(arg[2]) > 0:
+		fn = func(buf []byte) (_ string, err error) {
 			cbc := cipher.NewCBCEncrypter(block, iv)
 			cbc.CryptBlocks(buf, buf)
 			runtime.Gosched()
-		case imx6ul.CAAM != nil:
+			return
+		}
+	case imx6ul.CAAM != nil:
+		fn = func(buf []byte) (_ string, err error) {
 			err = imx6ul.CAAM.Encrypt(buf, key, iv)
-		case imx6ul.DCP != nil:
+			return
+		}
+	case imx6ul.DCP != nil:
+		fn = func(buf []byte) (_ string, err error) {
 			_ = imx6ul.DCP.SetKey(keySlot, key)
 			err = imx6ul.DCP.Encrypt(buf, keySlot, iv)
-		default:
-			err = fmt.Errorf("unsupported hardware, use `aes %s %s soft` to disable hardware acceleration", arg[0], arg[1])
+			return
 		}
-
+	default:
+		err = fmt.Errorf("unsupported hardware, use `aes %s %s soft` to disable hardware acceleration", arg[0], arg[1])
 		return
 	}
 
