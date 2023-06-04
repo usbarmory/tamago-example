@@ -10,9 +10,60 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
+	"fmt"
 	"log"
+	"regexp"
+	"runtime"
 	"time"
+
+	"golang.org/x/term"
+
+	"github.com/usbarmory/tamago/soc/nxp/caam"
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
+
+func init() {
+	Add(Cmd{
+		Name:    "ecdsa",
+		Args:    3,
+		Pattern: regexp.MustCompile(`^ecdsa (\d+) (\d+)( soft)?$`),
+		Syntax:  "<size> <sec> (soft)?",
+		Help:    "benchmark CAAM/DCP hardware signing",
+		Fn:      ecdsaCmd,
+	})
+}
+
+func ecdsaCmd(_ *term.Terminal, arg []string) (res string, err error) {
+	priv, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+
+	var fn func([]byte) (string, error)
+
+	switch {
+	case len(arg[2]) > 0:
+		fn = func(buf []byte) (_ string, err error) {
+			_, _, err = ecdsa.Sign(rand.Reader, priv, buf)
+			runtime.Gosched()
+			return
+		}
+	case imx6ul.CAAM != nil:
+		pdb := &caam.SignPDB{}
+		defer pdb.Free()
+
+		if err = pdb.Init(priv); err != nil {
+			return
+		}
+
+		fn = func(buf []byte) (_ string, err error) {
+			_, _, err = imx6ul.CAAM.Sign(nil, buf, pdb)
+			return
+		}
+	default:
+		err = fmt.Errorf("unsupported hardware, use `ecdsa %s %s soft` to disable hardware acceleration", arg[0], arg[1])
+		return
+	}
+
+	return cipherCmd(arg, "ecdsap256", fn)
+}
 
 func testSignAndVerify(c elliptic.Curve, tag string) {
 	start := time.Now()

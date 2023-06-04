@@ -4,9 +4,6 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build mx6ullevk || usbarmory
-// +build mx6ullevk usbarmory
-
 package cmd
 
 import (
@@ -59,16 +56,16 @@ func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	key := make([]byte, aes.BlockSize)
 	iv := make([]byte, aes.BlockSize)
 
-	block, err := aes.NewCipher(key)
-
-	if err != nil {
-		return
-	}
-
 	var fn func([]byte) (string, error)
 
 	switch {
 	case len(arg[2]) > 0:
+		block, err := aes.NewCipher(key)
+
+		if err != nil {
+			return "", err
+		}
+
 		fn = func(buf []byte) (_ string, err error) {
 			cbc := cipher.NewCBCEncrypter(block, iv)
 			cbc.CryptBlocks(buf, buf)
