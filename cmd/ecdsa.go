@@ -25,18 +25,21 @@ import (
 func init() {
 	Add(Cmd{
 		Name:    "ecdsa",
-		Args:    3,
-		Pattern: regexp.MustCompile(`^ecdsa (\d+) (\d+)( soft)?$`),
-		Syntax:  "<size> <sec> (soft)?",
+		Args:    2,
+		Pattern: regexp.MustCompile(`^ecdsa (\d+)( soft)?$`),
+		Syntax:  "<sec> (soft)?",
 		Help:    "benchmark CAAM/DCP hardware signing",
 		Fn:      ecdsaCmd,
 	})
 }
 
 func ecdsaCmd(_ *term.Terminal, arg []string) (res string, err error) {
-	priv, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-
 	var fn func([]byte) (string, error)
+
+	curve := elliptic.P256()
+	priv, _ := ecdsa.GenerateKey(curve, rand.Reader)
+
+	arg = append([]string{fmt.Sprintf("%d", curve.Params().BitSize / 8)}, arg...)
 
 	switch {
 	case len(arg[2]) > 0:

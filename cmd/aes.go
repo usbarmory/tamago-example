@@ -53,10 +53,10 @@ func init() {
 }
 
 func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
+	var fn func([]byte) (string, error)
+
 	key := make([]byte, aes.BlockSize)
 	iv := make([]byte, aes.BlockSize)
-
-	var fn func([]byte) (string, error)
 
 	switch {
 	case len(arg[2]) > 0:

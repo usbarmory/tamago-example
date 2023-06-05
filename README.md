@@ -88,6 +88,7 @@ bee             <hex region0> <hex region1>                      # BEE OTF AES m
 ble                                                              # BLE serial console
 date            (time in RFC339 format)?                         # show/change runtime date and time
 dns             <fqdn>                                           # resolve domain (requires routing)
+ecdsa           <sec> (soft)?                                    # benchmark CAAM/DCP hardware signing
 exit, quit                                                       # close session
 help                                                             # this help
 huk                                                              # CAAM/DCP hardware unique key derivation
