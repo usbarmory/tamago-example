@@ -13,7 +13,7 @@ require (
 	github.com/usbarmory/crucible v0.0.0-20230412092556-269c90b0067e
 	github.com/usbarmory/imx-enet v0.0.0-20230210123530-18463adc40b7
 	github.com/usbarmory/imx-usbnet v0.0.0-20230503192114-c54f43365f06
-	github.com/usbarmory/tamago v0.0.0-20230604213624-012a5f8a93c5
+	github.com/usbarmory/tamago v0.0.0-20230606092234-a1daf4483647
 	golang.org/x/crypto v0.9.0
 	golang.org/x/term v0.8.0
 )
@@ -22,6 +22,7 @@ require (
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
 	github.com/decred/dcrd/crypto/blake256 v1.0.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
+	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/google/btree v1.0.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect

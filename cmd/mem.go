@@ -142,6 +142,8 @@ func memTest() {
 		}
 	}
 
+	runtime.GC()
+
 	runtime.ReadMemStats(&memstats)
 	totalAllocated := uint64(runs) * uint64(chunks) * uint64(chunkSize)
 

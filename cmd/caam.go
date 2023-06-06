@@ -19,6 +19,8 @@ import (
 	"log"
 	"strings"
 
+	"github.com/dustinxie/ecc"
+
 	"github.com/usbarmory/tamago/dma"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
@@ -92,7 +94,6 @@ func testSignatureCAAM() (err error) {
 	_, _ = rand.Read(hash)
 
 	priv, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-
 	r, s, err := imx6ul.CAAM.Sign(priv, hash, nil)
 
 	if err != nil {
@@ -101,10 +102,24 @@ func testSignatureCAAM() (err error) {
 	}
 
 	if !ecdsa.Verify(&priv.PublicKey, hash, r, s) {
-		return fmt.Errorf("invalid signature")
+		return fmt.Errorf("invalid ecdsap256 signature")
 	}
 
 	log.Printf("imx6_caam: ecdsap256 matches crypto/ecdsa")
+
+	priv, _ = ecdsa.GenerateKey(ecc.P256k1(), rand.Reader)
+	r, s, err = imx6ul.CAAM.Sign(priv, hash, nil)
+
+	if err != nil {
+		log.Printf("%v", err)
+		return err
+	}
+
+	if !ecdsa.Verify(&priv.PublicKey, hash, r, s) {
+		return fmt.Errorf("invalid secp256k1 signature")
+	}
+
+	log.Printf("imx6_caam: secp256k1 matches crypto/ecdsa")
 
 	return
 }
