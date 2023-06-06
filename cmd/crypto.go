@@ -76,23 +76,21 @@ func cipherCmd(arg []string, tag string, fn func(buf []byte) (string, error)) (r
 	buf := make([]byte, size)
 
 	start := time.Now()
-	var elapsed time.Duration
+	duration := time.Duration(sec) * time.Second
 
-	for run, timeout := true, time.After(time.Duration(sec)*time.Second); run; {
+	for {
 		if _, err = fn(buf); err != nil {
 			return
 		}
 
 		n++
 
-		select {
-		case <-timeout:
-			run = false
-			elapsed = time.Since(start)
-		default:
+		if time.Since(start) > duration {
+			break
 		}
 	}
 
+	elapsed := time.Since(start)
 	kbps := (n * size) / int(elapsed/time.Millisecond)
 
 	return fmt.Sprintf("%d %s's in %s (%dk)", n, tag, time.Since(start), kbps), nil

@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"runtime"
 	"time"
 
 	"golang.org/x/term"
@@ -45,7 +44,6 @@ func ecdsaCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	case len(arg[2]) > 0:
 		fn = func(buf []byte) (_ string, err error) {
 			_, _, err = ecdsa.Sign(rand.Reader, priv, buf)
-			runtime.Gosched()
 			return
 		}
 	case imx6ul.CAAM != nil:
