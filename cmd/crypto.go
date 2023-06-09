@@ -78,16 +78,12 @@ func cipherCmd(arg []string, tag string, fn func(buf []byte) (string, error)) (r
 	start := time.Now()
 	duration := time.Duration(sec) * time.Second
 
-	for {
+	for time.Since(start) < duration {
 		if _, err = fn(buf); err != nil {
 			return
 		}
 
 		n++
-
-		if time.Since(start) > duration {
-			break
-		}
 	}
 
 	elapsed := time.Since(start)
