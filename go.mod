@@ -3,6 +3,7 @@ module github.com/usbarmory/tamago-example
 go 1.20
 
 require (
+	github.com/Harvey-OS/ninep v0.0.0-20200724082702-d30a6d4f9789
 	github.com/arl/statsviz v0.5.2
 	github.com/btcsuite/btcd v0.23.4
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2
@@ -16,6 +17,7 @@ require (
 	github.com/usbarmory/tamago v0.0.0-20230529110145-b8025086bb9f
 	golang.org/x/crypto v0.9.0
 	golang.org/x/term v0.8.0
+	gvisor.dev/gvisor v0.0.0-20230118154312-8c6072b1c5c4
 )
 
 require (
@@ -33,5 +35,4 @@ require (
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	golang.org/x/tools v0.3.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gvisor.dev/gvisor v0.0.0-20230118154312-8c6072b1c5c4 // indirect
 )

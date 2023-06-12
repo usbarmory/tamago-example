@@ -66,6 +66,20 @@ func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 	go startWebServer(listenerHTTP, IP, 80, false)
 	go startWebServer(listenerHTTPS, IP, 443, true)
 
+	// 9P is optional. If it can not be started, that's ok.
+	listener9P, err := iface.ListenerTCP4(564)
+
+	if err != nil {
+		log.Printf("could not initialize 9P listener, %v", err)
+	}
+
+	if listener9P != nil {
+		// 9p server (see 9p_server.go)
+		go func() {
+			start9pServer(listener9P, IP, 564, 1)
+		}()
+	}
+
 	journal = journalFile
 
 	cmd.DialTCP4 = iface.DialTCP4
