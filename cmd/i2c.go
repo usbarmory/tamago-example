@@ -33,7 +33,7 @@ func init() {
 	})
 }
 
-func i2cCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func i2cCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	n, err := strconv.ParseUint(arg[0], 10, 8)
 
 	if err != nil {

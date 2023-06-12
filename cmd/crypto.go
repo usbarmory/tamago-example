@@ -30,7 +30,7 @@ func init() {
 	})
 }
 
-func hukCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func hukCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	if !imx6ul.Native {
 		return "", errors.New("unsupported under emulation")
 	}

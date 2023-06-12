@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"regexp"
 	"sort"
 	"strings"
@@ -27,7 +28,7 @@ const (
 	separatorSize = 80
 )
 
-type CmdFn func(term *term.Terminal, arg []string) (res string, err error)
+type CmdFn func(iface *Interface, term *term.Terminal, arg []string) (res string, err error)
 
 type Cmd struct {
 	Name    string
@@ -36,6 +37,11 @@ type Cmd struct {
 	Syntax  string
 	Help    string
 	Fn      CmdFn
+}
+
+type Interface struct {
+	DialTCP4     func(string) (net.Conn, error)
+	ListenerTCP4 func(uint16) (net.Listener, error)
 }
 
 var Banner string
@@ -75,7 +81,7 @@ func Help(term *term.Terminal) string {
 	return string(term.Escape.Cyan) + help.String() + string(term.Escape.Reset)
 }
 
-func handle(term *term.Terminal, line string) (err error) {
+func (iface *Interface) handle(term *term.Terminal, line string) (err error) {
 	var match *Cmd
 	var arg []string
 	var res string
@@ -97,7 +103,7 @@ func handle(term *term.Terminal, line string) (err error) {
 		return errors.New("unknown command, type `help`")
 	}
 
-	if res, err = match.Fn(term, arg); err != nil {
+	if res, err = match.Fn(iface, term, arg); err != nil {
 		return
 	}
 
@@ -106,7 +112,7 @@ func handle(term *term.Terminal, line string) (err error) {
 	return
 }
 
-func Handler(term *term.Terminal) {
+func (iface *Interface) Start(term *term.Terminal) {
 	fmt.Fprintf(term, "%s\n\n", Banner)
 	fmt.Fprintf(term, "%s\n", Help(term))
 
@@ -122,7 +128,7 @@ func Handler(term *term.Terminal) {
 			continue
 		}
 
-		if err = handle(term, s); err != nil {
+		if err = iface.handle(term, s); err != nil {
 			if err == io.EOF {
 				break
 			}
@@ -132,9 +138,9 @@ func Handler(term *term.Terminal) {
 	}
 }
 
-func SerialConsole() {
+func SerialConsole(iface *Interface) {
 	term := term.NewTerminal(console, "")
 	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
 
-	Handler(term)
+	iface.Start(term)
 }

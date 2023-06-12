@@ -27,7 +27,7 @@ func init() {
 	})
 }
 
-func kemCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func kemCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	kats := []struct {
 		name string
 		want string

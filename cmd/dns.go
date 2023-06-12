@@ -12,7 +12,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"net"
 	"regexp"
 	"time"
 
@@ -20,10 +19,7 @@ import (
 	"golang.org/x/term"
 )
 
-var (
-	DialTCP4 func(string) (net.Conn, error)
-	Resolver string
-)
+var Resolver string
 
 func init() {
 	Add(Cmd{
@@ -36,7 +32,12 @@ func init() {
 	})
 }
 
-func resolve(s string) (r *dns.Msg, rtt time.Duration, err error) {
+func (iface *Interface) resolve(s string) (r *dns.Msg, rtt time.Duration, err error) {
+	if iface.DialTCP4 == nil {
+		err = errors.New("network not available")
+		return
+	}
+
 	if s[len(s)-1:] != "." {
 		s += "."
 	}
@@ -54,7 +55,7 @@ func resolve(s string) (r *dns.Msg, rtt time.Duration, err error) {
 
 	conn := new(dns.Conn)
 
-	if conn.Conn, err = DialTCP4(Resolver); err != nil {
+	if conn.Conn, err = iface.DialTCP4(Resolver); err != nil {
 		return
 	}
 
@@ -63,12 +64,8 @@ func resolve(s string) (r *dns.Msg, rtt time.Duration, err error) {
 	return c.ExchangeWithConn(msg, conn)
 }
 
-func dnsCmd(_ *term.Terminal, arg []string) (res string, err error) {
-	if DialTCP4 == nil {
-		return "", errors.New("network not available")
-	}
-
-	r, _, err := resolve(arg[0])
+func dnsCmd(iface *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+	r, _, err := iface.resolve(arg[0])
 
 	if err != nil {
 		return fmt.Sprintf("query error: %v", err), nil

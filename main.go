@@ -45,19 +45,21 @@ func main() {
 
 	hasUSB, hasEth := cmd.HasNetwork()
 
+	console := &cmd.Interface{}
+
 	if hasUSB {
-		usb = network.StartUSB(cmd.Handler, logFile)
+		usb = network.StartUSB(console, logFile)
 	}
 
 	if hasEth {
-		eth = network.StartEth(cmd.Handler, logFile)
+		eth = network.StartEth(console, logFile)
 	}
 
 	if hasUSB || hasEth {
 		network.SetupStaticWebAssets()
 		network.StartInterruptHandler(usb, eth)
 	} else {
-		cmd.SerialConsole()
+		cmd.SerialConsole(console)
 		semihosting.Exit()
 	}
 }

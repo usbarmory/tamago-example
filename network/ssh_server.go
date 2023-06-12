@@ -21,13 +21,13 @@ import (
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
-)
 
-type consoleHandler func(term *term.Terminal)
+	"github.com/usbarmory/tamago-example/cmd"
+)
 
 var journal *os.File
 
-func handleChannel(newChannel ssh.NewChannel, handler consoleHandler) {
+func handleChannel(newChannel ssh.NewChannel, console *cmd.Interface) {
 	if t := newChannel.ChannelType(); t != "session" {
 		newChannel.Reject(ssh.UnknownChannelType, fmt.Sprintf("unknown channel type: %s", t))
 		return
@@ -49,7 +49,7 @@ func handleChannel(newChannel ssh.NewChannel, handler consoleHandler) {
 		log.SetOutput(io.MultiWriter(os.Stdout, journal, term))
 		defer log.SetOutput(io.MultiWriter(os.Stdout, journal))
 
-		handler(term)
+		console.Start(term)
 
 		log.Printf("closing ssh connection")
 	}()
@@ -100,13 +100,13 @@ func handleChannel(newChannel ssh.NewChannel, handler consoleHandler) {
 	}()
 }
 
-func handleChannels(chans <-chan ssh.NewChannel, handler consoleHandler) {
+func handleChannels(chans <-chan ssh.NewChannel, console *cmd.Interface) {
 	for newChannel := range chans {
-		go handleChannel(newChannel, handler)
+		go handleChannel(newChannel, console)
 	}
 }
 
-func startSSHServer(listener net.Listener, addr string, port uint16, handler consoleHandler) {
+func startSSHServer(listener net.Listener, addr string, port uint16, console *cmd.Interface) {
 	srv := &ssh.ServerConfig{
 		NoClientAuth: true,
 	}
@@ -145,6 +145,6 @@ func startSSHServer(listener net.Listener, addr string, port uint16, handler con
 		log.Printf("new ssh connection from %s (%s)", sshConn.RemoteAddr(), sshConn.ClientVersion())
 
 		go ssh.DiscardRequests(reqs)
-		go handleChannels(chans, handler)
+		go handleChannels(chans, console)
 	}
 }

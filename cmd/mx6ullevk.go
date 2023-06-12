@@ -35,7 +35,7 @@ func init() {
 	MMC = append(MMC, mx6ullevk.SD2)
 }
 
-func rebootCmd(_ *term.Terminal, _ []string) (_ string, _ error) {
+func rebootCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
 	mx6ullevk.Reset()
 	return
 }

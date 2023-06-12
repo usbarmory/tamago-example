@@ -57,7 +57,7 @@ func init() {
 }
 
 // Clause 22 access to standard management registers (802.3-2008)
-func miiCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func miiCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	if ENET == nil {
 		return "", errors.New("MII not available")
 	}
@@ -90,7 +90,7 @@ func miiCmd(_ *term.Terminal, arg []string) (res string, err error) {
 }
 
 // Clause 22 access to Clause 45 MMD registers (802.3-2008)
-func mmdCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func mmdCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	if ENET == nil {
 		return "", errors.New("MII not available")
 	}

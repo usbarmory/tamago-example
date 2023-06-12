@@ -32,7 +32,7 @@ func init() {
 	})
 }
 
-func bleCmd(term *term.Terminal, _ []string) (_ string, err error) {
+func bleCmd(_ *Interface, term *term.Terminal, _ []string) (_ string, err error) {
 	if !imx6ul.Native {
 		return "", errors.New("unsupported under emulation")
 	}

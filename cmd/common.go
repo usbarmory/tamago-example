@@ -72,27 +72,27 @@ func init() {
 	})
 }
 
-func helpCmd(term *term.Terminal, _ []string) (string, error) {
+func helpCmd(_ *Interface, term *term.Terminal, _ []string) (string, error) {
 	return Help(term), nil
 }
 
-func exitCmd(_ *term.Terminal, _ []string) (string, error) {
+func exitCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	log.Printf("Goodbye from %s/%s\n", runtime.GOOS, runtime.GOARCH)
 	return "logout", io.EOF
 }
 
-func stackCmd(_ *term.Terminal, _ []string) (string, error) {
+func stackCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	return string(debug.Stack()), nil
 }
 
-func stackallCmd(_ *term.Terminal, _ []string) (string, error) {
+func stackallCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	buf := new(bytes.Buffer)
 	pprof.Lookup("goroutine").WriteTo(buf, 1)
 
 	return buf.String(), nil
 }
 
-func dateCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func dateCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	if len(arg[0]) > 1 {
 		t, err := time.Parse(time.RFC3339, arg[0][1:])
 

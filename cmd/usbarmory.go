@@ -46,7 +46,7 @@ func init() {
 	MMC = append(MMC, usbarmory.MMC)
 }
 
-func rebootCmd(_ *term.Terminal, _ []string) (_ string, _ error) {
+func rebootCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
 	usbarmory.Reset()
 	return
 }

@@ -38,7 +38,7 @@ func init() {
 	}
 }
 
-func beeCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func beeCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6UL) {
 		return "", errors.New("unsupported under emulation or unsupported hardware")
 	}

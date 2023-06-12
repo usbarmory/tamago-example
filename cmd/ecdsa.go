@@ -32,13 +32,13 @@ func init() {
 	})
 }
 
-func ecdsaCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func ecdsaCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	var fn func([]byte) (string, error)
 
 	curve := elliptic.P256()
 	priv, _ := ecdsa.GenerateKey(curve, rand.Reader)
 
-	arg = append([]string{fmt.Sprintf("%d", curve.Params().BitSize / 8)}, arg...)
+	arg = append([]string{fmt.Sprintf("%d", curve.Params().BitSize/8)}, arg...)
 
 	switch {
 	case len(arg[2]) > 0:

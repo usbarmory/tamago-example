@@ -69,7 +69,7 @@ func memCopy(start uint, size int, w []byte) (b []byte) {
 	return
 }
 
-func memReadCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func memReadCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	addr, err := strconv.ParseUint(arg[0], 16, 32)
 
 	if err != nil {
@@ -93,7 +93,7 @@ func memReadCmd(_ *term.Terminal, arg []string) (res string, err error) {
 	return hex.Dump(mem(uint(addr), int(size), nil)), nil
 }
 
-func memWriteCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func memWriteCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	addr, err := strconv.ParseUint(arg[0], 16, 32)
 
 	if err != nil {

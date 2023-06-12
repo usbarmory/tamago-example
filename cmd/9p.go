@@ -10,8 +10,8 @@
 // copyright notice, this list of conditions and the following disclaimer
 // in the documentation and/or other materials provided with the
 // distribution.
-//    * The names of Ninep's contributors may not be used to endorse 
-// or promote products derived from this software without specific prior 
+//    * The names of Ninep's contributors may not be used to endorse
+// or promote products derived from this software without specific prior
 // written permission.
 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -30,34 +30,52 @@
 //
 // By default, it will export / over a TCP on port 5640 under the username
 // of "harvey".
-package network
+package cmd
 
 import (
+	"errors"
 	"log"
-	"net"
+
+	"golang.org/x/term"
 
 	ufs "github.com/Harvey-OS/ninep/filesystem"
 	"github.com/Harvey-OS/ninep/protocol"
-	"gvisor.dev/gvisor/pkg/tcpip"
 )
 
-func start9pServer(l net.Listener, addr tcpip.Address, port uint16, nic tcpip.NICID) {
-	// Maybe it did not start. Life is like that sometimes.
-	if l == nil {
+func init() {
+	Add(Cmd{
+		Name: "9p",
+		Help: "start 9p remote file server",
+		Fn:   ninepCmd,
+	})
+}
+
+func ninepCmd(iface *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
+	log.Printf("starting 9p remote filesystem server")
+
+	if iface.DialTCP4 == nil {
+		return "", errors.New("network not available")
+	}
+
+	listener9p, err := iface.ListenerTCP4(564)
+
+	if err != nil {
 		return
 	}
 
 	ufslistener, err := ufs.NewUFS(func(l *protocol.Listener) error {
-		//l.Trace = log.Printf
 		return nil
 	})
+
 	if err != nil {
-		log.Printf("ufslistener: %v", err)
 		return
 	}
 
-	if err := ufslistener.Serve(l); err != nil {
-		log.Print(err)
-	}
-	log.Printf("9p server exits ...")
+	go func() {
+		if err := ufslistener.Serve(listener9p); err != nil {
+			log.Printf("9p server error: %v", err)
+		}
+	}()
+
+	return
 }

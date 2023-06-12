@@ -83,6 +83,7 @@ The web servers expose the following routes:
 The SSH server exposes a console with the following commands (i.MX6UL boards):
 
 ```
+9p                                                               # start 9p remote file server
 aes             <size> <sec> (soft)?                             # benchmark CAAM/DCP hardware encryption
 bee             <hex region0> <hex region1>                      # BEE OTF AES memory encryption
 ble                                                              # BLE serial console

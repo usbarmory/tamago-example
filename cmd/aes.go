@@ -52,7 +52,7 @@ func init() {
 	})
 }
 
-func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func aesCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	var fn func([]byte) (string, error)
 
 	key := make([]byte, aes.BlockSize)

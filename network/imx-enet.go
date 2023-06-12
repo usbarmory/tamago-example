@@ -34,7 +34,7 @@ func handleEthernetInterrupt(eth *enet.ENET) {
 	}
 }
 
-func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
+func StartEth(console *cmd.Interface, journalFile *os.File) (eth *enet.ENET) {
 	eth = imx6ul.ENET2
 
 	if !imx6ul.Native {
@@ -56,6 +56,9 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 			log.Fatalf("could not initialize SSH listener, %v", err)
 		}
 
+		console.DialTCP4 = iface.DialTCP4
+		console.ListenerTCP4 = iface.ListenerTCP4
+
 		go startSSHServer(listenerSSH, IP, 22, console)
 	}
 
@@ -76,7 +79,6 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 
 	journal = journalFile
 
-	cmd.DialTCP4 = iface.DialTCP4
 	cmd.ENET = iface.NIC.Device
 	cmd.Resolver = Resolver
 
