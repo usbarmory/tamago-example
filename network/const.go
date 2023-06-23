@@ -8,8 +8,14 @@
 
 package network
 
+import "net"
+
 const (
 	MAC      = "1a:55:89:a2:69:41"
 	IP       = "10.0.0.1"
 	Resolver = "8.8.8.8:53"
 )
+
+func init() {
+	net.DefaultNS = []string{Resolver}
+}

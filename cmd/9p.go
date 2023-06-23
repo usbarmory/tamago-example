@@ -33,13 +33,15 @@
 package cmd
 
 import (
-	"errors"
 	"log"
+	"net"
 
 	"golang.org/x/term"
 
 	ufs "github.com/Harvey-OS/ninep/filesystem"
 	"github.com/Harvey-OS/ninep/protocol"
+
+	"github.com/usbarmory/tamago-example/network"
 )
 
 func init() {
@@ -52,12 +54,9 @@ func init() {
 
 func ninepCmd(iface *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
 	log.Printf("starting 9p remote filesystem server")
+	log.Printf("access with: `mount -t 9p -o trans=tcp,noextend %s <path>`", network.IP)
 
-	if iface.DialTCP4 == nil {
-		return "", errors.New("network not available")
-	}
-
-	listener9p, err := iface.ListenerTCP4(564)
+	listener9p, err := net.Listen("tcp", ":564")
 
 	if err != nil {
 		return

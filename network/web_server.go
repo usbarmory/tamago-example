@@ -26,8 +26,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/usbarmory/tamago-example/cmd"
 )
 
 func generateTLSCerts(address net.IP) ([]byte, []byte, error) {
@@ -98,7 +96,7 @@ func flushingHandler(h http.Handler) http.HandlerFunc {
 	}
 }
 
-func SetupStaticWebAssets() {
+func SetupStaticWebAssets(banner string) {
 	file, err := os.OpenFile("/index.html", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 
 	if err != nil {
@@ -107,7 +105,7 @@ func SetupStaticWebAssets() {
 	defer file.Close()
 
 	file.WriteString("<html><body>")
-	file.WriteString(fmt.Sprintf("<p>%s</p><ul>", html.EscapeString(cmd.Banner)))
+	file.WriteString(fmt.Sprintf("<p>%s</p><ul>", html.EscapeString(banner)))
 	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/tamago-example.log", "/tamago-example.log"))
 	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/dir", "/dir"))
 	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/debug/pprof", "/debug/pprof"))

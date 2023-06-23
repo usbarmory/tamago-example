@@ -11,13 +11,13 @@ require (
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.2
 	github.com/cloudflare/circl v1.3.3
 	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564
-	github.com/miekg/dns v1.1.54
+	github.com/psanford/wormhole-william v1.0.6
 	github.com/usbarmory/crucible v0.0.0-20230412092556-269c90b0067e
-	github.com/usbarmory/imx-enet v0.0.0-20230615131844-0373d79f7198
-	github.com/usbarmory/imx-usbnet v0.0.0-20230615132922-59ac2ab4630d
-	github.com/usbarmory/tamago v0.0.0-20230606125032-579ffa4bff5c
-	golang.org/x/crypto v0.9.0
-	golang.org/x/term v0.8.0
+	github.com/usbarmory/imx-enet v0.0.0-20230622162703-9eec0bcf6bb4
+	github.com/usbarmory/imx-usbnet v0.0.0-20230623113811-87820c325e41
+	github.com/usbarmory/tamago v0.0.0-20230614130306-d64a26341d56
+	golang.org/x/crypto v0.10.0
+	golang.org/x/term v0.9.0
 )
 
 require (
@@ -27,12 +27,13 @@ require (
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/google/btree v1.0.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
-	golang.org/x/mod v0.7.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
+	github.com/klauspost/compress v1.11.13 // indirect
+	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
 	golang.org/x/time v0.0.0-20220210224613-90d013bbcef8 // indirect
-	golang.org/x/tools v0.5.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gvisor.dev/gvisor v0.0.0-20230614190805-57027c7d31f8 // indirect
+	nhooyr.io/websocket v1.8.6 // indirect
+	salsa.debian.org/vasudev/gospake2 v0.0.0-20180813171123-adcc69dd31d5 // indirect
 )

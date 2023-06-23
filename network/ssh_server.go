@@ -21,13 +21,13 @@ import (
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
-
-	"github.com/usbarmory/tamago-example/cmd"
 )
+
+type consoleHandler func(term *term.Terminal)
 
 var journal *os.File
 
-func handleChannel(newChannel ssh.NewChannel, console *cmd.Interface) {
+func handleChannel(newChannel ssh.NewChannel, console consoleHandler) {
 	if t := newChannel.ChannelType(); t != "session" {
 		newChannel.Reject(ssh.UnknownChannelType, fmt.Sprintf("unknown channel type: %s", t))
 		return
@@ -49,7 +49,7 @@ func handleChannel(newChannel ssh.NewChannel, console *cmd.Interface) {
 		log.SetOutput(io.MultiWriter(os.Stdout, journal, term))
 		defer log.SetOutput(io.MultiWriter(os.Stdout, journal))
 
-		console.Start(term)
+		console(term)
 
 		log.Printf("closing ssh connection")
 	}()
@@ -100,13 +100,13 @@ func handleChannel(newChannel ssh.NewChannel, console *cmd.Interface) {
 	}()
 }
 
-func handleChannels(chans <-chan ssh.NewChannel, console *cmd.Interface) {
+func handleChannels(chans <-chan ssh.NewChannel, console consoleHandler) {
 	for newChannel := range chans {
 		go handleChannel(newChannel, console)
 	}
 }
 
-func startSSHServer(listener net.Listener, addr string, port uint16, console *cmd.Interface) {
+func StartSSHServer(listener net.Listener, console consoleHandler) {
 	srv := &ssh.ServerConfig{
 		NoClientAuth: true,
 	}
@@ -123,7 +123,7 @@ func startSSHServer(listener net.Listener, addr string, port uint16, console *cm
 		log.Fatal("key conversion error: ", err)
 	}
 
-	log.Printf("starting ssh server (%s) at %s:%d", ssh.FingerprintSHA256(signer.PublicKey()), addr, port)
+	log.Printf("starting ssh server (%s) at %s", ssh.FingerprintSHA256(signer.PublicKey()), listener.Addr())
 
 	srv.AddHostKey(signer)
 

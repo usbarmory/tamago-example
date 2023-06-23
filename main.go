@@ -48,15 +48,15 @@ func main() {
 	console := &cmd.Interface{}
 
 	if hasUSB {
-		usb = network.StartUSB(console, logFile)
+		usb = network.StartUSB(console.Start, logFile)
 	}
 
 	if hasEth {
-		eth = network.StartEth(console, logFile)
+		eth = network.StartEth(console.Start, logFile)
 	}
 
 	if hasUSB || hasEth {
-		network.SetupStaticWebAssets()
+		network.SetupStaticWebAssets(cmd.Banner)
 		network.StartInterruptHandler(usb, eth)
 	} else {
 		cmd.SerialConsole(console)

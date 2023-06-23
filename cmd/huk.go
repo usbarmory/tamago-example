@@ -4,6 +4,9 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
+//go:build mx6ullevk || usbarmory
+// +build mx6ullevk usbarmory
+
 package cmd
 
 import (
@@ -11,16 +14,11 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
-	"log"
-	"strconv"
-	"time"
 
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
-
-const testDiversifier = "\xde\xad\xbe\xef"
 
 func init() {
 	Add(Cmd{
@@ -55,39 +53,4 @@ func hukCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error
 	}
 
 	return fmt.Sprintf("%s: %x", res, key), nil
-}
-
-func cipherCmd(arg []string, tag string, fn func(buf []byte) (string, error)) (res string, err error) {
-	size, err := strconv.Atoi(arg[0])
-
-	if err != nil {
-		return "", fmt.Errorf("invalid size, %v", err)
-	}
-
-	sec, err := strconv.Atoi(arg[1])
-
-	if err != nil {
-		return "", fmt.Errorf("invalid duration, %v", err)
-	}
-
-	log.Printf("Doing %s for %ds on %d size blocks", tag, sec, size)
-
-	n := 0
-	buf := make([]byte, size)
-
-	start := time.Now()
-	duration := time.Duration(sec) * time.Second
-
-	for time.Since(start) < duration {
-		if _, err = fn(buf); err != nil {
-			return
-		}
-
-		n++
-	}
-
-	elapsed := time.Since(start)
-	kbps := (n * size) / int(elapsed/time.Millisecond)
-
-	return fmt.Sprintf("%d %s's in %s (%dk)", n, tag, time.Since(start), kbps), nil
 }

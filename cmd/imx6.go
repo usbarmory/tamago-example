@@ -86,7 +86,6 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 }
 
 func cryptoTest() {
-	spawn(ecdsaTest)
 	spawn(btcdTest)
 	spawn(kyberTest)
 	spawn(caamTest)

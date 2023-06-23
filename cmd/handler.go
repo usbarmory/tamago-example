@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net"
 	"regexp"
 	"sort"
 	"strings"
@@ -39,10 +38,7 @@ type Cmd struct {
 	Fn      CmdFn
 }
 
-type Interface struct {
-	DialTCP4     func(string) (net.Conn, error)
-	ListenerTCP4 func(uint16) (net.Listener, error)
-}
+type Interface struct{}
 
 var Banner string
 var cmds = make(map[string]*Cmd)
@@ -124,7 +120,7 @@ func (iface *Interface) Start(term *term.Terminal) {
 		}
 
 		if err != nil {
-			log.Printf("readline error: %v", err)
+			log.Printf("readline error, %v", err)
 			continue
 		}
 
@@ -133,7 +129,7 @@ func (iface *Interface) Start(term *term.Terminal) {
 				break
 			}
 
-			log.Printf("command error: %v", err)
+			log.Printf("command error, %v", err)
 		}
 	}
 }

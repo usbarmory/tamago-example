@@ -18,8 +18,6 @@ import (
 	"github.com/usbarmory/imx-usbnet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
-
-	"github.com/usbarmory/tamago-example/cmd"
 )
 
 const hostMAC = "1a:55:89:a2:69:42"
@@ -28,7 +26,7 @@ func handleUSBInterrupt(usb *usb.USB) {
 	usb.ServiceInterrupts()
 }
 
-func StartUSB(console *cmd.Interface, journalFile *os.File) (port *usb.USB) {
+func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 	port = imx6ul.USB1
 
 	iface, err := usbnet.Init(IP, MAC, hostMAC, 1)
@@ -48,10 +46,7 @@ func StartUSB(console *cmd.Interface, journalFile *os.File) (port *usb.USB) {
 			log.Fatalf("could not initialize SSH listener, %v", err)
 		}
 
-		console.DialTCP4 = iface.DialTCP4
-		console.ListenerTCP4 = iface.ListenerTCP4
-
-		go startSSHServer(listenerSSH, IP, 22, console)
+		go StartSSHServer(listenerSSH, console)
 	}
 
 	listenerHTTP, err := iface.ListenerTCP4(80)
@@ -71,8 +66,6 @@ func StartUSB(console *cmd.Interface, journalFile *os.File) (port *usb.USB) {
 
 	journal = journalFile
 
-	cmd.Resolver = Resolver
-
 	port.Init()
 	port.DeviceMode()
 
@@ -82,6 +75,9 @@ func StartUSB(console *cmd.Interface, journalFile *os.File) (port *usb.USB) {
 	port.EnableInterrupt(usb.IRQ_URI) // reset
 	port.EnableInterrupt(usb.IRQ_PCI) // port change detect
 	port.EnableInterrupt(usb.IRQ_UI)  // transfer completion
+
+	// hook interface into Go runtime
+	// net.SocketFunc = iface.Socket
 
 	return
 }
