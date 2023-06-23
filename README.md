@@ -54,7 +54,6 @@ external libraries:
   * Timer operation.
   * Sleep operation.
   * Random bytes collection (gathered from SoC TRNG on non-emulated runs).
-  * ECDSA signing and verification.
   * Test BTC transaction creation and signing.
   * Test post-quantum key encapsulation (KEM).
   * Hardware accelerated encryption, hashing, key derivation (on non-emulated runs).
@@ -88,7 +87,7 @@ aes             <size> <sec> (soft)?                             # benchmark CAA
 bee             <hex region0> <hex region1>                      # BEE OTF AES memory encryption
 ble                                                              # BLE serial console
 date            (time in RFC339 format)?                         # show/change runtime date and time
-dns             <fqdn>                                           # resolve domain (requires routing)
+dns             <host>                                           # resolve domain (requires routing)
 ecdsa           <sec> (soft)?                                    # benchmark CAAM/DCP hardware signing
 exit, quit                                                       # close session
 help                                                             # this help
@@ -109,6 +108,7 @@ stack                                                            # goroutine sta
 stackall                                                         # goroutine stack trace (all)
 test                                                             # launch tests
 usdhc           <n> <hex offset> <size>                          # SD/MMC card read
+wormhole        (send <path>|recv <code>)                        # transfer file through magic wormhole
 ```
 
 On emulated runs (e.g. `make qemu`) the console is exposed directly on the
