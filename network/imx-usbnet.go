@@ -77,7 +77,7 @@ func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 	port.EnableInterrupt(usb.IRQ_UI)  // transfer completion
 
 	// hook interface into Go runtime
-	// net.SocketFunc = iface.Socket
+	net.SocketFunc = iface.Socket
 
 	return
 }
