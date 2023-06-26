@@ -298,6 +298,8 @@ github.com/usbarmory/imx-usbnet v0.0.0-20230615132922-59ac2ab4630d h1:W0yLcmypVN
 github.com/usbarmory/imx-usbnet v0.0.0-20230615132922-59ac2ab4630d/go.mod h1:eT+4LgXX1S+pyzpTtg0P5vCqvzQA4/kA1b/kmiMqQbE=
 github.com/usbarmory/imx-usbnet v0.0.0-20230623113811-87820c325e41 h1:0+8tJbhilflhq9JHfvIhqSKiO+V2h9GHG5yMzH+Xj28=
 github.com/usbarmory/imx-usbnet v0.0.0-20230623113811-87820c325e41/go.mod h1:eT+4LgXX1S+pyzpTtg0P5vCqvzQA4/kA1b/kmiMqQbE=
+github.com/usbarmory/imx-usbnet v0.0.0-20230626092818-ef791923688e h1:x2vSKye5+66g7OSPSazNSA/QHJjw+MBhJcvTAUvPfO8=
+github.com/usbarmory/imx-usbnet v0.0.0-20230626092818-ef791923688e/go.mod h1:eT+4LgXX1S+pyzpTtg0P5vCqvzQA4/kA1b/kmiMqQbE=
 github.com/usbarmory/tamago v0.0.0-20230614130306-d64a26341d56 h1:b/pXGtqyJghjfm1LXlATpHtcnF9zs/+4qc3BAqMxmec=
 github.com/usbarmory/tamago v0.0.0-20230614130306-d64a26341d56/go.mod h1:uCPXcPo8SZulhZPz8irfVqzwVlPZ45w7CTJxkfxueGA=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
