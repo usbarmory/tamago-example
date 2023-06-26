@@ -14,6 +14,7 @@ package network
 import (
 	"log"
 	"os"
+	"net"
 
 	"github.com/usbarmory/imx-usbnet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
