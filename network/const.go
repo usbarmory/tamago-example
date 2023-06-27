@@ -8,7 +8,12 @@
 
 package network
 
-import "net"
+import (
+	"net"
+
+	// maintained set of TLS roots for any potential TLS client requests
+	_ "golang.org/x/crypto/x509roots/fallback"
+)
 
 const (
 	MAC      = "1a:55:89:a2:69:41"
