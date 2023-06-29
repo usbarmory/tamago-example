@@ -15,10 +15,14 @@ import (
 	"runtime"
 	"runtime/debug"
 	"runtime/pprof"
+	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"golang.org/x/term"
+
+	"github.com/usbarmory/tamago/dma"
 )
 
 const testDiversifier = "\xde\xad\xbe\xef"
@@ -48,6 +52,15 @@ func init() {
 		Name: "stackall",
 		Help: "goroutine stack trace (all)",
 		Fn:   stackallCmd,
+	})
+
+	Add(Cmd{
+		Name: "dma",
+		Args:    1,
+		Pattern: regexp.MustCompile(`^dma (free|used)$`),
+		Help: "show allocation of default DMA region",
+		Syntax:  "(free|used)",
+		Fn:   dmaCmd,
 	})
 
 	Add(Cmd{
@@ -93,6 +106,30 @@ func stackallCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	pprof.Lookup("goroutine").WriteTo(buf, 1)
 
 	return buf.String(), nil
+}
+
+func dmaCmd(_ *Interface, term *term.Terminal, arg []string) (string, error) {
+	var res []string
+
+	var l map[uint]uint
+	var t uint
+
+	switch arg[0] {
+	case "free":
+		l = dma.Default().FreeBlocks()
+	case "used":
+		l = dma.Default().UsedBlocks()
+	}
+
+	for addr, n := range l {
+		t += n
+		res = append(res, fmt.Sprintf("%#08x-%#08x %d", addr, addr + n, n))
+	}
+
+	sort.Strings(res)
+	res = append(res, fmt.Sprintf("%s %d total bytes", strings.Repeat(" ", 21), t))
+
+	return strings.Join(res, "\n"), nil
 }
 
 func dateCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {

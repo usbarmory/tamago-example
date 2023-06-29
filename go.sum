@@ -302,6 +302,8 @@ github.com/usbarmory/imx-usbnet v0.0.0-20230626092818-ef791923688e h1:x2vSKye5+6
 github.com/usbarmory/imx-usbnet v0.0.0-20230626092818-ef791923688e/go.mod h1:eT+4LgXX1S+pyzpTtg0P5vCqvzQA4/kA1b/kmiMqQbE=
 github.com/usbarmory/tamago v0.0.0-20230614130306-d64a26341d56 h1:b/pXGtqyJghjfm1LXlATpHtcnF9zs/+4qc3BAqMxmec=
 github.com/usbarmory/tamago v0.0.0-20230614130306-d64a26341d56/go.mod h1:uCPXcPo8SZulhZPz8irfVqzwVlPZ45w7CTJxkfxueGA=
+github.com/usbarmory/tamago v0.0.0-20230629154957-a6a5aa50eeed h1:KTI3JZGljdMR/syFNKOm7aPKiCVSZx102QNcAIqjT1I=
+github.com/usbarmory/tamago v0.0.0-20230629154957-a6a5aa50eeed/go.mod h1:uCPXcPo8SZulhZPz8irfVqzwVlPZ45w7CTJxkfxueGA=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 h1:CCriYyAfq1Br1aIYettdHZTy8mBTIPo7We18TuO/bak=
