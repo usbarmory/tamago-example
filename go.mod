@@ -3,19 +3,16 @@ module github.com/usbarmory/tamago-example
 go 1.20
 
 require (
+	github.com/Harvey-OS/ninep v0.0.0-20200724082702-d30a6d4f9789
 	github.com/arl/statsviz v0.5.2
 	github.com/btcsuite/btcd v0.23.4
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/btcsuite/btcd/btcutil v1.1.3
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.2
 	github.com/cloudflare/circl v1.3.3
-	github.com/miekg/dns v1.1.54
+	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564
+	github.com/psanford/wormhole-william v1.0.6
 	github.com/usbarmory/crucible v0.0.0-20230412092556-269c90b0067e
-	github.com/usbarmory/imx-enet v0.0.0-20230210123530-18463adc40b7
-	github.com/usbarmory/imx-usbnet v0.0.0-20230503192114-c54f43365f06
-	github.com/usbarmory/tamago v0.0.0-20230614130306-d64a26341d56
-	golang.org/x/crypto v0.9.0
-	golang.org/x/term v0.8.0
 )
 
 require (
@@ -25,13 +22,14 @@ require (
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/google/btree v1.0.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/klauspost/compress v1.11.13 // indirect
 	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect
-	golang.org/x/mod v0.7.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/crypto/x509roots/fallback v0.0.0-20230623170555-183630ada7e0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	golang.org/x/tools v0.3.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
+	golang.org/x/time v0.0.0-20220210224613-90d013bbcef8 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gvisor.dev/gvisor v0.0.0-20230118154312-8c6072b1c5c4 // indirect
+	gvisor.dev/gvisor v0.0.0-20230614190805-57027c7d31f8 // indirect
+	nhooyr.io/websocket v1.8.6 // indirect
+	salsa.debian.org/vasudev/gospake2 v0.0.0-20180813171123-adcc69dd31d5 // indirect
 )

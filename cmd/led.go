@@ -35,7 +35,7 @@ func init() {
 	})
 }
 
-func ledCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func ledCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	var on bool
 
 	if arg[1] == "on" {

@@ -45,7 +45,7 @@ func init() {
 	})
 }
 
-func usdhcCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func usdhcCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	n, err := strconv.ParseUint(arg[0], 10, 8)
 
 	if err != nil {

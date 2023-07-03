@@ -14,12 +14,11 @@ package network
 import (
 	"log"
 	"os"
+	"net"
 
 	"github.com/usbarmory/imx-usbnet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
-
-	"github.com/usbarmory/tamago-example/cmd"
 )
 
 const hostMAC = "1a:55:89:a2:69:42"
@@ -48,7 +47,7 @@ func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 			log.Fatalf("could not initialize SSH listener, %v", err)
 		}
 
-		go startSSHServer(listenerSSH, IP, 22, console)
+		go StartSSHServer(listenerSSH, console)
 	}
 
 	listenerHTTP, err := iface.ListenerTCP4(80)
@@ -68,9 +67,6 @@ func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 
 	journal = journalFile
 
-	cmd.DialTCP4 = iface.DialTCP4
-	cmd.Resolver = Resolver
-
 	port.Init()
 	port.DeviceMode()
 
@@ -80,6 +76,9 @@ func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 	port.EnableInterrupt(usb.IRQ_URI) // reset
 	port.EnableInterrupt(usb.IRQ_PCI) // port change detect
 	port.EnableInterrupt(usb.IRQ_UI)  // transfer completion
+
+	// hook interface into Go runtime
+	net.SocketFunc = iface.Socket
 
 	return
 }

@@ -75,7 +75,7 @@ func readOTP(bank int, word int) (res string, err error) {
 	return "", errors.New("invalid OTP register")
 }
 
-func otpCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func otpCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	bank, err := strconv.Atoi(arg[0])
 
 	if err != nil {

@@ -13,13 +13,12 @@ package network
 
 import (
 	"log"
+	"net"
 	"os"
 
 	imxenet "github.com/usbarmory/imx-enet"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
-
-	"github.com/usbarmory/tamago-example/cmd"
 )
 
 const (
@@ -56,7 +55,7 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 			log.Fatalf("could not initialize SSH listener, %v", err)
 		}
 
-		go startSSHServer(listenerSSH, IP, 22, console)
+		go StartSSHServer(listenerSSH, console)
 	}
 
 	listenerHTTP, err := iface.ListenerTCP4(80)
@@ -76,15 +75,14 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 
 	journal = journalFile
 
-	cmd.DialTCP4 = iface.DialTCP4
-	cmd.ENET = iface.NIC.Device
-	cmd.Resolver = Resolver
-
 	// This example illustrates IRQ handling, alternatively a poller can be
 	// used with `eth.Start(true)`.
 
 	eth.EnableInterrupt(enet.IRQ_RXF)
 	eth.Start(false)
+
+	// hook interface into Go runtime
+	net.SocketFunc = iface.Socket
 
 	return
 }

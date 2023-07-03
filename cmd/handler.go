@@ -27,7 +27,7 @@ const (
 	separatorSize = 80
 )
 
-type CmdFn func(term *term.Terminal, arg []string) (res string, err error)
+type CmdFn func(iface *Interface, term *term.Terminal, arg []string) (res string, err error)
 
 type Cmd struct {
 	Name    string
@@ -37,6 +37,8 @@ type Cmd struct {
 	Help    string
 	Fn      CmdFn
 }
+
+type Interface struct{}
 
 var Banner string
 var cmds = make(map[string]*Cmd)
@@ -75,7 +77,7 @@ func Help(term *term.Terminal) string {
 	return string(term.Escape.Cyan) + help.String() + string(term.Escape.Reset)
 }
 
-func handle(term *term.Terminal, line string) (err error) {
+func (iface *Interface) handle(term *term.Terminal, line string) (err error) {
 	var match *Cmd
 	var arg []string
 	var res string
@@ -97,7 +99,7 @@ func handle(term *term.Terminal, line string) (err error) {
 		return errors.New("unknown command, type `help`")
 	}
 
-	if res, err = match.Fn(term, arg); err != nil {
+	if res, err = match.Fn(iface, term, arg); err != nil {
 		return
 	}
 
@@ -106,7 +108,7 @@ func handle(term *term.Terminal, line string) (err error) {
 	return
 }
 
-func Handler(term *term.Terminal) {
+func (iface *Interface) Start(term *term.Terminal) {
 	fmt.Fprintf(term, "%s\n\n", Banner)
 	fmt.Fprintf(term, "%s\n", Help(term))
 
@@ -118,23 +120,23 @@ func Handler(term *term.Terminal) {
 		}
 
 		if err != nil {
-			log.Printf("readline error: %v", err)
+			log.Printf("readline error, %v", err)
 			continue
 		}
 
-		if err = handle(term, s); err != nil {
+		if err = iface.handle(term, s); err != nil {
 			if err == io.EOF {
 				break
 			}
 
-			log.Printf("command error: %v", err)
+			log.Printf("command error, %v", err)
 		}
 	}
 }
 
-func SerialConsole() {
+func SerialConsole(iface *Interface) {
 	term := term.NewTerminal(console, "")
 	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
 
-	Handler(term)
+	iface.Start(term)
 }

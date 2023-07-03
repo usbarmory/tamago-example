@@ -63,7 +63,7 @@ func sleepTest() {
 	msg("slept %s (%v)", sleep, time.Since(start))
 }
 
-func testCmd(_ *term.Terminal, _ []string) (_ string, _ error) {
+func testCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
 	start := time.Now()
 
 	spawn(timerTest)

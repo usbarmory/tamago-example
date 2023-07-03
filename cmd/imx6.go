@@ -63,7 +63,7 @@ func mem(start uint, size int, w []byte) (b []byte) {
 	return memCopy(start, size, w)
 }
 
-func infoCmd(_ *term.Terminal, _ []string) (string, error) {
+func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	var res bytes.Buffer
 
 	ramStart, ramEnd := runtime.MemRegion()
@@ -86,7 +86,6 @@ func infoCmd(_ *term.Terminal, _ []string) (string, error) {
 }
 
 func cryptoTest() {
-	spawn(ecdsaTest)
 	spawn(btcdTest)
 	spawn(kyberTest)
 	spawn(caamTest)

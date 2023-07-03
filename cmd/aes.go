@@ -55,20 +55,20 @@ func init() {
 	})
 }
 
-func aesCmd(_ *term.Terminal, arg []string) (res string, err error) {
+func aesCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+	var fn func([]byte) (string, error)
+
 	key := make([]byte, aes.BlockSize)
 	iv := make([]byte, aes.BlockSize)
 
-	block, err := aes.NewCipher(key)
-
-	if err != nil {
-		return
-	}
-
-	var fn func([]byte) (string, error)
-
 	switch {
 	case len(arg[2]) > 0:
+		block, err := aes.NewCipher(key)
+
+		if err != nil {
+			return "", err
+		}
+
 		fn = func(buf []byte) (_ string, err error) {
 			cbc := cipher.NewCBCEncrypter(block, iv)
 			cbc.CryptBlocks(buf, buf)

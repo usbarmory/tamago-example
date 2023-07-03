@@ -11,10 +11,15 @@ package cmd
 
 import (
 	"bytes"
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
 	"crypto/sha256"
 	"fmt"
 	"log"
 	"strings"
+
+	"github.com/dustinxie/ecc"
 
 	"github.com/usbarmory/tamago/dma"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
@@ -84,6 +89,41 @@ func testCipherCAAM(keySize int) (err error) {
 	return
 }
 
+func testSignatureCAAM() (err error) {
+	hash := make([]byte, sha256.Size)
+	_, _ = rand.Read(hash)
+
+	priv, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	r, s, err := imx6ul.CAAM.Sign(priv, hash, nil)
+
+	if err != nil {
+		log.Printf("%v", err)
+		return err
+	}
+
+	if !ecdsa.Verify(&priv.PublicKey, hash, r, s) {
+		return fmt.Errorf("invalid ecdsap256 signature")
+	}
+
+	log.Printf("imx6_caam: ecdsap256 matches crypto/ecdsa")
+
+	priv, _ = ecdsa.GenerateKey(ecc.P256k1(), rand.Reader)
+	r, s, err = imx6ul.CAAM.Sign(priv, hash, nil)
+
+	if err != nil {
+		log.Printf("%v", err)
+		return err
+	}
+
+	if !ecdsa.Verify(&priv.PublicKey, hash, r, s) {
+		return fmt.Errorf("invalid secp256k1 signature")
+	}
+
+	log.Printf("imx6_caam: secp256k1 matches crypto/ecdsa")
+
+	return
+}
+
 func testKeyDerivationCAAM() (err error) {
 	key := make([]byte, sha256.Size)
 
@@ -130,5 +170,9 @@ func caamTest() {
 
 	if err := testKeyDerivationCAAM(); err != nil {
 		log.Printf("imx6_caam: key derivation error, %v", err)
+	}
+
+	if err := testSignatureCAAM(); err != nil {
+		log.Printf("imx6_caam: signature error, %v", err)
 	}
 }
