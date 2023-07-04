@@ -55,6 +55,8 @@ func main() {
 		eth = network.StartEth(console.Start, logFile)
 	}
 
+	cmd.ENET = eth
+
 	if hasUSB || hasEth {
 		network.SetupStaticWebAssets(cmd.Banner)
 		network.StartInterruptHandler(usb, eth)
