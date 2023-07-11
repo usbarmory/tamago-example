@@ -19,7 +19,7 @@ import (
 	"github.com/usbarmory/tamago/soc/nxp/usb"
 )
 
-func StartInterruptHandler(usb *usb.USB, eth *enet.ENET) {
+func StartInterruptHandler(_ *usb.USB, _ *enet.ENET) {
 	log.Fatal("unsupported")
 }
 

@@ -55,7 +55,7 @@ func main() {
 		eth = network.StartEth(console.Start, logFile)
 	}
 
-	cmd.ENET = eth
+	cmd.NIC = eth
 
 	if hasUSB || hasEth {
 		network.SetupStaticWebAssets(cmd.Banner)

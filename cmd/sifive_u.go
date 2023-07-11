@@ -22,6 +22,7 @@ import (
 )
 
 var boardName = "qemu-system-riscv64 (sifive_u)"
+var NIC interface{}
 
 func init() {
 	console = sifive_u.UART0

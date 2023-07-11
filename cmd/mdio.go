@@ -34,7 +34,7 @@ const (
 	MMD_FN_DATA = 0b01
 )
 
-var ENET *enet.ENET
+var NIC *enet.ENET
 
 func init() {
 	Add(Cmd{
@@ -58,7 +58,7 @@ func init() {
 
 // Clause 22 access to standard management registers (802.3-2008)
 func miiCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
-	if ENET == nil {
+	if NIC == nil {
 		return "", errors.New("MII not available")
 	}
 
@@ -81,9 +81,9 @@ func miiCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error
 			return "", fmt.Errorf("invalid data, %v", err)
 		}
 
-		ENET.WritePHYRegister(int(pa), int(ra), uint16(data))
+		NIC.WritePHYRegister(int(pa), int(ra), uint16(data))
 	} else {
-		res = fmt.Sprintf("%#x", ENET.ReadPHYRegister(int(pa), int(ra)))
+		res = fmt.Sprintf("%#x", NIC.ReadPHYRegister(int(pa), int(ra)))
 	}
 
 	return
@@ -91,7 +91,7 @@ func miiCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error
 
 // Clause 22 access to Clause 45 MMD registers (802.3-2008)
 func mmdCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
-	if ENET == nil {
+	if NIC == nil {
 		return "", errors.New("MII not available")
 	}
 
@@ -114,11 +114,11 @@ func mmdCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error
 	}
 
 	// set address function
-	ENET.WritePHYRegister(int(pa), REGCR, (MMD_FN_ADDR<<14)|(uint16(devad)&0x1f))
+	NIC.WritePHYRegister(int(pa), REGCR, (MMD_FN_ADDR<<14)|(uint16(devad)&0x1f))
 	// write address value
-	ENET.WritePHYRegister(int(pa), ADDAR, uint16(ra))
+	NIC.WritePHYRegister(int(pa), ADDAR, uint16(ra))
 	// set data function
-	ENET.WritePHYRegister(int(pa), REGCR, (MMD_FN_DATA<<14)|(uint16(devad)&0x1f))
+	NIC.WritePHYRegister(int(pa), REGCR, (MMD_FN_DATA<<14)|(uint16(devad)&0x1f))
 
 	if len(arg[3]) > 0 {
 		data, err := strconv.ParseUint(arg[3], 16, 16)
@@ -127,9 +127,9 @@ func mmdCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error
 			return "", fmt.Errorf("invalid data, %v", err)
 		}
 
-		ENET.WritePHYRegister(int(pa), ADDAR, uint16(data))
+		NIC.WritePHYRegister(int(pa), ADDAR, uint16(data))
 	} else {
-		res = fmt.Sprintf("%#x", ENET.ReadPHYRegister(int(pa), ADDAR))
+		res = fmt.Sprintf("%#x", NIC.ReadPHYRegister(int(pa), ADDAR))
 	}
 
 	return
