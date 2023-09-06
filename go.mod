@@ -15,12 +15,13 @@ require (
 	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564
 	github.com/psanford/wormhole-william v1.0.7
 	github.com/usbarmory/crucible v0.0.0-20230824072712-7fe0bb96da65
-	github.com/usbarmory/imx-enet v0.0.0-20230622162703-9eec0bcf6bb4
-	github.com/usbarmory/imx-usbnet v0.0.0-20230626092818-ef791923688e
+	github.com/usbarmory/imx-enet v0.0.0-20230906121622-9b9d18e7b72a
+	github.com/usbarmory/imx-usbnet v0.0.0-20230906121641-6105d330ad44
 	github.com/usbarmory/tamago v0.0.0-20230829132607-64264ab65702
 	golang.org/x/crypto v0.12.0
 	golang.org/x/crypto/x509roots/fallback v0.0.0-20230804165707-b4ddeeda5bc7
 	golang.org/x/term v0.11.0
+	tailscale.com v0.0.0-00010101000000-000000000000
 )
 
 require (
