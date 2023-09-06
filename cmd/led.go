@@ -21,7 +21,7 @@ import (
 func init() {
 	leds := "white|blue"
 
-	if usbarmory.Model() == "UA-MKII-LAN" {
+	if model, _ := usbarmory.Model(); model == usbarmory.LAN {
 		leds += "|yellow|green"
 	}
 

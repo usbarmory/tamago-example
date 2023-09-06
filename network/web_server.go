@@ -117,7 +117,7 @@ func SetupStaticWebAssets(banner string) {
 	http.Handle("/", http.StripPrefix("/", staticHandler))
 }
 
-func startWebServer(listener net.Listener, addr string, port uint16, https bool) {
+func StartWebServer(listener net.Listener, addr string, port uint16, https bool) {
 	var err error
 
 	srv := &http.Server{

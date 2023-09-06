@@ -70,8 +70,8 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 		log.Fatalf("could not initialize HTTP listener, %v", err)
 	}
 
-	go startWebServer(listenerHTTP, IP, 80, false)
-	go startWebServer(listenerHTTPS, IP, 443, true)
+	go StartWebServer(listenerHTTP, IP, 80, false)
+	go StartWebServer(listenerHTTPS, IP, 443, true)
 
 	journal = journalFile
 
