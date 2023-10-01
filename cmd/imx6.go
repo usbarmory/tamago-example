@@ -56,8 +56,8 @@ func date(epoch int64) {
 func mem(start uint, size int, w []byte) (b []byte) {
 	// temporarily map page zero if required
 	if z := uint32(1 << 20); uint32(start) < z {
-		imx6ul.ARM.ConfigureMMU(0, z, (arm.TTE_AP_001<<10)|arm.TTE_SECTION)
-		defer imx6ul.ARM.ConfigureMMU(0, z, 0)
+		imx6ul.ARM.ConfigureMMU(0, z, 0, (arm.TTE_AP_001<<10)|arm.TTE_SECTION)
+		defer imx6ul.ARM.ConfigureMMU(0, z, 0, 0)
 	}
 
 	return memCopy(start, size, w)

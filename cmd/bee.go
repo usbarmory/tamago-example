@@ -65,6 +65,7 @@ func beeCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error
 	imx6ul.ARM.ConfigureMMU(
 		bee.AliasRegion0,
 		bee.AliasRegion1+bee.AliasRegionSize,
+		0,
 		memAttr)
 
 	log.Printf("OTF AES 128 CTR encryption enabled:")
