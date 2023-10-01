@@ -107,6 +107,7 @@ reboot                                                           # reset device
 sha             <size> <sec> (soft)?                             # benchmark CAAM/DCP hardware hashing
 stack                                                            # goroutine stack trace (current)
 stackall                                                         # goroutine stack trace (all)
+tailscale       <auth key>                                       # start network servers on Tailscale tailnet
 test                                                             # launch tests
 usdhc           <n> <hex offset> <size>                          # SD/MMC card read
 wormhole        (send <path>|recv <code>)                        # transfer file through magic wormhole
