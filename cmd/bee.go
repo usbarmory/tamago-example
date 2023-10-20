@@ -33,13 +33,13 @@ func init() {
 		Fn:      beeCmd,
 	})
 
-	if imx6ul.Native && imx6ul.Family == imx6ul.IMX6UL {
+	if imx6ul.Native && imx6ul.BEE != nil {
 		imx6ul.BEE.Init()
 	}
 }
 
 func beeCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
-	if !(imx6ul.Native && imx6ul.Family == imx6ul.IMX6UL) {
+	if !(imx6ul.Native && imx6ul.BEE != nil) {
 		return "", errors.New("unsupported under emulation or unsupported hardware")
 	}
 
