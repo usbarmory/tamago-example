@@ -4,9 +4,6 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//foobar go:build experimental
-//foobar +build experimental
-
 package cmd
 
 import (
