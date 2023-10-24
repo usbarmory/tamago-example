@@ -58,7 +58,7 @@ check_tamago:
 	fi
 
 clean:
-	@rm -fr $(APP) $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd cmd/IMX6ULL.yaml qemu.dtb bios/bios.bin
+	@rm -fr $(APP) $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd cmd/IMX6UL*.yaml qemu.dtb bios/bios.bin
 
 #### generic targets ####
 
@@ -102,6 +102,13 @@ $(APP).imx: $(APP).bin $(APP).dcd
 	# Copy entry point from ELF file
 	dd if=$(APP) of=$(APP).imx bs=1 count=4 skip=24 seek=4 conv=notrunc
 
+IMX6UL.yaml: check_tamago
+IMX6UL.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
+IMX6UL.yaml: CRUCIBLE_PKG=$(shell grep "github.com/usbarmory/crucible v" go.mod | awk '{print $$1"@"$$2}')
+IMX6UL.yaml:
+	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool
+	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX6UL.yaml cmd/IMX6UL.yaml
+
 IMX6ULL.yaml: check_tamago
 IMX6ULL.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
 IMX6ULL.yaml: CRUCIBLE_PKG=$(shell grep "github.com/usbarmory/crucible v" go.mod | awk '{print $$1"@"$$2}')
@@ -143,7 +150,7 @@ $(APP): check_tamago qemu.dtb
 
 else
 
-$(APP): check_tamago IMX6ULL.yaml
+$(APP): check_tamago IMX6UL.yaml IMX6ULL.yaml
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 
 endif

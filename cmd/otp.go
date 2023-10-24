@@ -18,6 +18,8 @@ import (
 
 	"golang.org/x/term"
 
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
+
 	"github.com/usbarmory/crucible/fusemap"
 	"github.com/usbarmory/crucible/otp"
 )
@@ -33,20 +35,26 @@ func init() {
 	})
 }
 
-//go:embed IMX6ULL.yaml
-var IMX6ULLFusemapYAML []byte
-var IMX6ULLFusemap *fusemap.FuseMap
+var (
+	//go:embed IMX6UL.yaml
+	IMX6ULFusemapYAML []byte
+	//go:embed IMX6ULL.yaml
+	IMX6ULLFusemapYAML []byte
+
+	fuseMap *fusemap.FuseMap
+)
 
 func loadFuseMap() (err error) {
-	if IMX6ULLFusemap != nil {
+	if fuseMap != nil {
 		return
 	}
 
-	if len(IMX6ULLFusemapYAML) == 0 {
-		return errors.New("fusemap not available")
+	switch imx6ul.Model() {
+	case "i.MX6ULL", "i.MX6ULZ":
+		fuseMap, err = fusemap.Parse(IMX6ULLFusemapYAML)
+	case "i.MX6UL":
+		fuseMap, err = fusemap.Parse(IMX6ULFusemapYAML)
 	}
-
-	IMX6ULLFusemap, err = fusemap.Parse(IMX6ULLFusemapYAML)
 
 	return
 }
@@ -64,7 +72,7 @@ func readOTP(bank int, word int) (res string, err error) {
 		return
 	}
 
-	for _, reg = range IMX6ULLFusemap.Registers {
+	for _, reg = range fuseMap.Registers {
 		if reg.Bank == bank && reg.Word == word {
 			res = fmt.Sprintf("OTP bank:%d word:%d val:%#x\n\n", bank, word, val)
 			res += reg.BitMap(val)
