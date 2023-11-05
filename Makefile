@@ -8,9 +8,9 @@
 
 BUILD_USER ?= $(shell whoami)
 BUILD_HOST ?= $(shell hostname)
-BUILD_DATE ?= $(shell /bin/date -u "+%Y-%m-%d %H:%M:%S")
-BUILD = ${BUILD_USER}@${BUILD_HOST} on ${BUILD_DATE}
-REV = $(shell git rev-parse --short HEAD 2> /dev/null)
+BUILD_DATE ?= $(shell /bin/date -u "+%Y-%m-%d,%H:%M:%S")
+BUILD = ${BUILD_USER},${BUILD_HOST}:${BUILD_DATE}
+REV = 22
 
 SHELL = /bin/bash
 
@@ -47,7 +47,9 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
 
 endif
 
-GOFLAGS := -tags ${TARGET},linkramsize,native -trimpath -ldflags "-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
+GOTAGS := -tags ${TARGET},linkramsize,native
+GOLDFLAGS := "-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000 -X main.Build=${BUILD} -X main.Revision=${REV}"
+GOFLAGS := $(GOTAGS) $(GOBUILDARGS) -trimpath -ldflags $(GOLDFLAGS)
 
 .PHONY: clean qemu qemu-gdb
 
@@ -145,6 +147,9 @@ else
 
 $(APP): check_tamago IMX6ULL.yaml
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
+
+uroot: check_tamago IMX6ULL.yaml $(APP)
+	$(GOENV) u-root -defaultsh="" -initcmd="" -gen-dir /tmp/x -uroot-source=~/go/src/github.com/u-root/u-root  $(GOTAGS)  -go-extra-args '$(GOLDFLAGS)' . ~/go/src/github.com/u-root/u-root/cmds/core/echo
 
 endif
 
