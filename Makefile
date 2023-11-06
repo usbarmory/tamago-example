@@ -48,7 +48,7 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
 endif
 
 GOTAGS := -tags ${TARGET},linkramsize,native
-GOLDFLAGS := "-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000 -X main.Build=${BUILD} -X main.Revision=${REV}"
+GOLDFLAGS := "-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000"
 GOFLAGS := $(GOTAGS) $(GOBUILDARGS) -trimpath -ldflags $(GOLDFLAGS)
 
 .PHONY: clean qemu qemu-gdb
@@ -149,7 +149,12 @@ $(APP): check_tamago IMX6ULL.yaml
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 
 uroot: check_tamago IMX6ULL.yaml $(APP)
-	$(GOENV) u-root -defaultsh="" -initcmd="" -gen-dir /tmp/x -uroot-source=~/go/src/github.com/u-root/u-root  $(GOTAGS)  -go-extra-args '$(GOLDFLAGS)' . ~/go/src/github.com/u-root/u-root/cmds/core/echo
+	$(GOENV) u-root -tmpdir /tmp/tdir -o tx -defaultsh="" -initcmd="" -gen-dir /tmp/x -uroot-source=~/go/src/github.com/u-root/u-root  $(GOTAGS)  -go-extra-args -ldflags="-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000" . ~/go/src/github.com/u-root/u-root/cmds/core/echo
+	mkdir -p bbin
+	cpio -iv < tx  bbin/bb
+
+urootqemu: uroot
+	$(QEMU) -kernel bbin/bb -monitor /dev/ttys001
 
 endif
 
