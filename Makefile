@@ -48,9 +48,9 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 1024M \
 endif
 
 GOTAGS := -tags ${TARGET},linkramsize,native
-#GOLDFLAGS := "-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000"
-GOLDFLAGS := "-T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000"
-GOFLAGS := $(GOTAGS) $(GOBUILDARGS) -trimpath -ldflags $(GOLDFLAGS)
+GOLDFLAGSSTRIP := "-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000"
+GOLDFLAGSNOSTRIP := "-T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000"
+GOFLAGS := $(GOTAGS) -trimpath -ldflags $(GOLDFLAGSNOSTRIP)
 
 .PHONY: clean qemu qemu-gdb
 
@@ -59,6 +59,9 @@ check_tamago:
 		echo 'You need to set the TAMAGO variable to a compiled version of https://github.com/usbarmory/tamago-go'; \
 		exit 1; \
 	fi
+
+check_uroot: check_tamago
+	which u-root
 
 clean:
 	@rm -fr $(APP) $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd cmd/IMX6ULL.yaml qemu.dtb bios/bios.bin
@@ -71,7 +74,10 @@ elf: $(APP)
 
 qemu: GOFLAGS := $(GOFLAGS:native=semihosting)
 qemu: $(APP)
-	$(QEMU) -kernel $(APP) -monitor /dev/ttys001 -s -S
+	$(QEMU) -kernel $(APP) -monitor /dev/ttys001
+
+justqemu:
+	$(QEMU) -kernel $(APP) -monitor /dev/ttys001
 
 qemu-gdb: GOFLAGS := $(GOFLAGS:native=semihosting)
 qemu-gdb: GOFLAGS := $(GOFLAGS:-w=)
@@ -149,14 +155,17 @@ else
 $(APP): check_tamago IMX6ULL.yaml
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 
-uroot: check_tamago IMX6ULL.yaml $(APP)
-	$(GOENV) u-root -go-no-strip -no-strip -tmpdir /tmp/tdir -o tx -defaultsh="" -initcmd="" -gen-dir /tmp/x -uroot-source=~/go/src/github.com/u-root/u-root  $(GOTAGS)  -go-extra-args -ldflags="-T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000" . ~/go/src/github.com/u-root/u-root/cmds/core/echo
+uroot: check_uroot IMX6ULL.yaml $(APP)
+	$(GOENV) u-root -go-no-strip -no-strip -tmpdir /tmp/tdir -o tx -defaultsh="forth" -initcmd="forth" -gen-dir /tmp/x -uroot-source=~/go/src/github.com/u-root/u-root  $(GOTAGS)  -go-extra-args -ldflags="-T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000" .  \
+	~/go/src/github.com/u-root/u-root/cmds/core/echo \
+	~/go/src/github.com/u-root/u-root/cmds/exp/forth \
+	~/go/src/github.com/u-root/u-root/cmds/core/wget
 	mkdir -p bbin
 	rm -f bbin/bb
 	cpio -iv < tx  bbin/bb
 
 urootqemu: uroot
-	$(QEMU) -kernel bbin/bb -monitor /dev/ttys001 -s -S
+	$(QEMU) -kernel bbin/bb -monitor /dev/ttys001
 
 endif
 
