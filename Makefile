@@ -8,8 +8,8 @@
 
 BUILD_USER ?= $(shell whoami)
 BUILD_HOST ?= $(shell hostname)
-BUILD_DATE ?= $(shell /bin/date -u "+%Y-%m-%d %H:%M:%S")
-BUILD = ${BUILD_USER}@${BUILD_HOST} on ${BUILD_DATE}
+BUILD_DATE ?= $(shell /bin/date -u "+%Y-%m-%d:%H:%M:%S")
+BUILD = ${BUILD_USER}@${BUILD_HOST}@${BUILD_DATE}
 REV = $(shell git rev-parse --short HEAD 2> /dev/null)
 
 SHELL = /bin/bash
