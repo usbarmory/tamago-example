@@ -22,8 +22,8 @@ ifeq ($(TARGET),sifive_u)
 
 GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARCH=riscv64
 ENTRY_POINT := _rt0_riscv64_tamago
-QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
-        -nographic -monitor none -serial stdio -net none \
+QEMU ?= qemu-system-riscv64 -machine sifive_u -m 1024M \
+        -nographic -serial stdio -net none \
         -semihosting \
         -dtb $(CURDIR)/qemu.dtb \
         -bios $(CURDIR)/bios/bios.bin
@@ -41,14 +41,15 @@ endif
 
 GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARM=7 GOARCH=arm
 ENTRY_POINT := _rt0_arm_tamago
-QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
+QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 1024M \
         -nographic -monitor none -serial $(UART1) -serial $(UART2) -net $(NET) \
         -semihosting
 
 endif
 
 GOTAGS := -tags ${TARGET},linkramsize,native
-GOLDFLAGS := "-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000"
+#GOLDFLAGS := "-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000"
+GOLDFLAGS := "-T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000"
 GOFLAGS := $(GOTAGS) $(GOBUILDARGS) -trimpath -ldflags $(GOLDFLAGS)
 
 .PHONY: clean qemu qemu-gdb
@@ -70,7 +71,7 @@ elf: $(APP)
 
 qemu: GOFLAGS := $(GOFLAGS:native=semihosting)
 qemu: $(APP)
-	$(QEMU) -kernel $(APP)
+	$(QEMU) -kernel $(APP) -monitor /dev/ttys001 -s -S
 
 qemu-gdb: GOFLAGS := $(GOFLAGS:native=semihosting)
 qemu-gdb: GOFLAGS := $(GOFLAGS:-w=)
@@ -155,7 +156,7 @@ uroot: check_tamago IMX6ULL.yaml $(APP)
 	cpio -iv < tx  bbin/bb
 
 urootqemu: uroot
-	$(QEMU) -kernel bbin/bb -monitor /dev/ttys001
+	$(QEMU) -kernel bbin/bb -monitor /dev/ttys001 -s -S
 
 endif
 
