@@ -156,14 +156,21 @@ $(APP): check_tamago IMX6ULL.yaml
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 
 uroot: check_uroot IMX6ULL.yaml $(APP)
-	$(GOENV) u-root -go-no-strip -no-strip -tmpdir /tmp/tdir -o tx -defaultsh="forth" -initcmd="forth" -gen-dir /tmp/x -uroot-source=~/go/src/github.com/u-root/u-root  $(GOTAGS)  -go-extra-args -ldflags="-T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000" .  \
+	rm -rf $(PWD)/tdir
+	$(GOENV) u-root -go-no-strip -no-strip -tmpdir $(PWD)/tdir -o tx -defaultsh="forth" -initcmd="forth" -gen-dir /tmp/x -uroot-source=~/go/src/github.com/u-root/u-root  $(GOTAGS)  -go-extra-args -ldflags="-T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000" .  \
 	tamago \
 	~/go/src/github.com/u-root/u-root/cmds/core/echo \
 	~/go/src/github.com/u-root/u-root/cmds/exp/forth \
 	~/go/src/github.com/u-root/u-root/cmds/core/wget
+	# having this as a separate file will not work.
+	# cp uroot/init.go tdir/*/src/github.com/usbarmory/tamago-example/tamago
+	cat  uroot/init.go >>tdir/*/src/github.com/usbarmory/tamago-example/tamago/main.go
+	(cd tdir/*/src/bb.u-root.com/bb && $(GOENV) go build -o tx  $(GOTAGS)  \
+			-ldflags="-T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000" .  )
 	mkdir -p bbin
 	rm -f bbin/bb
 	cpio -iv < tx  bbin/bb
+	cp tdir/*/src/bb.u-root.com/bb/tx utx
 
 urootqemu: uroot
 	$(QEMU) -kernel bbin/bb -monitor /dev/ttys001

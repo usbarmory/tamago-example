@@ -25,6 +25,10 @@ import (
 
 var Build string
 var Revision string
+// can not initialize this. It gets turned into a function
+// that runs after init()
+var onexit func()
+
 
 func init() {
 	log.SetFlags(0)
@@ -57,11 +61,16 @@ func main() {
 
 	cmd.NIC = eth
 
+	log.Printf("hasUSB %v hasEth %v", hasUSB, hasEth)
 	if hasUSB || hasEth {
 		network.SetupStaticWebAssets(cmd.Banner)
 		network.StartInterruptHandler(usb, eth)
 	} else {
 		cmd.SerialConsole(console)
 		semihosting.Exit()
+	}
+	log.Printf("onexit is %v", onexit)
+	if onexit != nil {
+		onexit()
 	}
 }
