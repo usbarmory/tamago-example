@@ -157,6 +157,7 @@ $(APP): check_tamago IMX6ULL.yaml
 
 uroot: check_uroot IMX6ULL.yaml $(APP)
 	$(GOENV) u-root -go-no-strip -no-strip -tmpdir /tmp/tdir -o tx -defaultsh="forth" -initcmd="forth" -gen-dir /tmp/x -uroot-source=~/go/src/github.com/u-root/u-root  $(GOTAGS)  -go-extra-args -ldflags="-T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000" .  \
+	tamago \
 	~/go/src/github.com/u-root/u-root/cmds/core/echo \
 	~/go/src/github.com/u-root/u-root/cmds/exp/forth \
 	~/go/src/github.com/u-root/u-root/cmds/core/wget
