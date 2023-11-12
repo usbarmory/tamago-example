@@ -167,19 +167,6 @@ uroot: check_uroot IMX6ULL.yaml $(APP)
 	cpio -iv < tx  bbin/bb
 	cp bbin/bb utx
 
-builduroot:
-	echo DO NOT DO THIS ANY MORE
-	false
-	cp uroot/init.go tdir/*/src/github.com/usbarmory/tamago-example/tamago
-	echo the "" is required by BSD sed, which has its own wonderful rules.
-	sed -i "" 's/os.Exit.0./if false { & } /' tdir/*/src/bb.u-root.com/bb/pkg/bbmain/register.go
-	(cd tdir/*/src/bb.u-root.com/bb && $(GOENV) go build -o tx  $(GOTAGS)  \
-			-ldflags="-T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000" .  )
-	mkdir -p bbin
-	rm -f bbin/bb
-	cpio -iv < tx  bbin/bb
-	cp tdir/*/src/bb.u-root.com/bb/tx utx
-
 urootqemu: uroot
 	$(QEMU) -kernel utx -monitor /dev/ttys001
 
