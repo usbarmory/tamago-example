@@ -14,21 +14,21 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"time"
 
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
 
 	"github.com/usbarmory/tamago-example/cmd"
-	"github.com/usbarmory/tamago-example/internal/semihosting"
 	"github.com/usbarmory/tamago-example/network"
 )
 
 var Build string
 var Revision string
+
 // can not initialize this. It gets turned into a function
 // that runs after init()
 var onexit func()
-
 
 func init() {
 	log.SetFlags(0)
@@ -66,11 +66,25 @@ func main() {
 		network.SetupStaticWebAssets(cmd.Banner)
 		network.StartInterruptHandler(usb, eth)
 	} else {
-		cmd.SerialConsole(console)
-		semihosting.Exit()
+		for {
+			err := doit(console)
+			log.Printf("console err %v; take 5", err)
+			time.Sleep(5 * time.Second)
+		}
 	}
-	log.Printf("onexit is %v", onexit)
-	if onexit != nil {
-		onexit()
+}
+
+func doit(console *cmd.Interface) error {
+	var err error
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Recovered. Error:%v\n", r)
+			err = fmt.Errorf("wel: %v", r)
+		}
+	}()
+	runtime.Exit = func() {
+		panic("hey we exited")
 	}
+	cmd.SerialConsole(console)
+	return err
 }
