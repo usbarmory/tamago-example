@@ -22,9 +22,9 @@ import (
 func init() {
 	Add(Cmd{
 		Name:    "tailscale",
-		Args:    1,
-		Pattern: regexp.MustCompile(`^tailscale ([^\s]+)$`),
-		Syntax:  "<auth key>",
+		Args:    2,
+		Pattern: regexp.MustCompile(`^tailscale ([^\s]+)( verbose)?$`),
+		Syntax:  "<auth key> (verbose)?",
 		Help:    "start network servers on Tailscale tailnet",
 		Fn:      tailscaleCmd,
 	})
@@ -35,10 +35,13 @@ func tailscaleCmd(iface *Interface, _ *term.Terminal, arg []string) (res string,
 		AuthKey:   arg[0],
 		Ephemeral: true,
 		Hostname:  "tamago",
+		Logf:      func(string, ...any) {},
 	}
 
-	s.Logf = func(format string, args ...any) {
-		log.Printf("tsnet --- %s", fmt.Sprintf(format, args...))
+	if len(arg[1]) > 0 {
+		s.Logf = func(format string, args ...any) {
+			log.Printf("tsnet --- %s", fmt.Sprintf(format, args...))
+		}
 	}
 
 	status, err := s.Up(context.Background())
@@ -47,7 +50,8 @@ func tailscaleCmd(iface *Interface, _ *term.Terminal, arg []string) (res string,
 		return
 	}
 
-	log.Printf("Tailscale IPN network status: %+v", status)
+	ip := status.TailscaleIPs[0].String()
+	log.Printf("Tailscale registered IPV4: %s", ip)
 
 	listenerSSH, err := s.Listen("tcp", fmt.Sprintf(":%d", 22))
 
@@ -63,7 +67,14 @@ func tailscaleCmd(iface *Interface, _ *term.Terminal, arg []string) (res string,
 		return
 	}
 
+	listenerHTTPS, err := s.Listen("tcp", fmt.Sprintf(":%d", 443))
+
+	if err != nil {
+		return
+	}
+
 	go network.StartWebServer(listenerHTTP, status.TailscaleIPs[0].String(), 80, false)
+	go network.StartWebServer(listenerHTTPS, status.TailscaleIPs[0].String(), 443, true)
 
 	return
 }
