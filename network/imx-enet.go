@@ -75,14 +75,14 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 
 	journal = journalFile
 
+	// hook interface into Go runtime
+	net.SocketFunc = iface.Socket
+
 	// This example illustrates IRQ handling, alternatively a poller can be
 	// used with `eth.Start(true)`.
 
 	eth.EnableInterrupt(enet.IRQ_RXF)
 	eth.Start(false)
-
-	// hook interface into Go runtime
-	net.SocketFunc = iface.Socket
 
 	return
 }
