@@ -13,12 +13,15 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
+	"regexp"
 	"runtime"
+	"strconv"
 
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/arm"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
+	"github.com/usbarmory/tamago/soc/nxp/snvs"
 )
 
 const (
@@ -47,6 +50,26 @@ func init() {
 	case "i.MX6UL":
 		imx6ul.SetARMFreq(imx6ul.Freq528)
 	}
+
+	Add(Cmd{
+		Name: "freq",
+		Args:    1,
+		Pattern: regexp.MustCompile(`^freq (198|396|528|792|900)$`),
+		Help: "change ARM core frequency",
+		Syntax:  "(198|396|528|792|900)",
+		Fn:   freqCmd,
+	})
+
+	imx6ul.SNVS.SetPolicy(
+		snvs.SecurityPolicy{
+			Clock:             true,
+			Temperature:       true,
+			Voltage:           false,
+			SecurityViolation: true,
+			HardFail:          true,
+			HAC:               0xffffffff,
+		},
+	)
 }
 
 func date(epoch int64) {
@@ -74,20 +97,39 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	res.WriteString(fmt.Sprintf("Board ........: %s\n", boardName))
 	res.WriteString(fmt.Sprintf("SoC ..........: %s\n", Target()))
 	res.WriteString(fmt.Sprintf("SDP ..........: %v\n", imx6ul.SDP))
-	res.WriteString(fmt.Sprintf("Secure boot ..: %v\n", imx6ul.HAB()))
+	res.WriteString(fmt.Sprintf("Unique ID ....: %X\n", imx6ul.UniqueID()))
 	res.WriteString(fmt.Sprintf("Boot ROM hash : %x\n", sha256.Sum256(rom)))
+	res.WriteString(fmt.Sprintf("Secure boot ..: %v\n", imx6ul.SNVS.Available()))
 
 	if imx6ul.Native {
-		res.WriteString(fmt.Sprintf("Unique ID ....: %X\n", imx6ul.UniqueID()))
+		ssm := imx6ul.SNVS.Monitor()
+
+		res.WriteString(fmt.Sprintf(
+			"SSM Status ...: state:%#.4b clk:%v tmp:%v vcc:%v hac:%d\n",
+			ssm.State, ssm.Clock, ssm.Temperature, ssm.Voltage, ssm.HAC,
+			))
+
 		res.WriteString(fmt.Sprintf("Temperature ..: %f\n", imx6ul.TEMPMON.Read()))
 	}
 
 	return res.String(), nil
 }
 
+func freqCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+	var mhz uint64
+
+	if mhz, err = strconv.ParseUint(arg[0], 10, 32); err != nil {
+		return
+	}
+
+	err = imx6ul.SetARMFreq(uint32(mhz))
+
+	return Target(), err
+}
+
 func cryptoTest() {
 	spawn(btcdTest)
-	spawn(kyberTest)
+	spawn(kemTest)
 	spawn(caamTest)
 	spawn(dcpTest)
 }
