@@ -136,7 +136,7 @@ func testKeyDerivationCAAM() (err error) {
 	}
 
 	// if the SoC is secure booted we can only print the result
-	if imx6ul.HAB() {
+	if imx6ul.SNVS.Available() {
 		log.Printf("imx6_caam: OTPMK derived key %x", key)
 		return
 	}
