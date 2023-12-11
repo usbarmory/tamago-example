@@ -95,6 +95,7 @@ dma             (free|used)                                      # show allocati
 dns             <host>                                           # resolve domain (requires routing)
 ecdsa           <sec> (soft)?                                    # benchmark CAAM/DCP hardware signing
 exit, quit                                                       # close session
+freq            (198|396|528|792|900)                            # change ARM core frequency
 help                                                             # this help
 huk                                                              # CAAM/DCP hardware unique key derivation
 i2c             <n> <hex target> <hex addr> <size>               # I²C bus read

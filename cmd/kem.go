@@ -19,6 +19,8 @@ import (
 	"github.com/usbarmory/tamago-example/internal/nist"
 )
 
+// TODO: replace with https://github.com/FiloSottile/mlkem768/blob/main/mlkem768_test.go
+
 func init() {
 	Add(Cmd{
 		Name: "kem",
@@ -45,7 +47,7 @@ func kemCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error
 	return
 }
 
-func kyberTest() {
+func kemTest() {
 	msg("post-quantum KEM")
 	testPQCgenKATKem("Kyber512", "e9c2bd37133fcb40772f81559f14b1f58dccd1c816701be9ba6214d43baf4547")
 }

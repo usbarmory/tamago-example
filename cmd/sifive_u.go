@@ -55,7 +55,7 @@ func rebootCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error)
 
 func cryptoTest() {
 	spawn(btcdTest)
-	spawn(kyberTest)
+	spawn(kemTest)
 }
 
 func usdhcTest() {
