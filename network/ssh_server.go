@@ -106,27 +106,7 @@ func handleChannels(chans <-chan ssh.NewChannel, console consoleHandler) {
 	}
 }
 
-func StartSSHServer(listener net.Listener, console consoleHandler) {
-	srv := &ssh.ServerConfig{
-		NoClientAuth: true,
-	}
-
-	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-
-	if err != nil {
-		log.Fatal("private key generation error: ", err)
-	}
-
-	signer, err := ssh.NewSignerFromKey(key)
-
-	if err != nil {
-		log.Fatal("key conversion error: ", err)
-	}
-
-	log.Printf("starting ssh server (%s) at %s", ssh.FingerprintSHA256(signer.PublicKey()), listener.Addr())
-
-	srv.AddHostKey(signer)
-
+func accept(listener net.Listener, console consoleHandler, srv *ssh.ServerConfig) {
 	for {
 		conn, err := listener.Accept()
 
@@ -147,4 +127,27 @@ func StartSSHServer(listener net.Listener, console consoleHandler) {
 		go ssh.DiscardRequests(reqs)
 		go handleChannels(chans, console)
 	}
+}
+
+func StartSSHServer(listener net.Listener, console consoleHandler) {
+	srv := &ssh.ServerConfig{
+		NoClientAuth: true,
+	}
+
+	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+
+	if err != nil {
+		log.Fatal("private key generation error: ", err)
+	}
+
+	signer, err := ssh.NewSignerFromKey(key)
+
+	if err != nil {
+		log.Fatal("key conversion error: ", err)
+	}
+
+	srv.AddHostKey(signer)
+
+	log.Printf("starting ssh server (%s) at %s", ssh.FingerprintSHA256(signer.PublicKey()), listener.Addr())
+	go accept(listener, console, srv)
 }

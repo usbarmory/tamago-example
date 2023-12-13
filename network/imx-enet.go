@@ -55,7 +55,8 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 			log.Fatalf("could not initialize SSH listener, %v", err)
 		}
 
-		go StartSSHServer(listenerSSH, console)
+		// wait for server to start before responding to USB requests
+		StartSSHServer(listenerSSH, console)
 	}
 
 	listenerHTTP, err := iface.ListenerTCP4(80)
