@@ -60,6 +60,10 @@ func init() {
 		Fn:   freqCmd,
 	})
 
+	// This example policy sets the maximum delay between violation
+	// detection and hard failure, on the i.MX6UL SNVS re-initialization
+	// with invalid calibration data (e.g. SNVS.Init(0)) can be used to
+	// test tamper detection.
 	imx6ul.SNVS.SetPolicy(
 		snvs.SecurityPolicy{
 			Clock:             true,
