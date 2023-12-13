@@ -91,6 +91,7 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 
 	ramStart, ramEnd := runtime.MemRegion()
 	rom := mem(romStart, romSize, nil)
+	ssm := imx6ul.SNVS.Monitor()
 
 	res.WriteString(fmt.Sprintf("Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH))
 	res.WriteString(fmt.Sprintf("RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024)))
@@ -101,14 +102,12 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	res.WriteString(fmt.Sprintf("Boot ROM hash : %x\n", sha256.Sum256(rom)))
 	res.WriteString(fmt.Sprintf("Secure boot ..: %v\n", imx6ul.SNVS.Available()))
 
+	res.WriteString(fmt.Sprintf(
+		"SSM Status ...: state:%#.4b clk:%v tmp:%v vcc:%v hac:%d\n",
+		ssm.State, ssm.Clock, ssm.Temperature, ssm.Voltage, ssm.HAC,
+	))
+
 	if imx6ul.Native {
-		ssm := imx6ul.SNVS.Monitor()
-
-		res.WriteString(fmt.Sprintf(
-			"SSM Status ...: state:%#.4b clk:%v tmp:%v vcc:%v hac:%d\n",
-			ssm.State, ssm.Clock, ssm.Temperature, ssm.Voltage, ssm.HAC,
-			))
-
 		res.WriteString(fmt.Sprintf("Temperature ..: %f\n", imx6ul.TEMPMON.Read()))
 	}
 
