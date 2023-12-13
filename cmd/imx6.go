@@ -64,7 +64,7 @@ func init() {
 		snvs.SecurityPolicy{
 			Clock:             true,
 			Temperature:       true,
-			Voltage:           false,
+			Voltage:           true,
 			SecurityViolation: true,
 			HardFail:          true,
 			HAC:               0xffffffff,
