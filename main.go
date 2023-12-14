@@ -43,9 +43,15 @@ func main() {
 	logFile, _ := os.OpenFile("/tamago-example.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 
+	console := &cmd.Interface{}
 	hasUSB, hasEth := cmd.HasNetwork()
 
-	console := &cmd.Interface{}
+	if hasUSB || hasEth {
+		network.SetupStaticWebAssets(cmd.Banner)
+	} else {
+		cmd.SerialConsole(console)
+		semihosting.Exit()
+	}
 
 	if hasUSB {
 		usb = network.StartUSB(console.Start, logFile)
@@ -53,15 +59,8 @@ func main() {
 
 	if hasEth {
 		eth = network.StartEth(console.Start, logFile)
+		cmd.NIC = eth
 	}
 
-	cmd.NIC = eth
-
-	if hasUSB || hasEth {
-		network.SetupStaticWebAssets(cmd.Banner)
-		network.StartInterruptHandler(usb, eth)
-	} else {
-		cmd.SerialConsole(console)
-		semihosting.Exit()
-	}
+	network.StartInterruptHandler(usb, eth)
 }
