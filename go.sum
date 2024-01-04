@@ -306,6 +306,8 @@ github.com/usbarmory/tamago v0.0.0-20231213092343-e778de617b62 h1:5mT5vp3zO9j9aQ
 github.com/usbarmory/tamago v0.0.0-20231213092343-e778de617b62/go.mod h1:uCPXcPo8SZulhZPz8irfVqzwVlPZ45w7CTJxkfxueGA=
 github.com/usbarmory/tamago v0.0.0-20231213101626-43fc8af0637b h1:CvICR6nwvGBUzadA44f2J24avR/WhL1WAGwbQo/zG7I=
 github.com/usbarmory/tamago v0.0.0-20231213101626-43fc8af0637b/go.mod h1:uCPXcPo8SZulhZPz8irfVqzwVlPZ45w7CTJxkfxueGA=
+github.com/usbarmory/tamago v0.0.0-20240104082548-a4cec7c453bd h1:tb7f0SnVR9yTv7kxdBcMqvpNtJ8+/rZDzeizFvGT0jc=
+github.com/usbarmory/tamago v0.0.0-20240104082548-a4cec7c453bd/go.mod h1:uCPXcPo8SZulhZPz8irfVqzwVlPZ45w7CTJxkfxueGA=
 github.com/vishvananda/netlink v1.2.1-beta.2 h1:Llsql0lnQEbHj0I1OuKyp8otXp0r3q0mPkuhwHfStVs=
 github.com/vishvananda/netlink v1.2.1-beta.2/go.mod h1:twkDnbuQxJYemMlGd4JFIcuhgX83tXhKS2B/PRMpOho=
 github.com/vishvananda/netns v0.0.0-20200728191858-db3c7e526aae/go.mod h1:DD4vA1DwXk04H54A1oHXtwZmA0grkVMdPxx/VGLCah0=

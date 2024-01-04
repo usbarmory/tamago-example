@@ -94,26 +94,29 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	var res bytes.Buffer
 
 	ramStart, ramEnd := runtime.MemRegion()
-	rom := mem(romStart, romSize, nil)
-	ssm := imx6ul.SNVS.Monitor()
 
 	res.WriteString(fmt.Sprintf("Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH))
 	res.WriteString(fmt.Sprintf("RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024)))
 	res.WriteString(fmt.Sprintf("Board ........: %s\n", boardName))
 	res.WriteString(fmt.Sprintf("SoC ..........: %s\n", Target()))
-	res.WriteString(fmt.Sprintf("SDP ..........: %v\n", imx6ul.SDP))
-	res.WriteString(fmt.Sprintf("Unique ID ....: %X\n", imx6ul.UniqueID()))
-	res.WriteString(fmt.Sprintf("Boot ROM hash : %x\n", sha256.Sum256(rom)))
-	res.WriteString(fmt.Sprintf("Secure boot ..: %v\n", imx6ul.SNVS.Available()))
 
+	if !imx6ul.Native {
+		return res.String(), nil
+	}
+
+	ssm := imx6ul.SNVS.Monitor()
 	res.WriteString(fmt.Sprintf(
 		"SSM Status ...: state:%#.4b clk:%v tmp:%v vcc:%v hac:%d\n",
 		ssm.State, ssm.Clock, ssm.Temperature, ssm.Voltage, ssm.HAC,
 	))
 
-	if imx6ul.Native {
-		res.WriteString(fmt.Sprintf("Temperature ..: %f\n", imx6ul.TEMPMON.Read()))
-	}
+	rom := mem(romStart, romSize, nil)
+	res.WriteString(fmt.Sprintf("Boot ROM hash : %x\n", sha256.Sum256(rom)))
+	res.WriteString(fmt.Sprintf("Secure boot ..: %v\n", imx6ul.SNVS.Available()))
+
+	res.WriteString(fmt.Sprintf("Unique ID ....: %X\n", imx6ul.UniqueID()))
+	res.WriteString(fmt.Sprintf("SDP ..........: %v\n", imx6ul.SDP))
+	res.WriteString(fmt.Sprintf("Temperature ..: %f\n", imx6ul.TEMPMON.Read()))
 
 	return res.String(), nil
 }

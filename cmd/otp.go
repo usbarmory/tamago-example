@@ -61,15 +61,16 @@ func loadFuseMap() (err error) {
 
 func readOTP(bank int, word int) (res string, err error) {
 	var reg *fusemap.Register
+	var val []byte
 
 	if err = loadFuseMap(); err != nil {
 		return
 	}
 
-	val, err := otp.ReadOCOTP(bank, word, 0, 32)
-
-	if err != nil {
-		return
+	if imx6ul.Native {
+		if val, err = otp.ReadOCOTP(bank, word, 0, 32); err != nil {
+			return
+		}
 	}
 
 	for _, reg = range fuseMap.Registers {
