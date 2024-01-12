@@ -53,13 +53,13 @@ func main() {
 		semihosting.Exit()
 	}
 
-	if hasUSB {
-		usb = network.StartUSB(console.Start, logFile)
-	}
-
 	if hasEth {
 		eth = network.StartEth(console.Start, logFile)
 		cmd.NIC = eth
+	}
+
+	if hasUSB {
+		usb = network.StartUSB(console.Start, logFile)
 	}
 
 	network.StartInterruptHandler(usb, eth)
