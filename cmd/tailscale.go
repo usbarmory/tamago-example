@@ -59,7 +59,7 @@ func tailscaleCmd(iface *Interface, _ *term.Terminal, arg []string) (res string,
 		return
 	}
 
-	go network.StartSSHServer(listenerSSH, iface.Start)
+	network.StartSSHServer(listenerSSH, iface.Start)
 
 	listenerHTTP, err := s.Listen("tcp", fmt.Sprintf(":%d", 80))
 
@@ -73,8 +73,8 @@ func tailscaleCmd(iface *Interface, _ *term.Terminal, arg []string) (res string,
 		return
 	}
 
-	go network.StartWebServer(listenerHTTP, status.TailscaleIPs[0].String(), 80, false)
-	go network.StartWebServer(listenerHTTPS, status.TailscaleIPs[0].String(), 443, true)
+	network.StartWebServer(listenerHTTP, status.TailscaleIPs[0].String(), 80, false)
+	network.StartWebServer(listenerHTTPS, status.TailscaleIPs[0].String(), 443, true)
 
 	return
 }

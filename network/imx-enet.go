@@ -55,7 +55,6 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 			log.Fatalf("could not initialize SSH listener, %v", err)
 		}
 
-		// wait for server to start before responding to USB requests
 		StartSSHServer(listenerSSH, console)
 	}
 
@@ -71,19 +70,19 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 		log.Fatalf("could not initialize HTTP listener, %v", err)
 	}
 
-	go StartWebServer(listenerHTTP, IP, 80, false)
-	go StartWebServer(listenerHTTPS, IP, 443, true)
+	StartWebServer(listenerHTTP, IP, 80, false)
+	StartWebServer(listenerHTTPS, IP, 443, true)
 
 	journal = journalFile
-
-	// hook interface into Go runtime
-	net.SocketFunc = iface.Socket
 
 	// This example illustrates IRQ handling, alternatively a poller can be
 	// used with `eth.Start(true)`.
 
 	eth.EnableInterrupt(enet.IRQ_RXF)
 	eth.Start(false)
+
+	// hook interface into Go runtime
+	net.SocketFunc = iface.Socket
 
 	return
 }

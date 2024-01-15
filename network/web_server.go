@@ -147,11 +147,13 @@ func StartWebServer(listener net.Listener, addr string, port uint16, https bool)
 
 	log.Printf("starting web server at %s:%d", addr, port)
 
-	if https {
-		err = srv.ServeTLS(listener, "", "")
-	} else {
-		err = srv.Serve(listener)
-	}
+	go func() {
+		if https {
+			err = srv.ServeTLS(listener, "", "")
+		} else {
+			err = srv.Serve(listener)
+		}
 
-	log.Fatal("server returned unexpectedly ", err)
+		log.Fatal("server returned unexpectedly ", err)
+	}()
 }
