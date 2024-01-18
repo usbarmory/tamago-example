@@ -298,6 +298,8 @@ github.com/usbarmory/imx-usbnet v0.0.0-20230906121641-6105d330ad44 h1:Ix2SE4SbB3
 github.com/usbarmory/imx-usbnet v0.0.0-20230906121641-6105d330ad44/go.mod h1:eT+4LgXX1S+pyzpTtg0P5vCqvzQA4/kA1b/kmiMqQbE=
 github.com/usbarmory/tamago v0.0.0-20240104082716-7fdd041b36ef h1:/4FEy+WnOsA06twAR0UWFLEBU2KRhYzkh+jmvlsI4f4=
 github.com/usbarmory/tamago v0.0.0-20240104082716-7fdd041b36ef/go.mod h1:uCPXcPo8SZulhZPz8irfVqzwVlPZ45w7CTJxkfxueGA=
+github.com/usbarmory/tamago v0.0.0-20240118094247-331eaa233b97 h1:EYjaDSggEAUGFPEHUKbEdQPjijxJ+XyvIV/9KaDoalI=
+github.com/usbarmory/tamago v0.0.0-20240118094247-331eaa233b97/go.mod h1:uCPXcPo8SZulhZPz8irfVqzwVlPZ45w7CTJxkfxueGA=
 github.com/vishvananda/netlink v1.2.1-beta.2 h1:Llsql0lnQEbHj0I1OuKyp8otXp0r3q0mPkuhwHfStVs=
 github.com/vishvananda/netlink v1.2.1-beta.2/go.mod h1:twkDnbuQxJYemMlGd4JFIcuhgX83tXhKS2B/PRMpOho=
 github.com/vishvananda/netns v0.0.0-20200728191858-db3c7e526aae/go.mod h1:DD4vA1DwXk04H54A1oHXtwZmA0grkVMdPxx/VGLCah0=
