@@ -21,7 +21,7 @@ import (
 	"github.com/usbarmory/tamago/soc/nxp/usb"
 )
 
-const hostMAC = "1a:55:89:a2:69:42"
+const HostMAC = "1a:55:89:a2:69:42"
 
 func handleUSBInterrupt(usb *usb.USB) {
 	usb.ServiceInterrupts()
@@ -30,7 +30,7 @@ func handleUSBInterrupt(usb *usb.USB) {
 func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 	port = imx6ul.USB1
 
-	iface, err := usbnet.Init(IP, MAC, hostMAC, 1)
+	iface, err := usbnet.Init(IP, MAC, HostMAC, NICID)
 
 	if err != nil {
 		log.Fatalf("could not initialize USB networking, %v", err)
