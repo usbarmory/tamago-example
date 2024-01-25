@@ -13,8 +13,8 @@ require (
 	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564
 	github.com/psanford/wormhole-william v1.0.7
 	github.com/usbarmory/crucible v0.0.0-20231213080712-321ac9311a09
-	github.com/usbarmory/imx-enet v0.0.0-20230906121622-9b9d18e7b72a
-	github.com/usbarmory/imx-usbnet v0.0.0-20230906121641-6105d330ad44
+	github.com/usbarmory/imx-enet v0.0.0-20240119111743-39ba6fac5320
+	github.com/usbarmory/imx-usbnet v0.0.0-20240119111829-8a5a776bd9e9
 	github.com/usbarmory/tamago v0.0.0-20240118094247-331eaa233b97
 	golang.org/x/crypto v0.18.0
 	golang.org/x/crypto/x509roots/fallback v0.0.0-20240108164429-dbb6ec16ecef

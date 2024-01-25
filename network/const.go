@@ -17,13 +17,12 @@ import (
 
 // This example starts TCP/IP networking on all available network
 // interfaces (either USB, Ethernet or both), for simplicity each NIC
-// is assigned the same ID, IP address and its own gVisor stack.
+// is assigned the same IP address and its own gVisor stack.
 //
 // For more advanced use cases gVisor supports sharing a single stack across
 // different NIC IDs and routing while this example simply clones interface
 // configuration and stack.
 const (
-	NICID    = 1
 	MAC      = "1a:55:89:a2:69:41"
 	IP       = "10.0.0.1"
 	Resolver = "8.8.8.8:53"

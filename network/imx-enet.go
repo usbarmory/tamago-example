@@ -40,9 +40,9 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 		eth = imx6ul.ENET1
 	}
 
-	iface, err := imxenet.Init(eth, IP, Netmask, MAC, Gateway, NICID)
+	iface := imxenet.Interface{}
 
-	if err != nil {
+	if err := iface.Init(eth, IP, Netmask, MAC, Gateway); err != nil {
 		log.Fatalf("could not initialize Ethernet networking, %v", err)
 	}
 

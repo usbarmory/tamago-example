@@ -30,9 +30,9 @@ func handleUSBInterrupt(usb *usb.USB) {
 func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 	port = imx6ul.USB1
 
-	iface, err := usbnet.Init(IP, MAC, HostMAC, NICID)
+	iface := usbnet.Interface{}
 
-	if err != nil {
+	if  err := iface.Init(IP, MAC, HostMAC); err != nil {
 		log.Fatalf("could not initialize USB networking, %v", err)
 	}
 
