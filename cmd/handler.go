@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -38,11 +39,13 @@ type Cmd struct {
 	Fn      CmdFn
 }
 
-type Interface struct{}
+type Interface struct{
+	Log *os.File
+}
 
 var Banner string
 var cmds = make(map[string]*Cmd)
-var console io.ReadWriter
+var uart io.ReadWriter
 
 func Add(cmd Cmd) {
 	cmds[cmd.Name] = &cmd
@@ -51,7 +54,7 @@ func Add(cmd Cmd) {
 func msg(format string, args ...interface{}) {
 	s := strings.Repeat(separator, 2) + " "
 	s += fmt.Sprintf(format, args...)
-	s += strings.Repeat(separator, separatorSize-len(s))
+	s += " " + strings.Repeat(separator, separatorSize-len(s))
 
 	log.Println(s)
 }
@@ -108,7 +111,15 @@ func (iface *Interface) handle(term *term.Terminal, line string) (err error) {
 	return
 }
 
-func (iface *Interface) Start(term *term.Terminal) {
+func (iface *Interface) Exec(term *term.Terminal, cmd []byte) {
+	if err := iface.handle(term, string(cmd)); err != nil {
+		fmt.Fprintf(term, "command error (%s), %v\n", cmd, err)
+	}
+}
+
+func (iface *Interface) Terminal(term *term.Terminal) {
+	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
+
 	fmt.Fprintf(term, "%s\n\n", Banner)
 	fmt.Fprintf(term, "%s\n", Help(term))
 
@@ -129,14 +140,14 @@ func (iface *Interface) Start(term *term.Terminal) {
 				break
 			}
 
-			log.Printf("command error, %v", err)
+			fmt.Fprintf(term, "command error, %v\n", err)
 		}
 	}
 }
 
 func SerialConsole(iface *Interface) {
-	term := term.NewTerminal(console, "")
+	term := term.NewTerminal(uart, "")
 	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
 
-	iface.Start(term)
+	iface.Terminal(term)
 }

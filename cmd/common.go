@@ -92,8 +92,8 @@ func helpCmd(_ *Interface, term *term.Terminal, _ []string) (string, error) {
 	return Help(term), nil
 }
 
-func exitCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
-	log.Printf("Goodbye from %s/%s\n", runtime.GOOS, runtime.GOARCH)
+func exitCmd(_ *Interface, term *term.Terminal, _ []string) (string, error) {
+	fmt.Fprintf(term, "Goodbye from %s/%s\n", runtime.GOOS, runtime.GOARCH)
 	return "logout", io.EOF
 }
 

@@ -23,11 +23,24 @@ import (
 	"golang.org/x/term"
 )
 
-type consoleHandler func(term *term.Terminal)
+type sshHandler interface {
+	Exec(term *term.Terminal, cmd []byte)
+	Terminal(term *term.Terminal)
+}
 
 var journal *os.File
 
-func handleChannel(newChannel ssh.NewChannel, console consoleHandler) {
+func handleTerminal(conn ssh.Channel, term *term.Terminal, handler sshHandler) {
+	log.SetOutput(io.MultiWriter(os.Stdout, journal, term))
+	defer log.SetOutput(io.MultiWriter(os.Stdout, journal))
+
+	handler.Terminal(term)
+
+	log.Printf("closing ssh connection")
+	conn.Close()
+}
+
+func handleChannel(newChannel ssh.NewChannel, handler sshHandler) {
 	if t := newChannel.ChannelType(); t != "session" {
 		newChannel.Reject(ssh.UnknownChannelType, fmt.Sprintf("unknown channel type: %s", t))
 		return
@@ -41,29 +54,19 @@ func handleChannel(newChannel ssh.NewChannel, console consoleHandler) {
 	}
 
 	term := term.NewTerminal(conn, "")
-	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
-
-	go func() {
-		defer conn.Close()
-
-		log.SetOutput(io.MultiWriter(os.Stdout, journal, term))
-		defer log.SetOutput(io.MultiWriter(os.Stdout, journal))
-
-		console(term)
-
-		log.Printf("closing ssh connection")
-	}()
 
 	go func() {
 		for req := range requests {
 			reqSize := len(req.Payload)
 
 			switch req.Type {
+			case "exec":
+				handler.Exec(term, req.Payload[4:])
+				conn.Close()
+				return
 			case "shell":
-				// do not accept payload commands
-				if len(req.Payload) == 0 {
-					req.Reply(true, nil)
-				}
+				go handleTerminal(conn, term, handler)
+				req.Reply(true, nil)
 			case "pty-req":
 				// p10, 6.2.  Requesting a Pseudo-Terminal, RFC4254
 				if reqSize < 4 {
@@ -100,13 +103,13 @@ func handleChannel(newChannel ssh.NewChannel, console consoleHandler) {
 	}()
 }
 
-func handleChannels(chans <-chan ssh.NewChannel, console consoleHandler) {
+func handleChannels(chans <-chan ssh.NewChannel, handler sshHandler) {
 	for newChannel := range chans {
-		go handleChannel(newChannel, console)
+		go handleChannel(newChannel, handler)
 	}
 }
 
-func accept(listener net.Listener, console consoleHandler, srv *ssh.ServerConfig) {
+func accept(listener net.Listener, handler sshHandler, srv *ssh.ServerConfig) {
 	for {
 		conn, err := listener.Accept()
 
@@ -125,11 +128,11 @@ func accept(listener net.Listener, console consoleHandler, srv *ssh.ServerConfig
 		log.Printf("new ssh connection from %s (%s)", sshConn.RemoteAddr(), sshConn.ClientVersion())
 
 		go ssh.DiscardRequests(reqs)
-		go handleChannels(chans, console)
+		go handleChannels(chans, handler)
 	}
 }
 
-func StartSSHServer(listener net.Listener, console consoleHandler) {
+func StartSSHServer(listener net.Listener, handler sshHandler) {
 	srv := &ssh.ServerConfig{
 		NoClientAuth: true,
 	}
@@ -149,5 +152,5 @@ func StartSSHServer(listener net.Listener, console consoleHandler) {
 	srv.AddHostKey(signer)
 
 	log.Printf("starting ssh server (%s) at %s", ssh.FingerprintSHA256(signer.PublicKey()), listener.Addr())
-	go accept(listener, console, srv)
+	go accept(listener, handler, srv)
 }

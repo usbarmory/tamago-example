@@ -22,7 +22,7 @@ var boardName string
 
 func init() {
 	_, boardName = usbarmory.Model()
-	console = usbarmory.UART2
+	uart = usbarmory.UART2
 
 	if !imx6ul.Native {
 		return

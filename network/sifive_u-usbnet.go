@@ -13,7 +13,6 @@ package network
 
 import (
 	"log"
-	"os"
 
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
@@ -23,12 +22,12 @@ func StartInterruptHandler(_ *usb.USB, _ *enet.ENET) {
 	log.Fatal("unsupported")
 }
 
-func StartEth(_ consoleHandler, _ *os.File) (_ *enet.ENET) {
+func StartEth(_ sshHandler) (_ *enet.ENET) {
 	log.Fatal("unsupported")
 	return
 }
 
-func StartUSB(_ consoleHandler, _ *os.File) (_ *usb.USB) {
+func StartUSB(_ sshHandler) (_ *usb.USB) {
 	log.Fatal("unsupported")
 	return
 }

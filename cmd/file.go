@@ -7,51 +7,90 @@
 package cmd
 
 import (
+	"bytes"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
+
+	"golang.org/x/term"
 )
 
-func ls(path string) {
-	log.Printf("listing %s:", path)
+func init() {
+	Add(Cmd{
+		Name: "ls",
+		Args: 1,
+		Pattern: regexp.MustCompile(`^ls(.*)`),
+		Syntax:  "(path)?",
+		Help: "list directory contents",
+		Fn:   lsCmd,
+	})
+}
+
+func lsCmd(_ *Interface, term *term.Terminal, arg []string) (string, error) {
+	path := strings.TrimSpace(arg[0])
+
+	if len(path) == 0 {
+		path = "/"
+	}
+
+	return ls(path)
+}
+
+func ls(path string) (string, error) {
+	var res bytes.Buffer
+
+	res.WriteString(fmt.Sprintf("listing %s:\n", path))
 
 	f, err := os.Open(path)
 
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	d, err := f.Stat()
 
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	if !d.IsDir() {
-		log.Fatal("expected directory")
+		return "", errors.New("expected directory")
 	}
 
 	files, err := f.Readdir(-1)
 
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	for _, i := range files {
-		log.Printf(" %s/%s (%d bytes)", path, i.Name(), i.Size())
+		res.WriteString(fmt.Sprintf(" %s (%d bytes)\n", i.Name(), i.Size()))
 	}
+
+	return res.String(), nil
 }
 
 func devTest() {
-	ls("/dev")
+	res, err := ls("/dev")
+
+	log.Print(res)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	buf := make([]byte, 20)
 	path := "/dev/random"
 
 	log.Printf("reading %d bytes from %s", len(buf), path)
+
 	file, err := os.OpenFile(path, os.O_RDONLY, 0600)
+	defer file.Close()
 
 	if err != nil {
 		log.Fatal(err)
@@ -62,7 +101,6 @@ func devTest() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	file.Close()
 
 	log.Printf("read %s (%d bytes): %x", path, n, buf)
 }
@@ -72,25 +110,22 @@ func fileTest() {
 	fileName := "tamago.txt"
 	path := filepath.Join(dirPath, fileName)
 
-	err := os.MkdirAll(dirPath, 0700)
-
-	if err != nil {
+	if err := os.MkdirAll(dirPath, 0700); err != nil {
 		log.Fatal(err)
 	}
 
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	defer file.Close()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	log.Printf("writing %d bytes to %s", len(Banner), path)
-	_, err = file.WriteString(Banner)
 
-	if err != nil {
+	if _, err = file.WriteString(Banner); err != nil {
 		log.Fatal(err)
 	}
-	file.Close()
 
 	read, err := ioutil.ReadFile(path)
 
@@ -104,7 +139,13 @@ func fileTest() {
 		log.Printf("read %s (%d bytes)", path, len(read))
 	}
 
-	ls("/dir")
+	res, err := ls("/dir")
+
+	log.Print(res)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func fsTest() {

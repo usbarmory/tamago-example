@@ -14,7 +14,6 @@ package network
 import (
 	"log"
 	"net"
-	"os"
 
 	imxenet "github.com/usbarmory/imx-enet"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
@@ -33,7 +32,7 @@ func handleEthernetInterrupt(eth *enet.ENET) {
 	}
 }
 
-func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
+func StartEth(handler sshHandler) (eth *enet.ENET) {
 	eth = imx6ul.ENET2
 
 	if !imx6ul.Native {
@@ -48,14 +47,14 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 
 	iface.EnableICMP()
 
-	if console != nil {
+	if handler != nil {
 		listenerSSH, err := iface.ListenerTCP4(22)
 
 		if err != nil {
 			log.Fatalf("could not initialize SSH listener, %v", err)
 		}
 
-		StartSSHServer(listenerSSH, console)
+		StartSSHServer(listenerSSH, handler)
 	}
 
 	listenerHTTP, err := iface.ListenerTCP4(80)
@@ -72,8 +71,6 @@ func StartEth(console consoleHandler, journalFile *os.File) (eth *enet.ENET) {
 
 	StartWebServer(listenerHTTP, IP, 80, false)
 	StartWebServer(listenerHTTPS, IP, 443, true)
-
-	journal = journalFile
 
 	// This example illustrates IRQ handling, alternatively a poller can be
 	// used with `eth.Start(true)`.

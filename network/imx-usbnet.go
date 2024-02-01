@@ -14,7 +14,6 @@ package network
 import (
 	"log"
 	"net"
-	"os"
 
 	"github.com/usbarmory/imx-usbnet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
@@ -27,7 +26,7 @@ func handleUSBInterrupt(usb *usb.USB) {
 	usb.ServiceInterrupts()
 }
 
-func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
+func StartUSB(handler sshHandler) (port *usb.USB) {
 	port = imx6ul.USB1
 
 	iface := usbnet.Interface{}
@@ -40,7 +39,7 @@ func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 
 	iface.EnableICMP()
 
-	if console != nil {
+	if handler != nil {
 		listenerSSH, err := iface.ListenerTCP4(22)
 
 		if err != nil {
@@ -48,7 +47,7 @@ func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 		}
 
 		// wait for server to start before responding to USB requests
-		StartSSHServer(listenerSSH, console)
+		StartSSHServer(listenerSSH, handler)
 	}
 
 	listenerHTTP, err := iface.ListenerTCP4(80)
@@ -65,8 +64,6 @@ func StartUSB(console consoleHandler, journalFile *os.File) (port *usb.USB) {
 
 	StartWebServer(listenerHTTP, IP, 80, false)
 	StartWebServer(listenerHTTPS, IP, 443, true)
-
-	journal = journalFile
 
 	net.SocketFunc = iface.Socket
 

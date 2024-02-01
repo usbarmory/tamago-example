@@ -25,7 +25,7 @@ var boardName = "qemu-system-riscv64 (sifive_u)"
 var NIC interface{}
 
 func init() {
-	console = sifive_u.UART0
+	uart = sifive_u.UART0
 }
 
 func date(epoch int64) {

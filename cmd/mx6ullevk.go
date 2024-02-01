@@ -19,7 +19,7 @@ import (
 const boardName = "MCIMX6ULL-EVK"
 
 func init() {
-	console = mx6ullevk.UART1
+	uart = mx6ullevk.UART1
 
 	if !imx6ul.Native {
 		return
