@@ -111,6 +111,10 @@ func (iface *Interface) handle(term *term.Terminal, line string) (err error) {
 	return
 }
 
+func (iface *Interface) LogFile() *os.File {
+	return iface.Log
+}
+
 func (iface *Interface) Exec(term *term.Terminal, cmd []byte) {
 	if err := iface.handle(term, string(cmd)); err != nil {
 		fmt.Fprintf(term, "command error (%s), %v\n", cmd, err)

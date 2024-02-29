@@ -89,9 +89,6 @@ func flushingHandler(h http.Handler) http.HandlerFunc {
 		w.Header().Set("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate")
 		w.Header().Set("Pragma", "no-cache")
 		w.Header().Set("Expires", "Fri, 07 Jan 1981 00:00:00 GMT")
-
-		journal.Sync()
-
 		h.ServeHTTP(w, r)
 	}
 }

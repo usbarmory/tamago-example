@@ -26,13 +26,12 @@ import (
 type sshHandler interface {
 	Exec(term *term.Terminal, cmd []byte)
 	Terminal(term *term.Terminal)
+	LogFile() *os.File
 }
 
-var journal *os.File
-
 func handleTerminal(conn ssh.Channel, term *term.Terminal, handler sshHandler) {
-	log.SetOutput(io.MultiWriter(os.Stdout, journal, term))
-	defer log.SetOutput(io.MultiWriter(os.Stdout, journal))
+	log.SetOutput(io.MultiWriter(os.Stdout, handler.LogFile(), term))
+	defer log.SetOutput(io.MultiWriter(os.Stdout))
 
 	handler.Terminal(term)
 
