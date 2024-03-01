@@ -106,14 +106,14 @@ IMX6UL.yaml: check_tamago
 IMX6UL.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
 IMX6UL.yaml: CRUCIBLE_PKG=$(shell grep "github.com/usbarmory/crucible v" go.mod | awk '{print $$1"@"$$2}')
 IMX6UL.yaml:
-	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool
+	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool@latest
 	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX6UL.yaml cmd/IMX6UL.yaml
 
 IMX6ULL.yaml: check_tamago
 IMX6ULL.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
 IMX6ULL.yaml: CRUCIBLE_PKG=$(shell grep "github.com/usbarmory/crucible v" go.mod | awk '{print $$1"@"$$2}')
 IMX6ULL.yaml:
-	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool
+	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool@latest
 	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX6ULL.yaml cmd/IMX6ULL.yaml
 
 $(APP).dcd: check_tamago
@@ -158,7 +158,7 @@ endif
 #### HAB secure boot ####
 
 $(APP)-signed.imx: check_tamago check_hab_keys $(APP).imx
-	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool
+	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool@latest
 	$(shell ${TAMAGO} env GOPATH)/bin/habtool \
 		-A ${HAB_KEYS}/CSF_1_key.pem \
 		-a ${HAB_KEYS}/CSF_1_crt.pem \
