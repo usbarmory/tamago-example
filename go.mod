@@ -15,7 +15,7 @@ require (
 	github.com/usbarmory/crucible v0.0.0-20240222195051-dec27cd4e0e0
 	github.com/usbarmory/imx-enet v0.0.0-20240119111743-39ba6fac5320
 	github.com/usbarmory/imx-usbnet v0.0.0-20240119111829-8a5a776bd9e9
-	github.com/usbarmory/tamago v0.0.0-20240219125710-656154c7421a
+	github.com/usbarmory/tamago v0.0.0-20240306113720-d7dd77b4ed17
 	golang.org/x/crypto v0.20.0
 	golang.org/x/crypto/x509roots/fallback v0.0.0-20240228204720-0d2316b26734
 	golang.org/x/term v0.17.0
@@ -40,6 +40,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.21.7 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.26.7 // indirect
 	github.com/aws/smithy-go v1.19.0 // indirect
+	github.com/beevik/ntp v1.3.1 // indirect
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
 	github.com/coreos/go-iptables v0.7.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect

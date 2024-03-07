@@ -92,7 +92,7 @@ bee             <hex region0> <hex region1>                      # BEE OTF AES m
 ble                                                              # BLE serial console
 date            (time in RFC339 format)?                         # show/change runtime date and time
 dma             (free|used)                                      # show allocation of default DMA region
-dns             <host>                                           # resolve domain (requires routing)
+dns             <host>                                           # resolve domain
 ecdsa           <sec> (soft)?                                    # benchmark CAAM/DCP hardware signing
 exit, quit                                                       # close session
 freq            (198|396|528|792|900)                            # change ARM core frequency
@@ -105,6 +105,7 @@ ls              (path)?                                          # list director
 led             (white|blue) (on|off)                            # LED control
 mii             <hex pa> <hex ra> (hex data)?                    # show/change eth PHY standard registers
 mmd             <hex pa> <hex devad> <hex ra> (hex data)?        # show/change eth PHY extended registers
+ntp             <host>                                           # change runtime date and time via NTP
 otp             <bank> <word>                                    # OTP fuses display
 peek            <hex offset> <size>                              # memory display (use with caution)
 poke            <hex offset> <hex value>                         # memory write   (use with caution)
