@@ -23,7 +23,7 @@ func init() {
 		Args:    1,
 		Pattern: regexp.MustCompile(`^dns (.*)`),
 		Syntax:  "<host>",
-		Help:    "resolve domain (requires routing)",
+		Help:    "resolve domain",
 		Fn:      dnsCmd,
 	})
 }
@@ -32,7 +32,7 @@ func dnsCmd(iface *Interface, _ *term.Terminal, arg []string) (res string, err e
 	cname, err := net.LookupHost(arg[0])
 
 	if err != nil {
-		return fmt.Sprintf("query error: %v", err), nil
+		return "", fmt.Errorf("query error: %v", err)
 	}
 
 	return fmt.Sprintf("%+v", cname), nil
