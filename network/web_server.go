@@ -37,7 +37,7 @@ func generateTLSCerts(address net.IP) ([]byte, []byte, error) {
 	log.Printf("generating TLS keypair IP: %s, Serial: %X", address.String(), serial)
 
 	validFrom, _ := time.Parse(time.RFC3339, "1981-01-07T00:00:00Z")
-	validUntil, _ := time.Parse(time.RFC3339, "2022-01-07T00:00:00Z")
+	validUntil, _ := time.Parse(time.RFC3339, "2031-01-07T00:00:00Z")
 
 	certTemplate := x509.Certificate{
 		SerialNumber: serial,
