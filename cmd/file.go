@@ -22,12 +22,12 @@ import (
 
 func init() {
 	Add(Cmd{
-		Name: "ls",
-		Args: 1,
+		Name:    "ls",
+		Args:    1,
 		Pattern: regexp.MustCompile(`^ls(.*)`),
 		Syntax:  "(path)?",
-		Help: "list directory contents",
-		Fn:   lsCmd,
+		Help:    "list directory contents",
+		Fn:      lsCmd,
 	})
 }
 

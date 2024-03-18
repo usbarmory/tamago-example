@@ -39,7 +39,7 @@ type Cmd struct {
 	Fn      CmdFn
 }
 
-type Interface struct{
+type Interface struct {
 	Log *os.File
 }
 
