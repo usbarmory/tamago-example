@@ -32,6 +32,10 @@ func date(epoch int64) {
 	fu540.CLINT.SetTimer(epoch)
 }
 
+func uptime() (ns int64) {
+	return fu540.CLINT.Nanotime() - fu540.CLINT.TimerOffset
+}
+
 func mem(start uint, size int, w []byte) (b []byte) {
 	return memCopy(start, size, w)
 }

@@ -55,12 +55,12 @@ func init() {
 	})
 
 	Add(Cmd{
-		Name: "dma",
+		Name:    "dma",
 		Args:    1,
 		Pattern: regexp.MustCompile(`^dma (free|used)$`),
-		Help: "show allocation of default DMA region",
+		Help:    "show allocation of default DMA region",
 		Syntax:  "(free|used)",
-		Fn:   dmaCmd,
+		Fn:      dmaCmd,
 	})
 
 	Add(Cmd{
@@ -70,6 +70,12 @@ func init() {
 		Syntax:  "(time in RFC339 format)?",
 		Help:    "show/change runtime date and time",
 		Fn:      dateCmd,
+	})
+
+	Add(Cmd{
+		Name: "uptime",
+		Help: "show how long the system has been running",
+		Fn:   uptimeCmd,
 	})
 
 	// The following commands are board specific, therefore their Fn
@@ -123,7 +129,7 @@ func dmaCmd(_ *Interface, term *term.Terminal, arg []string) (string, error) {
 
 	for addr, n := range l {
 		t += n
-		res = append(res, fmt.Sprintf("%#08x-%#08x %d", addr, addr + n, n))
+		res = append(res, fmt.Sprintf("%#08x-%#08x %d", addr, addr+n, n))
 	}
 
 	sort.Strings(res)
@@ -144,6 +150,10 @@ func dateCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err erro
 	}
 
 	return fmt.Sprintf("%s", time.Now().Format(time.RFC3339)), nil
+}
+
+func uptimeCmd(_ *Interface, term *term.Terminal, _ []string) (string, error) {
+	return fmt.Sprintf("%s", time.Duration(uptime())*time.Nanosecond), nil
 }
 
 func cipherCmd(arg []string, tag string, fn func(buf []byte) (string, error)) (res string, err error) {

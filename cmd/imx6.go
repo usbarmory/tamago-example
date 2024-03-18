@@ -52,12 +52,12 @@ func init() {
 	}
 
 	Add(Cmd{
-		Name: "freq",
+		Name:    "freq",
 		Args:    1,
 		Pattern: regexp.MustCompile(`^freq (198|396|528|792|900)$`),
-		Help: "change ARM core frequency",
+		Help:    "change ARM core frequency",
 		Syntax:  "(198|396|528|792|900)",
-		Fn:   freqCmd,
+		Fn:      freqCmd,
 	})
 
 	// This example policy sets the maximum delay between violation
@@ -78,6 +78,10 @@ func init() {
 
 func date(epoch int64) {
 	imx6ul.ARM.SetTimer(epoch)
+}
+
+func uptime() (ns int64) {
+	return int64(imx6ul.ARM.TimerFn() * imx6ul.ARM.TimerMultiplier)
 }
 
 func mem(start uint, size int, w []byte) (b []byte) {
