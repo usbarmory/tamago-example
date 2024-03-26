@@ -1,10 +1,11 @@
 module github.com/usbarmory/tamago-example
 
-go 1.22.0
+go 1.22.1
 
 require (
 	github.com/Harvey-OS/ninep v0.0.0-20200724082702-d30a6d4f9789
 	github.com/arl/statsviz v0.6.0
+	github.com/beevik/ntp v1.3.1
 	github.com/btcsuite/btcd v0.24.0
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/btcsuite/btcd/btcutil v1.1.5
@@ -13,13 +14,13 @@ require (
 	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564
 	github.com/psanford/wormhole-william v1.0.7
 	github.com/usbarmory/crucible v0.0.0-20240222195051-dec27cd4e0e0
-	github.com/usbarmory/imx-enet v0.0.0-20240119111743-39ba6fac5320
-	github.com/usbarmory/imx-usbnet v0.0.0-20240119111829-8a5a776bd9e9
-	github.com/usbarmory/tamago v0.0.0-20240306113720-d7dd77b4ed17
-	golang.org/x/crypto v0.20.0
-	golang.org/x/crypto/x509roots/fallback v0.0.0-20240228204720-0d2316b26734
-	golang.org/x/term v0.17.0
-	tailscale.com v1.60.1
+	github.com/usbarmory/imx-enet v0.0.0-20240304151238-5b3010d57ea3
+	github.com/usbarmory/imx-usbnet v0.0.0-20240304152630-ca189bf3b3c1
+	github.com/usbarmory/tamago v0.0.0-20240325222443-126c79cb0a15
+	golang.org/x/crypto v0.21.0
+	golang.org/x/crypto/x509roots/fallback v0.0.0-20240318092723-b91329d961d4
+	golang.org/x/term v0.18.0
+	tailscale.com v1.62.0
 )
 
 require (
@@ -40,7 +41,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.21.7 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.26.7 // indirect
 	github.com/aws/smithy-go v1.19.0 // indirect
-	github.com/beevik/ntp v1.3.1 // indirect
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
 	github.com/coreos/go-iptables v0.7.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
@@ -82,7 +82,8 @@ require (
 	github.com/tailscale/goupnp v1.0.1-0.20210804011211-c64d0f06ea05 // indirect
 	github.com/tailscale/hujson v0.0.0-20221223112325-20486734a56a // indirect
 	github.com/tailscale/netlink v1.1.1-0.20211101221916-cabfb018fe85 // indirect
-	github.com/tailscale/web-client-prebuilt v0.0.0-20240208184856-443a64766f61 // indirect
+	github.com/tailscale/peercred v0.0.0-20240214030740-b535050b2aa4 // indirect
+	github.com/tailscale/web-client-prebuilt v0.0.0-20240226180453-5db17b287bf1 // indirect
 	github.com/tailscale/wireguard-go v0.0.0-20231121184858-cc193a0b3272 // indirect
 	github.com/tcnksm/go-httpstat v0.2.0 // indirect
 	github.com/u-root/uio v0.0.0-20240118234441-a3c409a6018e // indirect
@@ -95,15 +96,14 @@ require (
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
-	golang.org/x/sys v0.17.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.17.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gvisor.dev/gvisor v0.0.0-20240119233241-c9c1d4f9b186 // indirect
-	inet.af/peercred v0.0.0-20210906144145-0893ea02156a // indirect
+	gvisor.dev/gvisor v0.0.0-20240306221502-ee1e1f6070e3 // indirect
 	nhooyr.io/websocket v1.8.10 // indirect
 	salsa.debian.org/vasudev/gospake2 v0.0.0-20210510093858-d91629950ad1 // indirect
 )
