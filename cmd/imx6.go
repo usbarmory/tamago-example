@@ -104,6 +104,10 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	res.WriteString(fmt.Sprintf("Board ........: %s\n", boardName))
 	res.WriteString(fmt.Sprintf("SoC ..........: %s\n", Target()))
 
+	if NIC != nil {
+		res.WriteString(fmt.Sprintf("ENET%d ........: %s %d\n", NIC.Index, NIC.MAC, NIC.Stats))
+	}
+
 	if !imx6ul.Native {
 		return res.String(), nil
 	}
