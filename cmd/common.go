@@ -23,6 +23,8 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/dma"
+
+	"github.com/hako/durafmt"
 )
 
 const testDiversifier = "\xde\xad\xbe\xef"
@@ -153,7 +155,7 @@ func dateCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err erro
 }
 
 func uptimeCmd(_ *Interface, term *term.Terminal, _ []string) (string, error) {
-	return fmt.Sprintf("%s", time.Duration(uptime())*time.Nanosecond), nil
+	return fmt.Sprintf("%s", durafmt.Parse(time.Duration(uptime())*time.Nanosecond)), nil
 }
 
 func cipherCmd(arg []string, tag string, fn func(buf []byte) (string, error)) (res string, err error) {
