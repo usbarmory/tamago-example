@@ -77,14 +77,13 @@ func aesCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error
 		}
 	case imx6ul.CAAM != nil:
 		fn = func(buf []byte) (_ string, err error) {
-			err = imx6ul.CAAM.Encrypt(buf, key, iv)
-			return
+			return "", imx6ul.CAAM.Encrypt(buf, key, iv)
 		}
 	case imx6ul.DCP != nil:
+		_ = imx6ul.DCP.SetKey(keySlot, key)
+
 		fn = func(buf []byte) (_ string, err error) {
-			_ = imx6ul.DCP.SetKey(keySlot, key)
-			err = imx6ul.DCP.Encrypt(buf, keySlot, iv)
-			return
+			return "", imx6ul.DCP.Encrypt(buf, keySlot, iv)
 		}
 	default:
 		err = fmt.Errorf("unsupported hardware, use `aes %s %s soft` to disable hardware acceleration", arg[0], arg[1])
