@@ -111,6 +111,7 @@ peek            <hex offset> <size>                              # memory displa
 poke            <hex offset> <hex value>                         # memory write   (use with caution)
 rand                                                             # gather 32 random bytes
 reboot                                                           # reset device
+rtic            (<hex start> <hex end>)?                         # start RTIC on .text and optional region
 sha             <size> <sec> (soft)?                             # benchmark CAAM/DCP hardware hashing
 stack                                                            # goroutine stack trace (current)
 stackall                                                         # goroutine stack trace (all)

@@ -1,0 +1,86 @@
+// Copyright (c) WithSecure Corporation
+// https://foundry.withsecure.com
+//
+// Use of this source code is governed by the license
+// that can be found in the LICENSE file.
+
+//go:build mx6ullevk || usbarmory
+// +build mx6ullevk usbarmory
+
+package cmd
+
+import (
+	"errors"
+	"fmt"
+	"log"
+	"regexp"
+	"runtime"
+	"strconv"
+
+	"golang.org/x/term"
+
+	"github.com/usbarmory/tamago/soc/nxp/caam"
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
+)
+
+func init() {
+	Add(Cmd{
+		Name:    "rtic",
+		Args:    2,
+		Pattern: regexp.MustCompile(`^rtic(?: )?([[:xdigit:]]+)?(?: )?([[:xdigit:]]+)?$`),
+		Syntax:  "(<hex start> <hex end>)?",
+		Help:    "start RTIC on .text and optional region",
+		Fn:      rticCmd,
+	})
+}
+
+func rticCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+	if !(imx6ul.Native && imx6ul.CAAM != nil) {
+		return "", errors.New("unsupported under emulation or unsupported hardware")
+	}
+
+	var blocks []caam.MemoryBlock
+
+	if len(arg[0]) > 0 && len(arg[1]) > 0 {
+		start, err := strconv.ParseUint(arg[0], 16, 32)
+
+		if err != nil {
+			return "", fmt.Errorf("invalid start address, %v", err)
+		}
+
+		end, err := strconv.ParseUint(arg[1], 16, 32)
+
+		if err != nil {
+			return "", fmt.Errorf("invalid end address, %v", err)
+		}
+
+		if (start%4) != 0 || (end%4) != 0 {
+			return "", fmt.Errorf("only 32-bit aligned regions are supported")
+		}
+
+		blocks = append(blocks, caam.MemoryBlock{
+			Address: uint32(start),
+			Length:  uint32(end - start),
+		})
+	}
+
+	textStart, textEnd := runtime.TextRegion()
+
+	blocks = append(blocks, caam.MemoryBlock{
+		Address: textStart,
+		Length:  textEnd - textStart,
+	})
+
+	if err = imx6ul.CAAM.EnableRTIC(blocks); err != nil {
+		return
+	}
+
+	log.Printf("RTIC enabled:")
+	log.Printf("        scan rate: %d cycles", caam.RTICThrottle)
+
+	for i, block := range blocks {
+		log.Printf("  memory block #%d: %#08x-%#08x", i+1, block.Address, block.Address+block.Length)
+	}
+
+	return
+}
