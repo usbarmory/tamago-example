@@ -35,11 +35,11 @@ func init() {
 }
 
 func rticCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+	var blocks []caam.MemoryBlock
+
 	if !(imx6ul.Native && imx6ul.CAAM != nil) {
 		return "", errors.New("unsupported under emulation or unsupported hardware")
 	}
-
-	var blocks []caam.MemoryBlock
 
 	if len(arg[0]) > 0 && len(arg[1]) > 0 {
 		start, err := strconv.ParseUint(arg[0], 16, 32)

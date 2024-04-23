@@ -29,11 +29,11 @@ func init() {
 }
 
 func hukCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+	var key []byte
+
 	if !imx6ul.Native {
 		return "", errors.New("unsupported under emulation")
 	}
-
-	var key []byte
 
 	switch {
 	case imx6ul.CAAM != nil:

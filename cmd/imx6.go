@@ -114,13 +114,13 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 
 	ssm := imx6ul.SNVS.Monitor()
 	res.WriteString(fmt.Sprintf(
-		"SSM Status ...: state:%#.4b clk:%v tmp:%v vcc:%v hac:%d\n",
+		"SSM ..........: state:%#.4b clk:%v tmp:%v vcc:%v hac:%d\n",
 		ssm.State, ssm.Clock, ssm.Temperature, ssm.Voltage, ssm.HAC,
 	))
 
 	if imx6ul.CAAM != nil {
 		cs, err := imx6ul.CAAM.RSTA()
-		res.WriteString(fmt.Sprintf("RTIC Status ..: cs:%#.2b err:%v\n", cs, err))
+		res.WriteString(fmt.Sprintf("RTIC .........: state:%#.4b err:%v\n", cs, err))
 	}
 
 	rom := mem(romStart, romSize, nil)
