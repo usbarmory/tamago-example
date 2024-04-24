@@ -76,10 +76,10 @@ func rticCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err erro
 	}
 
 	log.Printf("RTIC enabled:")
-	log.Printf("        scan rate: %d cycles", caam.RTICThrottle)
+	log.Printf("        scan rate %d cycles", caam.RTICThrottle)
 
 	for i, block := range blocks {
-		log.Printf("  memory block #%d: %#08x-%#08x", i+1, block.Address, block.Address+block.Length)
+		log.Printf("  memory block #%d at %#08x-%#08x", i+1, block.Address, block.Address+block.Length)
 	}
 
 	return
