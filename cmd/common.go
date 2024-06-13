@@ -59,9 +59,9 @@ func init() {
 	Add(Cmd{
 		Name:    "dma",
 		Args:    1,
-		Pattern: regexp.MustCompile(`^dma (free|used)$`),
+		Pattern: regexp.MustCompile(`^dma(?:(?: )(free|used))?$`),
 		Help:    "show allocation of default DMA region",
-		Syntax:  "(free|used)",
+		Syntax:  "(free|used)?",
 		Fn:      dmaCmd,
 	})
 
@@ -119,23 +119,32 @@ func stackallCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 func dmaCmd(_ *Interface, term *term.Terminal, arg []string) (string, error) {
 	var res []string
 
-	var l map[uint]uint
-	var t uint
+	dump := func(blocks map[uint]uint, tag string) string {
+		var r []string
+		var t uint
 
-	switch arg[0] {
-	case "free":
-		l = dma.Default().FreeBlocks()
-	case "used":
-		l = dma.Default().UsedBlocks()
+		for addr, n := range blocks {
+			t += n
+			r = append(r, fmt.Sprintf("%#08x-%#08x %10d", addr, addr+n, n))
+		}
+
+		sort.Strings(r)
+		r = append(r, fmt.Sprintf("%21s %10d bytes %s", "", t, tag))
+
+		return strings.Join(r, "\n")
 	}
 
-	for addr, n := range l {
-		t += n
-		res = append(res, fmt.Sprintf("%#08x-%#08x %d", addr, addr+n, n))
+	if arg[0] == "" || arg[0] == "free" {
+		if blocks := dma.Default().FreeBlocks(); len(blocks) > 0 {
+			res = append(res, dump(blocks, "free"))
+		}
 	}
 
-	sort.Strings(res)
-	res = append(res, fmt.Sprintf("%s %d total bytes", strings.Repeat(" ", 21), t))
+	if arg[0] == "" || arg[0] == "used" {
+		if blocks := dma.Default().UsedBlocks(); len(blocks) > 0 {
+			res = append(res, dump(blocks, "used"))
+		}
+	}
 
 	return strings.Join(res, "\n"), nil
 }
