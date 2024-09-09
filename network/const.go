@@ -29,5 +29,5 @@ const (
 )
 
 func init() {
-	net.DefaultNS = []string{Resolver}
+	net.SetDefaultNS([]string{Resolver})
 }

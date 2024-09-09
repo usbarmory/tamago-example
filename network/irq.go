@@ -31,11 +31,7 @@ func StartInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 		imx6ul.GIC.EnableInterrupt(eth.IRQ, true)
 	}
 
-	arm.RegisterInterruptHandler()
-
-	for {
-		arm.WaitInterrupt()
-
+	isr := func() {
 		irq, end := imx6ul.GIC.GetInterrupt(true)
 
 		if end != nil {
@@ -51,4 +47,6 @@ func StartInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 			log.Printf("internal error, unexpected IRQ %d", irq)
 		}
 	}
+
+	arm.ServiceInterrupts(isr)
 }
