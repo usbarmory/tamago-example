@@ -75,7 +75,7 @@ func ls(path string) (string, error) {
 	return res.String(), nil
 }
 
-func devTest() {
+func devTest(log *log.Logger) {
 	res, err := ls("/dev")
 
 	log.Print(res)
@@ -105,7 +105,7 @@ func devTest() {
 	log.Printf("read %s (%d bytes): %x", path, n, buf)
 }
 
-func fileTest() {
+func fileTest(log *log.Logger) {
 	dirPath := "/dir"
 	fileName := "tamago.txt"
 	path := filepath.Join(dirPath, fileName)
@@ -148,8 +148,14 @@ func fileTest() {
 	}
 }
 
-func fsTest() {
-	msg("fs")
-	devTest()
-	fileTest()
+func fsTest() (tag string, res string) {
+	tag = "fs"
+
+	b := &strings.Builder{}
+	log := log.New(b, "", 0)
+
+	devTest(log)
+	fileTest(log)
+
+	return tag, b.String()
 }

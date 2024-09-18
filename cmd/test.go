@@ -7,6 +7,8 @@
 package cmd
 
 import (
+	"fmt"
+	"log"
 	"time"
 
 	"golang.org/x/term"
@@ -25,12 +27,20 @@ func init() {
 	})
 }
 
-func spawn(fn func()) {
+func spawn(fn func() (tag, res string)) {
 	gr += 1
 
 	go func() {
-		fn()
+		tag, res := fn()
 		exit <- true
+
+		if len(tag) > 0 {
+			msg(tag)
+		}
+
+		if len(res) > 0 {
+			log.Print(res)
+		}
 	}()
 }
 
@@ -42,25 +52,25 @@ func wait() {
 	gr = 0
 }
 
-func timerTest() {
-	msg("timer start (wake up in %v)", sleep)
-
+func timerTest() (tag string, res string) {
 	start := time.Now()
 	t := time.NewTimer(sleep)
 
 	for now := range t.C {
-		msg("timer woke up after %v", now.Sub(start))
+		tag = fmt.Sprintf("timer expired %v (actual %v)", sleep, now.Sub(start))
 		break
 	}
+
+	return
 }
 
-func sleepTest() {
-	msg("sleeping (wake up in %s)", sleep)
-
+func sleepTest() (tag string, res string) {
 	start := time.Now()
 	time.Sleep(sleep)
 
-	msg("slept %s (%v)", sleep, time.Since(start))
+	tag = fmt.Sprintf("slept %s (actual %v)", sleep, time.Since(start))
+
+	return
 }
 
 func testCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
@@ -70,7 +80,8 @@ func testCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
 	spawn(sleepTest)
 	spawn(fsTest)
 	spawn(rngTest)
-	spawn(cryptoTest)
+	// spawns on its own
+	cryptoTest()
 
 	msg("launched %d test goroutines", gr)
 

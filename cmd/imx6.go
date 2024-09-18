@@ -151,4 +151,6 @@ func cryptoTest() {
 	spawn(kemTest)
 	spawn(caamTest)
 	spawn(dcpTest)
+
+	return
 }

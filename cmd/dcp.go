@@ -27,7 +27,7 @@ func init() {
 	}
 }
 
-func testHashDCP() (err error) {
+func testHashDCP(log *log.Logger) (err error) {
 	sum256, err := imx6ul.DCP.Sum256([]byte(testVectorSHAInput))
 
 	if err != nil {
@@ -43,7 +43,7 @@ func testHashDCP() (err error) {
 	return
 }
 
-func testCipherDCP(keySize int) (err error) {
+func testCipherDCP(keySize int, log *log.Logger) (err error) {
 	buf := bytes.Clone([]byte(testVectorInput))
 	key := []byte(testVectorKey[keySize])
 	iv := []byte(testVectorIV)
@@ -73,7 +73,7 @@ func testCipherDCP(keySize int) (err error) {
 	return
 }
 
-func testKeyDerivationDCP() (err error) {
+func testKeyDerivationDCP(log *log.Logger) (err error) {
 	iv := make([]byte, aes.BlockSize)
 	key, err := imx6ul.DCP.DeriveKey([]byte(testDiversifier), iv, -1)
 
@@ -100,23 +100,28 @@ func testKeyDerivationDCP() (err error) {
 	return
 }
 
-func dcpTest() {
-	msg("imx6_dcp")
+func dcpTest() (tag string, res string) {
+	tag = "imx6_dcp"
+
+	b := &strings.Builder{}
+	log := log.New(b, "", 0)
 
 	if !(imx6ul.Native && imx6ul.DCP != nil) {
 		log.Printf("skipping imx6_dcp tests under emulation or unsupported hardware")
-		return
+		return tag, b.String()
 	}
 
-	if err := testHashDCP(); err != nil {
+	if err := testHashDCP(log); err != nil {
 		log.Printf("imx6_dcp: hash error, %v", err)
 	}
 
-	if err := testCipherDCP(128); err != nil {
+	if err := testCipherDCP(128, log); err != nil {
 		log.Printf("imx6_dcp: cipher error, %v", err)
 	}
 
-	if err := testKeyDerivationDCP(); err != nil {
+	if err := testKeyDerivationDCP(log); err != nil {
 		log.Printf("imx6_dcp: key derivation error, %v", err)
 	}
+
+	return tag, b.String()
 }

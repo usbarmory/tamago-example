@@ -10,6 +10,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"golang.org/x/term"
@@ -35,16 +36,17 @@ func randCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	return fmt.Sprintf("%x", buf), nil
 }
 
-func rngTest() {
-	msg("rng (%d runs)", rngRounds)
+func rngTest() (tag string, res string) {
+	tag = fmt.Sprintf("rng (%d runs)", rngRounds)
+
+	b := &strings.Builder{}
+	log := log.New(b, "", 0)
 
 	for i := 0; i < rngRounds; i++ {
 		rng := make([]byte, rngSize)
 		rand.Read(rng)
 		log.Printf("%x", rng)
 	}
-
-	msg("rng benchmark")
 
 	start := time.Now()
 
@@ -54,4 +56,6 @@ func rngTest() {
 	}
 
 	log.Printf("retrieved %d random bytes in %s", rngSize*rngCount, time.Since(start))
+
+	return tag, b.String()
 }

@@ -33,7 +33,7 @@ func init() {
 	}
 }
 
-func testHashCAAM() (err error) {
+func testHashCAAM(log *log.Logger) (err error) {
 	sum256, err := imx6ul.CAAM.Sum256([]byte(testVectorSHAInput))
 
 	if err != nil {
@@ -49,7 +49,7 @@ func testHashCAAM() (err error) {
 	return
 }
 
-func testCipherCAAM(keySize int) (err error) {
+func testCipherCAAM(keySize int, log *log.Logger) (err error) {
 	buf := bytes.Clone([]byte(testVectorInput))
 	key := []byte(testVectorKey[keySize])
 	iv := []byte(testVectorIV)
@@ -89,7 +89,7 @@ func testCipherCAAM(keySize int) (err error) {
 	return
 }
 
-func testSignatureCAAM() (err error) {
+func testSignatureCAAM(log *log.Logger) (err error) {
 	hash := make([]byte, sha256.Size)
 	_, _ = rand.Read(hash)
 
@@ -124,7 +124,7 @@ func testSignatureCAAM() (err error) {
 	return
 }
 
-func testKeyDerivationCAAM() (err error) {
+func testKeyDerivationCAAM(log *log.Logger) (err error) {
 	key := make([]byte, sha256.Size)
 
 	if err = imx6ul.CAAM.DeriveKey([]byte(testDiversifier), key); err != nil {
@@ -150,29 +150,34 @@ func testKeyDerivationCAAM() (err error) {
 	return
 }
 
-func caamTest() {
-	msg("imx6_caam")
+func caamTest() (tag string, res string) {
+	tag = "imx6_caam"
+
+	b := &strings.Builder{}
+	log := log.New(b, "", 0)
 
 	if !(imx6ul.Native && imx6ul.CAAM != nil) {
 		log.Printf("skipping imx6_caam tests under emulation or unsupported hardware")
-		return
+		return tag, b.String()
 	}
 
-	if err := testHashCAAM(); err != nil {
+	if err := testHashCAAM(log); err != nil {
 		log.Printf("imx6_caam: hash error, %v", err)
 	}
 
 	for _, n := range []int{128, 192, 256} {
-		if err := testCipherCAAM(n); err != nil {
+		if err := testCipherCAAM(n, log); err != nil {
 			log.Printf("imx6_caam: cipher error, %v", err)
 		}
 	}
 
-	if err := testKeyDerivationCAAM(); err != nil {
+	if err := testKeyDerivationCAAM(log); err != nil {
 		log.Printf("imx6_caam: key derivation error, %v", err)
 	}
 
-	if err := testSignatureCAAM(); err != nil {
+	if err := testSignatureCAAM(log); err != nil {
 		log.Printf("imx6_caam: signature error, %v", err)
 	}
+
+	return tag, b.String()
 }

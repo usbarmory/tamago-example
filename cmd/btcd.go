@@ -8,6 +8,7 @@ package cmd
 import (
 	"encoding/hex"
 	"log"
+	"strings"
 
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcutil"
@@ -20,7 +21,7 @@ import (
 // This example demonstrates creating a script which pays to a bitcoin address.
 // It also prints the created script hex and uses the DisasmString function to
 // display the disassembled script.
-func examplePayToAddrScript() {
+func examplePayToAddrScript(log *log.Logger) {
 	// Parse the address to send the coins to into a btcutil.Address
 	// which is useful to ensure the accuracy of the address and determine
 	// the address type.  It is also required for the upcoming call to
@@ -54,7 +55,7 @@ func examplePayToAddrScript() {
 
 // This example demonstrates extracting information from a standard public key
 // script.
-func exampleExtractPkScriptAddrs() {
+func exampleExtractPkScriptAddrs(log *log.Logger) {
 	// Start with a standard pay-to-pubkey-hash script.
 	scriptHex := "76a914128004ff2fcaf13b2b91eb654b1dc2b674f7ec6188ac"
 	script, err := hex.DecodeString(scriptHex)
@@ -81,7 +82,7 @@ func exampleExtractPkScriptAddrs() {
 }
 
 // This example demonstrates manually creating and signing a redeem transaction.
-func exampleSignTxOutput() {
+func exampleSignTxOutput(log *log.Logger) {
 	// Ordinarily the private key would come from whatever storage mechanism
 	// is being used, but for this example just hard code it.
 	privKeyBytes, err := hex.DecodeString("22a47fa09a223f2aa079edf85a7c2" +
@@ -176,16 +177,21 @@ func exampleSignTxOutput() {
 		log.Println(err)
 		return
 	}
-	log.Println("Transaction successfully signed")
+	log.Print("Transaction successfully signed")
 
 	// Output:
 	// Transaction successfully signed
 }
 
-func btcdTest() {
-	msg("btcd")
+func btcdTest() (tag string, res string) {
+	tag = "btcd"
 
-	examplePayToAddrScript()
-	exampleExtractPkScriptAddrs()
-	exampleSignTxOutput()
+	b := &strings.Builder{}
+	l := log.New(b, "", 0)
+
+	examplePayToAddrScript(l)
+	exampleExtractPkScriptAddrs(l)
+	exampleSignTxOutput(l)
+
+	return "btcd", b.String()
 }

@@ -1,25 +1,21 @@
 // The following functions are adapted from:
-//   https://github.com/cloudflare/circl/blob/v1.2.0/kem/kyber/kat_test.go
+//   https://github.com/FiloSottile/mlkem768/blob/main/xwing/xwing_test.go
 //
 // See LICENSE at:
-//   https://github.com/cloudflare/circl/blob/v1.2.0/LICENSE
+//   https://github.com/FiloSottile/mlkem768/blob/main/LICENSE
 
 package cmd
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"fmt"
+	"errors"
 	"log"
+	"strings"
 	"time"
 
-	"github.com/cloudflare/circl/kem/schemes"
+	"filippo.io/mlkem768/xwing"
 	"golang.org/x/term"
-
-	"github.com/usbarmory/tamago-example/internal/nist"
 )
-
-// TODO: replace with https://github.com/FiloSottile/mlkem768/blob/main/mlkem768_test.go
 
 func init() {
 	Add(Cmd{
@@ -30,75 +26,70 @@ func init() {
 }
 
 func kemCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
-	kats := []struct {
-		name string
-		want string
-	}{
-		// Computed from reference implementation
-		{"Kyber1024", "89248f2f33f7f4f7051729111f3049c409a933ec904aedadf035f30fa5646cd5"},
-		{"Kyber768", "a1e122cad3c24bc51622e4c242d8b8acbcd3f618fee4220400605ca8f9ea02c2"},
-		{"Kyber512", "e9c2bd37133fcb40772f81559f14b1f58dccd1c816701be9ba6214d43baf4547"},
-	}
-
-	for _, kat := range kats {
-		testPQCgenKATKem(kat.name, kat.want)
-	}
-
-	return
+	return "", xwingRoundTrip(log.Default())
 }
 
-func kemTest() {
-	msg("post-quantum KEM")
-	testPQCgenKATKem("Kyber512", "e9c2bd37133fcb40772f81559f14b1f58dccd1c816701be9ba6214d43baf4547")
+func kemTest() (tag string, res string) {
+	tag = "post-quantum KEM"
+
+	b := &strings.Builder{}
+	log := log.New(b, "", 0)
+
+	xwingRoundTrip(log)
+
+	return tag, b.String()
 }
 
-func testPQCgenKATKem(name, expected string) {
-	scheme := schemes.ByName(name)
-	if scheme == nil {
-		log.Fatal("invalid scheme")
-	}
-
+func xwingRoundTrip(log *log.Logger) (err error) {
 	start := time.Now()
 
-	var seed [48]byte
-	kseed := make([]byte, scheme.SeedSize())
-	eseed := make([]byte, scheme.EncapsulationSeedSize())
-	for i := 0; i < 48; i++ {
-		seed[i] = byte(i)
+	dk, err := xwing.GenerateKey()
+	if err != nil {
+		return
 	}
-	f := sha256.New()
-	g := nist.NewDRBG(&seed)
-	fmt.Fprintf(f, "# %s\n\n", name)
-	for i := 0; i < 100; i++ {
-		g.Fill(seed[:])
-		fmt.Fprintf(f, "count = %d\n", i)
-		fmt.Fprintf(f, "seed = %X\n", seed)
-		g2 := nist.NewDRBG(&seed)
-
-		// This is not equivalent to g2.Fill(kseed[:]).  As the reference
-		// implementation calls randombytes twice generating the keypair,
-		// we have to do that as well.
-		g2.Fill(kseed[:32])
-		g2.Fill(kseed[32:])
-
-		g2.Fill(eseed)
-		pk, sk := scheme.DeriveKeyPair(kseed)
-		ppk, _ := pk.MarshalBinary()
-		psk, _ := sk.MarshalBinary()
-		ct, ss, _ := scheme.EncapsulateDeterministically(pk, eseed)
-		ss2, _ := scheme.Decapsulate(sk, ct)
-		if !bytes.Equal(ss, ss2) {
-			log.Fatal("decapsulation mismatch")
-		}
-		fmt.Fprintf(f, "pk = %X\n", ppk)
-		fmt.Fprintf(f, "sk = %X\n", psk)
-		fmt.Fprintf(f, "ct = %X\n", ct)
-		fmt.Fprintf(f, "ss = %X\n\n", ss)
+	c, Ke, err := xwing.Encapsulate(dk.EncapsulationKey())
+	if err != nil {
+		return
+	}
+	Kd, err := xwing.Decapsulate(dk, c)
+	if err != nil {
+		return
+	}
+	if !bytes.Equal(Ke, Kd) {
+		return errors.New("Ke != Kd")
 	}
 
-	if fmt.Sprintf("%x", f.Sum(nil)) != expected {
-		log.Fatal("hash mismatch")
+	dk1, err := xwing.GenerateKey()
+	if err != nil {
+		return
+	}
+	if bytes.Equal(dk.EncapsulationKey(), dk1.EncapsulationKey()) {
+		return errors.New("ek == ek1")
+	}
+	if bytes.Equal(dk.Bytes(), dk1.Bytes()) {
+		return errors.New("dk == dk1")
 	}
 
-	log.Printf("%-9s %x (%s)", name, f.Sum(nil), time.Since(start))
+	dk2, err := xwing.NewKeyFromSeed(dk.Bytes())
+	if err != nil {
+		return
+	}
+	if !bytes.Equal(dk.Bytes(), dk2.Bytes()) {
+		return errors.New("dk != dk2")
+	}
+
+	c1, Ke1, err := xwing.Encapsulate(dk.EncapsulationKey())
+	if err != nil {
+		return
+	}
+	if bytes.Equal(c, c1) {
+		return errors.New("c == c1")
+	}
+	if bytes.Equal(Ke, Ke1) {
+		return errors.New("Ke == Ke1")
+	}
+
+	log.Printf("xwing-kem %x (%s)", dk.Bytes(), time.Since(start))
+
+	return
 }
