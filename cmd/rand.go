@@ -54,7 +54,7 @@ func rngTest() (tag string, res string) {
 
 	log.Printf("done (%s)", time.Since(start))
 
-	n = rngSize*rngRounds*10
+	n = rngSize * rngRounds * 10
 	buf = make([]byte, n)
 
 	log.Printf("single read of %d random bytes", n)
