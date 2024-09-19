@@ -44,7 +44,7 @@ func testHashCAAM(log *log.Logger) (err error) {
 		return fmt.Errorf("sum256:%x != testVector:%x", sum256, testVectorSHA)
 	}
 
-	log.Printf("imx6_caam: FIPS 180-2 SHA256 %x", sum256)
+	log.Printf("FIPS 180-2 SHA256 %x", sum256)
 
 	return
 }
@@ -62,7 +62,7 @@ func testCipherCAAM(keySize int, log *log.Logger) (err error) {
 		return fmt.Errorf("buf:%x != testVector:%x", buf, testVectorCipher[keySize])
 	}
 
-	log.Printf("imx6_caam: NIST aes-%d cbc encrypt %x", keySize, buf)
+	log.Printf("NIST aes-%d cbc encrypt %x", keySize, buf)
 
 	if err = imx6ul.CAAM.Decrypt(buf, key, iv); err != nil {
 		return
@@ -72,7 +72,7 @@ func testCipherCAAM(keySize int, log *log.Logger) (err error) {
 		return fmt.Errorf("decrypt mismatch (%x)", buf)
 	}
 
-	log.Printf("imx6_caam: NIST aes-%d cbc decrypt %x", keySize, buf)
+	log.Printf("NIST aes-%d cbc decrypt %x", keySize, buf)
 
 	cmac, err := imx6ul.CAAM.SumAES([]byte(testVectorInput), key)
 
@@ -84,7 +84,7 @@ func testCipherCAAM(keySize int, log *log.Logger) (err error) {
 		return fmt.Errorf("cmac:%x != testVector:%x", cmac, testVectorMAC[keySize])
 	}
 
-	log.Printf("imx6_caam: NIST.3 aes-%d cmac %x", keySize, cmac)
+	log.Printf("NIST.3 aes-%d cmac %x", keySize, cmac)
 
 	return
 }
@@ -105,7 +105,7 @@ func testSignatureCAAM(log *log.Logger) (err error) {
 		return fmt.Errorf("invalid ecdsap256 signature")
 	}
 
-	log.Printf("imx6_caam: ecdsap256 matches crypto/ecdsa")
+	log.Printf("ecdsap256 matches crypto/ecdsa")
 
 	priv, _ = ecdsa.GenerateKey(ecc.P256k1(), rand.Reader)
 	r, s, err = imx6ul.CAAM.Sign(priv, hash, nil)
@@ -119,7 +119,7 @@ func testSignatureCAAM(log *log.Logger) (err error) {
 		return fmt.Errorf("invalid secp256k1 signature")
 	}
 
-	log.Printf("imx6_caam: secp256k1 matches crypto/ecdsa")
+	log.Printf("secp256k1 matches crypto/ecdsa")
 
 	return
 }
@@ -137,7 +137,7 @@ func testKeyDerivationCAAM(log *log.Logger) (err error) {
 
 	// if the SoC is secure booted we can only print the result
 	if imx6ul.SNVS.Available() {
-		log.Printf("imx6_caam: OTPMK derived key %x", key)
+		log.Printf("OTPMK derived key %x", key)
 		return
 	}
 
@@ -145,7 +145,7 @@ func testKeyDerivationCAAM(log *log.Logger) (err error) {
 		return fmt.Errorf("derivedKey:%x != testVector:%x", key, testVectorCAAM)
 	}
 
-	log.Printf("imx6_caam: derived test key %x", key)
+	log.Printf("derived test key %x", key)
 
 	return
 }
@@ -157,26 +157,26 @@ func caamTest() (tag string, res string) {
 	log := log.New(b, "", 0)
 
 	if !(imx6ul.Native && imx6ul.CAAM != nil) {
-		log.Printf("skipping imx6_caam tests under emulation or unsupported hardware")
+		log.Printf("skipping tests under emulation or unsupported hardware")
 		return tag, b.String()
 	}
 
 	if err := testHashCAAM(log); err != nil {
-		log.Printf("imx6_caam: hash error, %v", err)
+		log.Printf("hash error, %v", err)
 	}
 
 	for _, n := range []int{128, 192, 256} {
 		if err := testCipherCAAM(n, log); err != nil {
-			log.Printf("imx6_caam: cipher error, %v", err)
+			log.Printf("cipher error, %v", err)
 		}
 	}
 
 	if err := testKeyDerivationCAAM(log); err != nil {
-		log.Printf("imx6_caam: key derivation error, %v", err)
+		log.Printf("key derivation error, %v", err)
 	}
 
 	if err := testSignatureCAAM(log); err != nil {
-		log.Printf("imx6_caam: signature error, %v", err)
+		log.Printf("signature error, %v", err)
 	}
 
 	return tag, b.String()

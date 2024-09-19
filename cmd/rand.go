@@ -19,7 +19,6 @@ import (
 const (
 	rngRounds = 10
 	rngSize   = 32
-	rngCount  = 1000
 )
 
 func init() {
@@ -37,25 +36,34 @@ func randCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 }
 
 func rngTest() (tag string, res string) {
-	tag = fmt.Sprintf("rng (%d runs)", rngRounds)
+	tag = "rng"
 
 	b := &strings.Builder{}
 	log := log.New(b, "", 0)
 
-	for i := 0; i < rngRounds; i++ {
-		rng := make([]byte, rngSize)
-		rand.Read(rng)
-		log.Printf("%x", rng)
-	}
+	n := rngSize
+	buf := make([]byte, rngSize)
 
+	log.Printf("%d reads of %d random bytes", rngRounds, n)
 	start := time.Now()
 
-	for i := 0; i < rngCount; i++ {
-		rng := make([]byte, rngSize)
-		rand.Read(rng)
+	for i := 0; i < rngRounds; i++ {
+		rand.Read(buf)
+		log.Printf("  %x", buf)
 	}
 
-	log.Printf("retrieved %d random bytes in %s", rngSize*rngCount, time.Since(start))
+	log.Printf("done (%s)", time.Since(start))
+
+	n = rngSize*rngRounds*10
+	buf = make([]byte, n)
+
+	log.Printf("single read of %d random bytes", n)
+	start = time.Now()
+
+	rand.Read(buf)
+
+	log.Printf("  %x\n  ...\n  %x", buf[0:rngSize], buf[n-rngSize:len(buf)])
+	log.Printf("done (%s)", time.Since(start))
 
 	return tag, b.String()
 }

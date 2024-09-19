@@ -133,7 +133,7 @@ func usdhcTest() {
 	msg("imx6_usdhc")
 
 	if !imx6ul.Native {
-		log.Printf("skipping imx6_usdhc tests under emulation")
+		log.Printf("skipping tests under emulation")
 	}
 
 	for _, card := range MMC {

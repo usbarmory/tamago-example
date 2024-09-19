@@ -38,7 +38,7 @@ func testHashDCP(log *log.Logger) (err error) {
 		return fmt.Errorf("sum256:%x != testVector:%x", sum256, testVectorSHA)
 	}
 
-	log.Printf("imx6_dcp: FIPS 180-2 SHA256 %x", sum256)
+	log.Printf("FIPS 180-2 SHA256 %x", sum256)
 
 	return
 }
@@ -58,7 +58,7 @@ func testCipherDCP(keySize int, log *log.Logger) (err error) {
 		return fmt.Errorf("buf:%x != testVector:%x", buf, testVectorCipher[keySize])
 	}
 
-	log.Printf("imx6_dcp: NIST aes-128 cbc encrypt %x", buf)
+	log.Printf("NIST aes-128 cbc encrypt %x", buf)
 
 	if err = imx6ul.DCP.Decrypt(buf, keySlot, iv); err != nil {
 		return
@@ -68,7 +68,7 @@ func testCipherDCP(keySize int, log *log.Logger) (err error) {
 		return fmt.Errorf("decrypt mismatch (%x)", buf)
 	}
 
-	log.Printf("imx6_dcp: NIST aes-128 cbc decrypt %x", buf)
+	log.Printf("NIST aes-128 cbc decrypt %x", buf)
 
 	return
 }
@@ -87,7 +87,7 @@ func testKeyDerivationDCP(log *log.Logger) (err error) {
 
 	// if the SoC is secure booted we can only print the result
 	if imx6ul.SNVS.Available() {
-		log.Printf("imx6_dcp: OTPMK derived key %x", key)
+		log.Printf("OTPMK derived key %x", key)
 		return
 	}
 
@@ -95,7 +95,7 @@ func testKeyDerivationDCP(log *log.Logger) (err error) {
 		return fmt.Errorf("derivedKey:%x != testVector:%x", key, testVectorDCP)
 	}
 
-	log.Printf("imx6_dcp: derived test key %x", key)
+	log.Printf("derived test key %x", key)
 
 	return
 }
@@ -107,20 +107,20 @@ func dcpTest() (tag string, res string) {
 	log := log.New(b, "", 0)
 
 	if !(imx6ul.Native && imx6ul.DCP != nil) {
-		log.Printf("skipping imx6_dcp tests under emulation or unsupported hardware")
+		log.Printf("skipping tests under emulation or unsupported hardware")
 		return tag, b.String()
 	}
 
 	if err := testHashDCP(log); err != nil {
-		log.Printf("imx6_dcp: hash error, %v", err)
+		log.Printf("hash error, %v", err)
 	}
 
 	if err := testCipherDCP(128, log); err != nil {
-		log.Printf("imx6_dcp: cipher error, %v", err)
+		log.Printf("cipher error, %v", err)
 	}
 
 	if err := testKeyDerivationDCP(log); err != nil {
-		log.Printf("imx6_dcp: key derivation error, %v", err)
+		log.Printf("key derivation error, %v", err)
 	}
 
 	return tag, b.String()

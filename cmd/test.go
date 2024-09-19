@@ -9,6 +9,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	"golang.org/x/term"
@@ -27,12 +28,17 @@ func init() {
 	})
 }
 
+var mux sync.Mutex
+
 func spawn(fn func() (tag, res string)) {
 	gr += 1
 
 	go func() {
 		tag, res := fn()
 		exit <- true
+
+		mux.Lock()
+		defer mux.Unlock()
 
 		if len(tag) > 0 {
 			msg(tag)
@@ -57,7 +63,7 @@ func timerTest() (tag string, res string) {
 	t := time.NewTimer(sleep)
 
 	for now := range t.C {
-		tag = fmt.Sprintf("timer expired %v (actual %v)", sleep, now.Sub(start))
+		tag = fmt.Sprintf("timer expiration %v (actual %v)", sleep, now.Sub(start))
 		break
 	}
 
@@ -68,7 +74,7 @@ func sleepTest() (tag string, res string) {
 	start := time.Now()
 	time.Sleep(sleep)
 
-	tag = fmt.Sprintf("slept %s (actual %v)", sleep, time.Since(start))
+	tag = fmt.Sprintf("timer sleep %s (actual %v)", sleep, time.Since(start))
 
 	return
 }
