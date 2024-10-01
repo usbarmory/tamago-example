@@ -3,6 +3,7 @@ module github.com/usbarmory/tamago-example
 go 1.23.1
 
 require (
+	filippo.io/mlkem768 v0.0.0-20240902154959-36b3023d41cf
 	github.com/Harvey-OS/ninep v0.0.0-20200724082702-d30a6d4f9789
 	github.com/arl/statsviz v0.6.0
 	github.com/beevik/ntp v1.4.3
@@ -10,26 +11,24 @@ require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.4
 	github.com/btcsuite/btcd/btcutil v1.1.6
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.1.0
-	github.com/cloudflare/circl v1.4.0
 	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/psanford/wormhole-william v1.0.7
-	github.com/transparency-dev/witness v0.0.0-20240909131934-7248a795a308
+	github.com/transparency-dev/witness v0.0.0-20240930091028-e61c87e06ad0
 	github.com/usbarmory/crucible v0.0.0-20240222195051-dec27cd4e0e0
 	github.com/usbarmory/imx-enet v0.0.0-20240909221101-ae8625bf5b84
 	github.com/usbarmory/imx-usbnet v0.0.0-20240909221106-d242d2c2d20b
-	github.com/usbarmory/tamago v0.0.0-20240909213541-c4704957c2e1
+	github.com/usbarmory/tamago v0.0.0-20240924114619-273d67cd811d
 	golang.org/x/crypto v0.27.0
-	golang.org/x/crypto/x509roots/fallback v0.0.0-20240904212608-c9da6b9a4008
+	golang.org/x/crypto/x509roots/fallback v0.0.0-20240930154113-a0819fbb0244
 	golang.org/x/mod v0.21.0
 	golang.org/x/term v0.24.0
-	google.golang.org/grpc v1.66.1
-	tailscale.com v1.72.1
+	google.golang.org/grpc v1.67.1
+	tailscale.com v1.74.1
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	filippo.io/mlkem768 v0.0.0-20240902154959-36b3023d41cf // indirect
 	github.com/akutz/memconn v0.1.0 // indirect
 	github.com/alexbrainman/sspi v0.0.0-20231016080023-1a75b4708caa // indirect
 	github.com/aws/aws-sdk-go-v2 v1.24.1 // indirect
@@ -75,7 +74,7 @@ require (
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hdevalence/ed25519consensus v0.2.0 // indirect
-	github.com/illarion/gonotify v1.0.1 // indirect
+	github.com/illarion/gonotify/v2 v2.0.3 // indirect
 	github.com/insomniacslk/dhcp v0.0.0-20231206064809-8c70d406f6d2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/native v1.1.1-0.20230202152459-5c7d0dd6ab86 // indirect
@@ -91,7 +90,7 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/prometheus-community/pro-bing v0.4.0 // indirect
-	github.com/prometheus/client_golang v1.20.3 // indirect
+	github.com/prometheus/client_golang v1.20.4 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
@@ -101,16 +100,15 @@ require (
 	github.com/tailscale/golang-x-crypto v0.0.0-20240604161659-3fde5e568aa4 // indirect
 	github.com/tailscale/goupnp v1.0.1-0.20210804011211-c64d0f06ea05 // indirect
 	github.com/tailscale/hujson v0.0.0-20221223112325-20486734a56a // indirect
-	github.com/tailscale/netlink v1.1.1-0.20211101221916-cabfb018fe85 // indirect
+	github.com/tailscale/netlink v1.1.1-0.20240822203006-4d49adab4de7 // indirect
 	github.com/tailscale/peercred v0.0.0-20240214030740-b535050b2aa4 // indirect
 	github.com/tailscale/web-client-prebuilt v0.0.0-20240226180453-5db17b287bf1 // indirect
-	github.com/tailscale/wireguard-go v0.0.0-20240731203015-71393c576b98 // indirect
+	github.com/tailscale/wireguard-go v0.0.0-20240905161824-799c1978fafc // indirect
 	github.com/tcnksm/go-httpstat v0.2.0 // indirect
 	github.com/transparency-dev/formats v0.0.0-20240610130149-01e8727bec75 // indirect
-	github.com/transparency-dev/merkle v0.0.2 // indirect
+	github.com/transparency-dev/merkle v0.0.3-0.20240919113952-3c979d16ee14 // indirect
 	github.com/transparency-dev/serverless-log v0.0.0-20240408141044-5d483a81bdb7 // indirect
 	github.com/u-root/uio v0.0.0-20240118234441-a3c409a6018e // indirect
-	github.com/vishvananda/netlink v1.2.1-beta.2 // indirect
 	github.com/vishvananda/netns v0.0.4 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	go4.org/mem v0.0.0-20220726221520-4f986261bf13 // indirect
@@ -124,7 +122,7 @@ require (
 	golang.org/x/tools v0.23.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240604185151-ef581f913117 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

@@ -32,11 +32,7 @@ func StartInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 	}
 
 	isr := func() {
-		irq, end := imx6ul.GIC.GetInterrupt(true)
-
-		if end != nil {
-			close(end)
-		}
+		irq := imx6ul.GIC.GetInterrupt(true)
 
 		switch {
 		case usb != nil && irq == usb.IRQ:
