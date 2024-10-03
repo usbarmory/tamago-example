@@ -10,7 +10,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -127,7 +126,7 @@ func fileTest(log *log.Logger) {
 		log.Fatal(err)
 	}
 
-	read, err := ioutil.ReadFile(path)
+	read, err := os.ReadFile(path)
 
 	if err != nil {
 		log.Fatal(err)
