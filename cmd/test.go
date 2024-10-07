@@ -35,7 +35,6 @@ func spawn(fn func() (tag, res string)) {
 
 	go func() {
 		tag, res := fn()
-		exit <- true
 
 		mux.Lock()
 		defer mux.Unlock()
@@ -47,6 +46,8 @@ func spawn(fn func() (tag, res string)) {
 		if len(res) > 0 {
 			log.Print(res)
 		}
+
+		exit <- true
 	}()
 }
 
@@ -93,7 +94,7 @@ func testCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
 
 	wait()
 
-	msg("completed all goroutines (%s)", time.Since(start))
+	msg("completed all test goroutines (%s)", time.Since(start))
 
 	memTest()
 	usdhcTest()
