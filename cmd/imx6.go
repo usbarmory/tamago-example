@@ -99,13 +99,13 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 
 	ramStart, ramEnd := runtime.MemRegion()
 
-	res.WriteString(fmt.Sprintf("Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH))
-	res.WriteString(fmt.Sprintf("RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024)))
-	res.WriteString(fmt.Sprintf("Board ........: %s\n", boardName))
-	res.WriteString(fmt.Sprintf("SoC ..........: %s\n", Target()))
+	fmt.Fprintf(&res, "Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
+	fmt.Fprintf(&res, "RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024))
+	fmt.Fprintf(&res, "Board ........: %s\n", boardName)
+	fmt.Fprintf(&res, "SoC ..........: %s\n", Target())
 
 	if NIC != nil {
-		res.WriteString(fmt.Sprintf("ENET%d ........: %s %d\n", NIC.Index, NIC.MAC, NIC.Stats))
+		fmt.Fprintf(&res, "ENET%d ........: %s %d\n", NIC.Index, NIC.MAC, NIC.Stats)
 	}
 
 	if !imx6ul.Native {
@@ -113,23 +113,23 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	}
 
 	ssm := imx6ul.SNVS.Monitor()
-	res.WriteString(fmt.Sprintf(
+	fmt.Fprintf(&res,
 		"SSM ..........: state:%#.4b clk:%v tmp:%v vcc:%v hac:%d\n",
 		ssm.State, ssm.Clock, ssm.Temperature, ssm.Voltage, ssm.HAC,
-	))
+	)
 
 	if imx6ul.CAAM != nil {
 		cs, err := imx6ul.CAAM.RSTA()
-		res.WriteString(fmt.Sprintf("RTIC .........: state:%#.4b err:%v\n", cs, err))
+		fmt.Fprintf(&res, "RTIC .........: state:%#.4b err:%v\n", cs, err)
 	}
 
 	rom := mem(romStart, romSize, nil)
-	res.WriteString(fmt.Sprintf("Boot ROM hash : %x\n", sha256.Sum256(rom)))
-	res.WriteString(fmt.Sprintf("Secure boot ..: %v\n", imx6ul.SNVS.Available()))
+	fmt.Fprintf(&res, "Boot ROM hash : %x\n", sha256.Sum256(rom))
+	fmt.Fprintf(&res, "Secure boot ..: %v\n", imx6ul.SNVS.Available())
 
-	res.WriteString(fmt.Sprintf("Unique ID ....: %X\n", imx6ul.UniqueID()))
-	res.WriteString(fmt.Sprintf("SDP ..........: %v\n", imx6ul.SDP))
-	res.WriteString(fmt.Sprintf("Temperature ..: %f\n", imx6ul.TEMPMON.Read()))
+	fmt.Fprintf(&res, "Unique ID ....: %X\n", imx6ul.UniqueID())
+	fmt.Fprintf(&res, "SDP ..........: %v\n", imx6ul.SDP)
+	fmt.Fprintf(&res, "Temperature ..: %f\n", imx6ul.TEMPMON.Read())
 
 	return res.String(), nil
 }

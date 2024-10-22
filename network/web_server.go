@@ -101,13 +101,13 @@ func SetupStaticWebAssets(banner string) {
 	}
 	defer file.Close()
 
-	file.WriteString("<html><body>")
-	file.WriteString(fmt.Sprintf("<p>%s</p><ul>", html.EscapeString(banner)))
-	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/tamago-example.log", "/tamago-example.log"))
-	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/dir", "/dir"))
-	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/debug/pprof", "/debug/pprof"))
-	file.WriteString(fmt.Sprintf(`<li><a href="%s">%s</a></li>`, "/debug/statsviz", "/debug/statsviz"))
-	file.WriteString("</ul></body></html>")
+	fmt.Fprint(file, "<html><body>")
+	fmt.Fprintf(file, "<p>%s</p><ul>", html.EscapeString(banner))
+	fmt.Fprintf(file, `<li><a href="%s">%s</a></li>`, "/tamago-example.log", "/tamago-example.log")
+	fmt.Fprintf(file, `<li><a href="%s">%s</a></li>`, "/dir", "/dir")
+	fmt.Fprintf(file, `<li><a href="%s">%s</a></li>`, "/debug/pprof", "/debug/pprof")
+	fmt.Fprintf(file, `<li><a href="%s">%s</a></li>`, "/debug/statsviz", "/debug/statsviz")
+	fmt.Fprint(file, "</ul></body></html>")
 
 	static := http.FileServer(http.Dir("/"))
 	staticHandler := flushingHandler(static)

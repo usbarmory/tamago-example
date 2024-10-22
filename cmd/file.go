@@ -43,7 +43,7 @@ func lsCmd(_ *Interface, term *term.Terminal, arg []string) (string, error) {
 func ls(path string) (string, error) {
 	var res bytes.Buffer
 
-	res.WriteString(fmt.Sprintf("listing %s:\n", path))
+	fmt.Fprintf(&res, "listing %s:\n", path)
 
 	f, err := os.Open(path)
 
@@ -68,7 +68,7 @@ func ls(path string) (string, error) {
 	}
 
 	for _, i := range files {
-		res.WriteString(fmt.Sprintf(" %s (%d bytes)\n", i.Name(), i.Size()))
+		fmt.Fprintf(&res, " %s (%d bytes)\n", i.Name(), i.Size())
 	}
 
 	return res.String(), nil
