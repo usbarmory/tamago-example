@@ -26,7 +26,7 @@ func handleUSBInterrupt(usb *usb.USB) {
 	usb.ServiceInterrupts()
 }
 
-func StartUSB(handler sshHandler) (port *usb.USB) {
+func startUSB(handler ConsoleHandler) (port *usb.USB) {
 	port = imx6ul.USB1
 
 	iface := usbnet.Interface{}

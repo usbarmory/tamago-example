@@ -15,9 +15,6 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/usbarmory/tamago/soc/nxp/enet"
-	"github.com/usbarmory/tamago/soc/nxp/usb"
-
 	"github.com/usbarmory/tamago-example/cmd"
 	"github.com/usbarmory/tamago-example/internal/semihosting"
 	"github.com/usbarmory/tamago-example/network"
@@ -37,9 +34,6 @@ func init() {
 }
 
 func main() {
-	var usb *usb.USB
-	var eth *enet.ENET
-
 	logFile, _ := os.OpenFile("/tamago-example.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 
@@ -56,14 +50,5 @@ func main() {
 		semihosting.Exit()
 	}
 
-	if hasUSB {
-		usb = network.StartUSB(console)
-	}
-
-	if hasEth {
-		eth = network.StartEth(console)
-		cmd.NIC = eth
-	}
-
-	network.StartInterruptHandler(usb, eth)
+	cmd.NIC = network.Init(console, hasUSB, hasEth)
 }

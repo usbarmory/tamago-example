@@ -23,13 +23,13 @@ import (
 	"golang.org/x/term"
 )
 
-type sshHandler interface {
+type ConsoleHandler interface {
 	Exec(term *term.Terminal, cmd []byte)
 	Terminal(term *term.Terminal)
 	LogFile() *os.File
 }
 
-func handleTerminal(conn ssh.Channel, term *term.Terminal, handler sshHandler) {
+func handleTerminal(conn ssh.Channel, term *term.Terminal, handler ConsoleHandler) {
 	log.SetOutput(io.MultiWriter(os.Stdout, handler.LogFile(), term))
 	defer log.SetOutput(io.MultiWriter(os.Stdout))
 
@@ -39,7 +39,7 @@ func handleTerminal(conn ssh.Channel, term *term.Terminal, handler sshHandler) {
 	conn.Close()
 }
 
-func handleChannel(newChannel ssh.NewChannel, handler sshHandler) {
+func handleChannel(newChannel ssh.NewChannel, handler ConsoleHandler) {
 	if t := newChannel.ChannelType(); t != "session" {
 		newChannel.Reject(ssh.UnknownChannelType, fmt.Sprintf("unknown channel type: %s", t))
 		return
@@ -102,13 +102,13 @@ func handleChannel(newChannel ssh.NewChannel, handler sshHandler) {
 	}()
 }
 
-func handleChannels(chans <-chan ssh.NewChannel, handler sshHandler) {
+func handleChannels(chans <-chan ssh.NewChannel, handler ConsoleHandler) {
 	for newChannel := range chans {
 		go handleChannel(newChannel, handler)
 	}
 }
 
-func accept(listener net.Listener, handler sshHandler, srv *ssh.ServerConfig) {
+func accept(listener net.Listener, handler ConsoleHandler, srv *ssh.ServerConfig) {
 	for {
 		conn, err := listener.Accept()
 
@@ -131,7 +131,7 @@ func accept(listener net.Listener, handler sshHandler, srv *ssh.ServerConfig) {
 	}
 }
 
-func StartSSHServer(listener net.Listener, handler sshHandler) {
+func StartSSHServer(listener net.Listener, handler ConsoleHandler) {
 	srv := &ssh.ServerConfig{
 		NoClientAuth: true,
 	}

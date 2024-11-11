@@ -20,7 +20,7 @@ import (
 	"github.com/usbarmory/tamago/soc/nxp/usb"
 )
 
-func StartInterruptHandler(usb *usb.USB, eth *enet.ENET) {
+func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 	imx6ul.GIC.Init(true, false)
 
 	if usb != nil {
@@ -45,4 +45,20 @@ func StartInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 	}
 
 	arm.ServiceInterrupts(isr)
+}
+
+func Init(console ConsoleHandler, hasUSB bool, hasEth bool) (eth *enet.ENET) {
+	var usb *usb.USB
+
+	if hasUSB {
+		usb = startUSB(console)
+	}
+
+	if hasEth {
+		eth = startEth(console)
+	}
+
+	startInterruptHandler(usb, eth)
+
+	return
 }

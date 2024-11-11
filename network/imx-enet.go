@@ -32,7 +32,7 @@ func handleEthernetInterrupt(eth *enet.ENET) {
 	}
 }
 
-func StartEth(handler sshHandler) (eth *enet.ENET) {
+func startEth(handler ConsoleHandler) (eth *enet.ENET) {
 	eth = imx6ul.ENET2
 
 	if !imx6ul.Native {
