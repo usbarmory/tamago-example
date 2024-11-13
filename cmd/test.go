@@ -97,7 +97,7 @@ func testCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
 	msg("completed all test goroutines (%s)", time.Since(start))
 
 	memTest()
-	usdhcTest()
+	storageTest()
 
 	return
 }

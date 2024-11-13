@@ -15,25 +15,33 @@ REV = $(shell git rev-parse --short HEAD 2> /dev/null)
 SHELL = /bin/bash
 
 APP := example
-TARGET ?= "usbarmory"
+TARGET ?= usbarmory
 TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
 
-ifeq ($(TARGET),sifive_u)
+ifeq ($(TARGET),microvm)
+GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARCH=amd64
+ENTRY_POINT := _rt0_amd64_tamago
+QEMU ?= qemu-system-x86_64 -machine microvm -m 512M \
+        -nographic -monitor none -serial stdio -net none
+endif
 
+ifeq ($(TARGET),sifive_u)
 GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARCH=riscv64
 ENTRY_POINT := _rt0_riscv64_tamago
 QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
-        -nographic -monitor none -serial stdio -net none \
-        -semihosting \
-        -dtb $(CURDIR)/qemu.dtb \
-        -bios $(CURDIR)/bios/bios.bin
-else
+        -nographic -monitor none -semihosting -serial stdio -net none \
+        -dtb $(CURDIR)/qemu.dtb -bios $(CURDIR)/bios/bios.bin
+endif
+
+ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk usbarmory))
 
 ifeq ($(TARGET),mx6ullevk)
 UART1 := stdio
 UART2 := null
 NET   := nic,model=imx.enet,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
-else
+endif
+
+ifeq ($(TARGET),usbarmory)
 UART1 := null
 UART2 := stdio
 NET   := none
@@ -42,8 +50,8 @@ endif
 GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARM=7 GOARCH=arm
 ENTRY_POINT := _rt0_arm_tamago
 QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
-        -nographic -monitor none -serial $(UART1) -serial $(UART2) -net $(NET) \
-        -semihosting
+        -nographic -monitor none -semihosting \
+        -serial $(UART1) -serial $(UART2) -net $(NET)
 
 endif
 
@@ -140,19 +148,22 @@ qemu.dtb:
 
 #### application target ####
 
-ifeq ($(TARGET),sifive_u)
+ifeq ($(TARGET),microvm)
+$(APP): check_tamago
+	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
+endif
 
+ifeq ($(TARGET),sifive_u)
 $(APP): check_tamago qemu.dtb
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP} && \
 	RT0=$$(riscv64-linux-gnu-readelf -a $(APP)|grep -i 'Entry point' | cut -dx -f2) && \
 	echo ".equ RT0_RISCV64_TAMAGO, 0x$$RT0" > $(CURDIR)/bios/cfg.inc && \
 	cd $(CURDIR)/bios && ./build.sh
+endif
 
-else
-
+ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk usbarmory))
 $(APP): check_tamago IMX6UL.yaml IMX6ULL.yaml
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
-
 endif
 
 #### HAB secure boot ####

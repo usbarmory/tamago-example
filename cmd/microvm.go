@@ -4,7 +4,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build sifive_u
+//go:build microvm
 
 package cmd
 
@@ -16,23 +16,22 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/usbarmory/tamago/board/qemu/sifive_u"
-	"github.com/usbarmory/tamago/soc/sifive/fu540"
+	_ "github.com/usbarmory/tamago/board/qemu/microvm"
 )
 
-var boardName = "qemu-system-riscv64 (sifive_u)"
+var boardName = "microvm"
 var NIC interface{}
 
 func init() {
-	uart = sifive_u.UART0
+	// uart = FIXME
 }
 
 func date(epoch int64) {
-	fu540.CLINT.SetTimer(epoch)
+	panic("FIXME: TODO")
 }
 
 func uptime() (ns int64) {
-	return fu540.CLINT.Nanotime() - fu540.CLINT.TimerOffset
+	panic("FIXME: TODO")
 }
 
 func mem(start uint, size int, w []byte) (b []byte) {
@@ -70,5 +69,5 @@ func HasNetwork() (usb bool, eth bool) {
 }
 
 func Target() (t string) {
-	return fmt.Sprintf("%s %v MHz", fu540.Model(), float32(fu540.Freq())/1000000)
+	return fmt.Sprintf("TODO")
 }

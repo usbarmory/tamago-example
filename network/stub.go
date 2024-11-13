@@ -6,8 +6,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build sifive_u
-// +build sifive_u
+//go:build !(mx6ullevk || usbarmory)
 
 package network
 

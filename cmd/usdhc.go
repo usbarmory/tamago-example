@@ -5,7 +5,6 @@
 // that can be found in the LICENSE file.
 
 //go:build mx6ullevk || usbarmory
-// +build mx6ullevk usbarmory
 
 package cmd
 
@@ -129,7 +128,7 @@ func usdhcRead(card *usdhc.USDHC, size int, readSize int) {
 	log.Printf("read %d MiB in %s (%.2f MB/s | %.2f MiB/s)", size/(1024*1024), elapsed, megaps, mebips)
 }
 
-func usdhcTest() {
+func storageTest() {
 	msg("imx6_usdhc")
 
 	if !imx6ul.Native {

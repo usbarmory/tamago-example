@@ -131,3 +131,5 @@ require (
 	nhooyr.io/websocket v1.8.7 // indirect
 	salsa.debian.org/vasudev/gospake2 v0.0.0-20210510093858-d91629950ad1 // indirect
 )
+
+replace github.com/usbarmory/tamago => /mnt/git/public/tamago
