@@ -1,9 +1,9 @@
 module github.com/usbarmory/tamago-example
 
-go 1.23.1
+go 1.23.4
 
 require (
-	filippo.io/mlkem768 v0.0.0-20240902154959-36b3023d41cf
+	filippo.io/mlkem768 v0.0.0-20241021091500-d85de16e2039
 	github.com/Harvey-OS/ninep v0.0.0-20200724082702-d30a6d4f9789
 	github.com/arl/statsviz v0.6.0
 	github.com/beevik/ntp v1.4.3
@@ -14,17 +14,17 @@ require (
 	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/psanford/wormhole-william v1.0.7
-	github.com/transparency-dev/witness v0.0.0-20240930091028-e61c87e06ad0
-	github.com/usbarmory/crucible v0.0.0-20240222195051-dec27cd4e0e0
+	github.com/transparency-dev/witness v0.0.0-20241125091305-dc3d031bf675
+	github.com/usbarmory/crucible v0.0.0-20241004082917-ad745b205b67
 	github.com/usbarmory/imx-enet v0.0.0-20240909221101-ae8625bf5b84
 	github.com/usbarmory/imx-usbnet v0.0.0-20240909221106-d242d2c2d20b
-	github.com/usbarmory/tamago v0.0.0-20240924114619-273d67cd811d
-	golang.org/x/crypto v0.27.0
-	golang.org/x/crypto/x509roots/fallback v0.0.0-20240930154113-a0819fbb0244
-	golang.org/x/mod v0.21.0
-	golang.org/x/term v0.24.0
-	google.golang.org/grpc v1.67.1
-	tailscale.com v1.74.1
+	github.com/usbarmory/tamago v0.0.0-20241204113720-e648ef3a4633
+	golang.org/x/crypto v0.29.0
+	golang.org/x/crypto/x509roots/fallback v0.0.0-20241127184453-8c4e668694cc
+	golang.org/x/mod v0.22.0
+	golang.org/x/term v0.26.0
+	google.golang.org/grpc v1.68.0
+	tailscale.com v1.76.6
 )
 
 require (
@@ -50,7 +50,6 @@ require (
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/cisco/go-tls-syntax v0.0.0-20200617162716-46b0cfb76b9b // indirect
 	github.com/coder/websocket v1.8.12 // indirect
 	github.com/coreos/go-iptables v0.7.1-0.20240112124308-65c67c9f46e6 // indirect
 	github.com/dblohm7/wingoes v0.0.0-20240119213807-a09d6be7affa // indirect
@@ -90,7 +89,7 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/prometheus-community/pro-bing v0.4.0 // indirect
-	github.com/prometheus/client_golang v1.20.4 // indirect
+	github.com/prometheus/client_golang v1.20.5 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
@@ -105,7 +104,7 @@ require (
 	github.com/tailscale/web-client-prebuilt v0.0.0-20240226180453-5db17b287bf1 // indirect
 	github.com/tailscale/wireguard-go v0.0.0-20240905161824-799c1978fafc // indirect
 	github.com/tcnksm/go-httpstat v0.2.0 // indirect
-	github.com/transparency-dev/formats v0.0.0-20240610130149-01e8727bec75 // indirect
+	github.com/transparency-dev/formats v0.0.0-20241003145927-a04dcc2a37e4 // indirect
 	github.com/transparency-dev/merkle v0.0.3-0.20240919113952-3c979d16ee14 // indirect
 	github.com/transparency-dev/serverless-log v0.0.0-20240408141044-5d483a81bdb7 // indirect
 	github.com/u-root/uio v0.0.0-20240118234441-a3c409a6018e // indirect
@@ -114,15 +113,15 @@ require (
 	go4.org/mem v0.0.0-20220726221520-4f986261bf13 // indirect
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
 	golang.org/x/exp v0.0.0-20240119083558-1b970713d09a // indirect
-	golang.org/x/net v0.29.0 // indirect
-	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
-	golang.org/x/text v0.18.0 // indirect
-	golang.org/x/time v0.6.0 // indirect
+	golang.org/x/net v0.31.0 // indirect
+	golang.org/x/sync v0.9.0 // indirect
+	golang.org/x/sys v0.27.0 // indirect
+	golang.org/x/text v0.20.0 // indirect
+	golang.org/x/time v0.8.0 // indirect
 	golang.org/x/tools v0.23.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
