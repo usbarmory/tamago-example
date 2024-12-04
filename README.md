@@ -1,5 +1,5 @@
-TamaGo - bare metal Go for ARM/RISCV-V SoCs - example application
-=================================================================
+TamaGo - bare metal Go for AMD64/ARM/RISC-V processors
+======================================================
 
 tamago | https://github.com/usbarmory/tamago  
 
@@ -21,7 +21,7 @@ Introduction
 ============
 
 TamaGo is a framework that enables compilation and execution of unencumbered Go
-applications on bare metal ARM/RISC-V System-on-Chip (SoC) components.
+applications on bare metal AMD64/ARM/RISC-V processors.
 
 This example Go application illustrates use of the
 [tamago](https://github.com/usbarmory/tamago) package
