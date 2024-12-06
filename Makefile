@@ -19,15 +19,14 @@ TARGET ?= usbarmory
 TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
 
 ifeq ($(TARGET),microvm)
-GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARCH=amd64
-ENTRY_POINT := _rt0_amd64_tamago
+TEXT_START := 0x10010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
+GOENV := GOOS=tamago GOARCH=amd64
 QEMU ?= qemu-system-x86_64 -machine microvm -m 512M \
         -nographic -monitor none -serial stdio -net none
 endif
 
 ifeq ($(TARGET),sifive_u)
-GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARCH=riscv64
-ENTRY_POINT := _rt0_riscv64_tamago
+GOENV := GOOS=tamago GOARCH=riscv64
 QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
         -nographic -monitor none -semihosting -serial stdio -net none \
         -dtb $(CURDIR)/qemu.dtb -bios $(CURDIR)/bios/bios.bin
@@ -47,15 +46,14 @@ UART2 := stdio
 NET   := none
 endif
 
-GOENV := GO_EXTLINK_ENABLED=0 CGO_ENABLED=0 GOOS=tamago GOARM=7 GOARCH=arm
-ENTRY_POINT := _rt0_arm_tamago
+GOENV := GOOS=tamago GOARM=7 GOARCH=arm
 QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -nographic -monitor none -semihosting \
         -serial $(UART1) -serial $(UART2) -net $(NET)
 
 endif
 
-GOFLAGS := -tags ${TARGET},linkramsize,native -trimpath -ldflags "-s -w -T $(TEXT_START) -E $(ENTRY_POINT) -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
+GOFLAGS := -tags ${TARGET},linkramsize,native -trimpath -ldflags "-s -w -T $(TEXT_START) -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
 
 .PHONY: clean qemu qemu-gdb
 
