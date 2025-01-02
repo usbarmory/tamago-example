@@ -22,10 +22,6 @@ import (
 var boardName = "microvm"
 var NIC interface{}
 
-func init() {
-	// uart = FIXME
-}
-
 func date(epoch int64) {
 	panic("FIXME: TODO")
 }
