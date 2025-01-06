@@ -15,18 +15,28 @@ import (
 	"regexp"
 	"runtime"
 	"strconv"
+	_ "unsafe"
 
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/arm"
+	"github.com/usbarmory/tamago/dma"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/snvs"
 )
 
 const (
+	// Override usbarmory pkg ramSize and `mem` allocation, as having concurrent
+	// USB and Ethernet interfaces requires more than what the iRAM can handle.
+	dmaSize = 0xa00000 // 10MB
+	dmaStart = 0xa0000000 - dmaSize
+
 	romStart = 0x00000000
 	romSize  = 0x17000
 )
+
+//go:linkname ramSize runtime.ramSize
+var ramSize uint = 0x20000000 - dmaSize // 512MB - 10MB
 
 func Target() (t string) {
 	t = fmt.Sprintf("%s %v MHz", imx6ul.Model(), float32(imx6ul.ARMFreq())/1000000)
@@ -39,6 +49,8 @@ func Target() (t string) {
 }
 
 func init() {
+	dma.Init(dmaStart, dmaSize)
+
 	if !imx6ul.Native {
 		return
 	}

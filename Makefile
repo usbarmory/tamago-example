@@ -17,12 +17,14 @@ SHELL = /bin/bash
 APP := example
 TARGET ?= usbarmory
 TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
+TAGS := $(TARGET)
 
 ifeq ($(TARGET),microvm)
 TEXT_START := 0x10010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
 GOENV := GOOS=tamago GOARCH=amd64
-QEMU ?= qemu-system-x86_64 -machine microvm -m 512M \
-        -nographic -monitor none -serial stdio -net none
+QEMU ?= qemu-system-x86_64 -machine microvm -enable-kvm -cpu host -no-reboot -m 1G \
+        -nographic -monitor none -serial stdio \
+        -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 endif
 
 ifeq ($(TARGET),sifive_u)
@@ -33,6 +35,8 @@ QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
 endif
 
 ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk usbarmory))
+
+TAGS := $(TARGET),linkramsize
 
 ifeq ($(TARGET),mx6ullevk)
 UART1 := stdio
@@ -53,7 +57,7 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
 
 endif
 
-GOFLAGS := -tags ${TARGET},linkramsize,native -trimpath -ldflags "-s -w -T $(TEXT_START) -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
+GOFLAGS := -tags ${TAGS},native -trimpath -ldflags "-s -w -T $(TEXT_START) -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
 
 .PHONY: clean qemu qemu-gdb
 
