@@ -45,10 +45,14 @@ func main() {
 
 	if hasUSB || hasEth {
 		network.SetupStaticWebAssets(cmd.Banner)
+		cmd.NIC = network.Init(console, hasUSB, hasEth)
 	} else {
 		cmd.SerialConsole(console)
+	}
+
+	if runtime.GOARCH != "amd64" {
 		semihosting.Exit()
 	}
 
-	cmd.NIC = network.Init(console, hasUSB, hasEth)
+	runtime.Exit(0)
 }
