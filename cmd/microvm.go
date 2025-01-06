@@ -16,11 +16,15 @@ import (
 
 	"golang.org/x/term"
 
-	_ "github.com/usbarmory/tamago/board/qemu/microvm"
+	"github.com/usbarmory/tamago/board/qemu/microvm"
 )
 
 var boardName = "microvm"
 var NIC interface{}
+
+func init() {
+	uart = microvm.UART0
+}
 
 func date(epoch int64) {
 	panic("FIXME: TODO")
