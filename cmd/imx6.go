@@ -101,7 +101,7 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	fmt.Fprintf(&res, "Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	fmt.Fprintf(&res, "RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024))
 	fmt.Fprintf(&res, "Board ........: %s\n", boardName)
-	fmt.Fprintf(&res, "SoC ..........: %s\n", Target())
+	fmt.Fprintf(&res, "CPU ..........: %s\n", Target()) // FIXME: parse CPUID
 
 	if NIC != nil {
 		fmt.Fprintf(&res, "ENET%d ........: %s %d\n", NIC.Index, NIC.MAC, NIC.Stats)
