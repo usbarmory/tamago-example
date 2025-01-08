@@ -27,11 +27,11 @@ func init() {
 }
 
 func date(epoch int64) {
-	panic("FIXME: TODO")
+	microvm.AMD64.SetTimer(epoch)
 }
 
 func uptime() (ns int64) {
-	panic("FIXME: TODO")
+	return int64(float64(microvm.AMD64.TimerFn()) * microvm.AMD64.TimerMultiplier)
 }
 
 func mem(start uint, size int, w []byte) (b []byte) {
@@ -46,7 +46,7 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	fmt.Fprintf(&res, "Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	fmt.Fprintf(&res, "RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024))
 	fmt.Fprintf(&res, "Board ........: %s\n", boardName)
-	fmt.Fprintf(&res, "SoC ..........: %s\n", Target())
+	fmt.Fprintf(&res, "CPU ..........: %s\n", Target())
 
 	return res.String(), nil
 }
@@ -69,5 +69,5 @@ func HasNetwork() (usb bool, eth bool) {
 }
 
 func Target() (t string) {
-	return fmt.Sprintf("TODO")
+	return microvm.AMD64.Name()
 }
