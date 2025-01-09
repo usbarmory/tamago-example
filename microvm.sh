@@ -20,7 +20,8 @@ if [ "$1" == "gdb" ]; then
 fi
 
 qemu-system-x86_64 \
-  -machine microvm -enable-kvm -cpu host,invtsc=on -no-reboot \
+  -machine microvm,x-option-roms=on,pit=off,pic=off,rtc=off \
+  -enable-kvm -cpu host,invtsc=on,kvmclock=on -no-reboot \
   -m 1G -nographic -monitor none -serial stdio -kernel example $OPTS \
   -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
   # -net none
