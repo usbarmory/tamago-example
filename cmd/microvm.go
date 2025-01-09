@@ -24,6 +24,12 @@ var NIC interface{}
 
 func init() {
 	uart = microvm.UART0
+
+	Add(Cmd{
+		Name:    "rtc",
+		Help:    "use RTC for runtime date and time",
+		Fn:      rtcCmd,
+	})
 }
 
 func date(epoch int64) {
@@ -53,6 +59,18 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 
 func rebootCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
 	return "", errors.New("unimplemented")
+}
+
+func rtcCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
+	t, err := microvm.RTC0.Now()
+
+	if err != nil {
+		return
+	}
+
+	microvm.AMD64.SetTimer(t.UnixNano())
+
+	return dateCmd(nil, nil, []string{""})
 }
 
 func cryptoTest() {
