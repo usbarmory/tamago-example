@@ -21,9 +21,8 @@ fi
 
 qemu-system-x86_64 \
   -machine microvm,x-option-roms=on,pit=off,pic=off,rtc=on \
+  -global virtio-mmio.force-legacy=false \
   -enable-kvm -cpu host,invtsc=on,kvmclock=on -no-reboot \
-  -m 1G -nographic -monitor none -serial stdio \
+  -m 1.25G -nographic -monitor none -serial stdio \
   -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
-  -kernel example $OPTS \
-  # -net none
-  #-m 1G -nographic -monitor none -serial stdio -net none -kernel example -d exec,nochain,cpu,in_asm
+  -kernel example $OPTS
