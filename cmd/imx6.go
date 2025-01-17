@@ -26,8 +26,8 @@ import (
 )
 
 const (
-	// Override usbarmory pkg ramSize and `mem` allocation, as having concurrent
-	// USB and Ethernet interfaces requires more than what the iRAM can handle.
+	// Override standard memory allocation as having concurrent USB and
+	// Ethernet interfaces requires more than what the iRAM can handle.
 	dmaSize = 0xa00000 // 10MB
 	dmaStart = 0xa0000000 - dmaSize
 
@@ -37,16 +37,6 @@ const (
 
 //go:linkname ramSize runtime.ramSize
 var ramSize uint = 0x20000000 - dmaSize // 512MB - 10MB
-
-func Target() (t string) {
-	t = fmt.Sprintf("%s %v MHz", imx6ul.Model(), float32(imx6ul.ARMFreq())/1000000)
-
-	if !imx6ul.Native {
-		t += " (emulated)"
-	}
-
-	return
-}
 
 func init() {
 	dma.Init(dmaStart, dmaSize)
@@ -162,6 +152,16 @@ func cryptoTest() {
 	spawn(kemTest)
 	spawn(caamTest)
 	spawn(dcpTest)
+
+	return
+}
+
+func Target() (t string) {
+	t = fmt.Sprintf("%s %v MHz", imx6ul.Model(), float32(imx6ul.ARMFreq())/1000000)
+
+	if !imx6ul.Native {
+		t += " (emulated)"
+	}
 
 	return
 }

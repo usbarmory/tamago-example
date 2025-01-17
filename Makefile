@@ -20,9 +20,6 @@ TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc
 TAGS := $(TARGET)
 
 ifeq ($(TARGET),microvm)
-
-TAGS := $(TARGET),linkramsize
-
 TEXT_START := 0x10010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
 GOENV := GOOS=tamago GOARCH=amd64
 QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc=on \

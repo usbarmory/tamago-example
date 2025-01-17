@@ -17,10 +17,11 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/board/qemu/microvm"
+	"github.com/usbarmory/virtio-net"
 )
 
 var boardName = "microvm"
-var NIC interface{}
+var NIC *vnet.Net
 
 func init() {
 	uart = microvm.UART0
@@ -54,6 +55,10 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	fmt.Fprintf(&res, "Board ........: %s\n", boardName)
 	fmt.Fprintf(&res, "CPU ..........: %s\n", Target())
 
+	if NIC != nil {
+		fmt.Fprintf(&res, "VirtIO Net%d ..: %s\n", NIC.Index, NIC.Config().MAC)
+	}
+
 	return res.String(), nil
 }
 
@@ -83,7 +88,7 @@ func storageTest() {
 }
 
 func HasNetwork() (usb bool, eth bool) {
-	return false, false
+	return false, true
 }
 
 func Target() (t string) {

@@ -19,6 +19,7 @@ require (
 	github.com/usbarmory/imx-enet v0.0.0-20240909221101-ae8625bf5b84
 	github.com/usbarmory/imx-usbnet v0.0.0-20240909221106-d242d2c2d20b
 	github.com/usbarmory/tamago v0.0.0-20241204113720-e648ef3a4633
+	github.com/usbarmory/virtio-net v0.0.0-00010101000000-000000000000
 	golang.org/x/crypto v0.29.0
 	golang.org/x/crypto/x509roots/fallback v0.0.0-20241127184453-8c4e668694cc
 	golang.org/x/mod v0.22.0
@@ -118,7 +119,7 @@ require (
 	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/text v0.20.0 // indirect
 	golang.org/x/time v0.8.0 // indirect
-	golang.org/x/tools v0.23.0 // indirect
+	golang.org/x/tools v0.26.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
@@ -132,3 +133,5 @@ require (
 )
 
 replace github.com/usbarmory/tamago => /mnt/git/public/tamago
+
+replace github.com/usbarmory/virtio-net => /mnt/git/public/virtio-net

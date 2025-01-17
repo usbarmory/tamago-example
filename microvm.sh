@@ -23,6 +23,6 @@ qemu-system-x86_64 \
   -machine microvm,x-option-roms=on,pit=off,pic=off,rtc=on \
   -global virtio-mmio.force-legacy=false \
   -enable-kvm -cpu host,invtsc=on,kvmclock=on -no-reboot \
-  -m 1.25G -nographic -monitor none -serial stdio \
+  -m 4G -nographic -monitor none -serial stdio \
   -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
-  -kernel example $OPTS
+  -kernel example $OPTS # -d unimp,guest_errors,trace:*virtio*
