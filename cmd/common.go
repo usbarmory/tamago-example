@@ -119,6 +119,10 @@ func stackallCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 func dmaCmd(_ *Interface, term *term.Terminal, arg []string) (string, error) {
 	var res []string
 
+	if dma.Default() == nil {
+		return "no default DMA region is present", nil
+	}
+
 	dump := func(blocks map[uint]uint, tag string) string {
 		var r []string
 		var t uint

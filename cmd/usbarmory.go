@@ -5,7 +5,6 @@
 // that can be found in the LICENSE file.
 
 //go:build usbarmory
-// +build usbarmory
 
 package cmd
 

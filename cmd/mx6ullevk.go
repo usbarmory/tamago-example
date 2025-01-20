@@ -5,7 +5,6 @@
 // that can be found in the LICENSE file.
 
 //go:build mx6ullevk
-// +build mx6ullevk
 
 package cmd
 

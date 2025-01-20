@@ -7,7 +7,6 @@
 // that can be found in the LICENSE file.
 
 //go:build mx6ullevk || usbarmory
-// +build mx6ullevk usbarmory
 
 package network
 
@@ -32,7 +31,7 @@ func handleEthernetInterrupt(eth *enet.ENET) {
 	}
 }
 
-func StartEth(handler sshHandler) (eth *enet.ENET) {
+func startEth(handler ConsoleHandler) (eth *enet.ENET) {
 	eth = imx6ul.ENET2
 
 	if !imx6ul.Native {

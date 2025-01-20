@@ -4,7 +4,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build sifive_u
+//go:build microvm
 
 package cmd
 
@@ -16,23 +16,29 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/usbarmory/tamago/board/qemu/sifive_u"
-	"github.com/usbarmory/tamago/soc/sifive/fu540"
+	"github.com/usbarmory/tamago/board/qemu/microvm"
+	"github.com/usbarmory/virtio-net"
 )
 
-var boardName = "qemu-system-riscv64 (sifive_u)"
-var NIC interface{}
+var boardName = "microvm"
+var NIC *vnet.Net
 
 func init() {
-	uart = sifive_u.UART0
+	uart = microvm.UART0
+
+	Add(Cmd{
+		Name:    "rtc",
+		Help:    "use RTC for runtime date and time",
+		Fn:      rtcCmd,
+	})
 }
 
 func date(epoch int64) {
-	fu540.CLINT.SetTimer(epoch)
+	microvm.AMD64.SetTimer(epoch)
 }
 
 func uptime() (ns int64) {
-	return fu540.CLINT.Nanotime() - fu540.CLINT.TimerOffset
+	return int64(float64(microvm.AMD64.TimerFn()) * microvm.AMD64.TimerMultiplier)
 }
 
 func mem(start uint, size int, w []byte) (b []byte) {
@@ -47,13 +53,29 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	fmt.Fprintf(&res, "Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	fmt.Fprintf(&res, "RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024))
 	fmt.Fprintf(&res, "Board ........: %s\n", boardName)
-	fmt.Fprintf(&res, "SoC ..........: %s\n", Target())
+	fmt.Fprintf(&res, "CPU ..........: %s\n", Target())
+
+	if NIC != nil {
+		fmt.Fprintf(&res, "VirtIO Net%d ..: %s\n", NIC.Index, NIC.Config().MAC)
+	}
 
 	return res.String(), nil
 }
 
 func rebootCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
 	return "", errors.New("unimplemented")
+}
+
+func rtcCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
+	t, err := microvm.RTC0.Now()
+
+	if err != nil {
+		return
+	}
+
+	microvm.AMD64.SetTimer(t.UnixNano())
+
+	return dateCmd(nil, nil, []string{""})
 }
 
 func cryptoTest() {
@@ -66,9 +88,9 @@ func storageTest() {
 }
 
 func HasNetwork() (usb bool, eth bool) {
-	return false, false
+	return false, true
 }
 
 func Target() (t string) {
-	return fmt.Sprintf("%s %v MHz", fu540.Model(), float32(fu540.Freq())/1000000)
+	return microvm.AMD64.Name()
 }

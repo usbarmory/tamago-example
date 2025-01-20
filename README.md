@@ -27,12 +27,13 @@ This example Go application illustrates use of the
 [tamago](https://github.com/usbarmory/tamago) package
 execute bare metal Go code on the following platforms:
 
-| SoC                  | Board                                                                                                                                                                                | SoC package                                                               | Board package                                                                        |
-|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| Processor             | Board                                                                                                                                                                                | SoC/CPU package                                                           | Board package                                                                        |
+|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
 | NXP i.MX6ULZ/i.MX6UL  | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki/Mk-II-Introduction)                                                                                                   | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)     |
 | NXP i.MX6ULL/i.MX6UL  | [USB armory Mk II LAN](https://github.com/usbarmory/usbarmory/wiki/Mk-II-LAN)                                                                                                        | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)     |
 | NXP i.MX6ULL/i.MX6ULZ | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk) |
 | SiFive FU540          | [QEMU sifive_u](https://www.qemu.org/docs/master/system/riscv/sifive_u.html)                                                                                                         | [fu540](https://github.com/usbarmory/tamago/tree/master/soc/sifive/fu540) | [qemu/sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u) |
+| AMD/Intel 64-bit      | [microvm](https://www.qemu.org/docs/master/system/i386/microvm.html)                                                                                                                 | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm)   |
 
 Documentation
 =============
@@ -74,6 +75,8 @@ On the USB armory Mk II LAN the network interface is exposed on both USB and
 physical Ethernet interfaces.
 
 On the MCIMX6ULL-EVK the second Ethernet port is used.
+
+On microvm VirtIO networking is used.
 
 The web servers expose the following routes:
 
@@ -121,8 +124,8 @@ usdhc           <n> <hex offset> <size>                          # SD/MMC card r
 wormhole        (send <path>|recv <code>)                        # transfer file through magic wormhole
 ```
 
-On emulated runs (e.g. `make qemu`) the console is exposed directly on the
-terminal.
+On emulated runs (e.g. `make qemu`) for `usbarmory` and `sifive_u` targets the
+console is exposed directly on the terminal, otherwise networking is used.
 
 Building the compiler
 =====================
@@ -167,11 +170,28 @@ make TARGET=sifive_u
 
 Available targets:
 
-| `TARGET`    | Board            | Executing and debugging                                                                                  |
-|-------------|------------------|----------------------------------------------------------------------------------------------------------|
-| `sifive_u`  | QEMU sifive_u    | [sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u#executing-and-debugging)  |
+| `TARGET`    | Board            | Executing and debugging                                                                                 |
+|-------------|------------------|---------------------------------------------------------------------------------------------------------|
+| `sifive_u`  | QEMU sifive_u    | [sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u#executing-and-debugging) |
 
-The target has only been tested with emulated execution (e.g. `make qemu`)
+The target has only been tested with emulated execution (e.g. `make qemu`).
+
+Building and executing on AMD64 targets
+=======================================
+
+Build the application executables as follows:
+
+```
+make TARGET=microvm
+```
+
+Available targets:
+
+| `TARGET`    | Board            | Executing and debugging                                                                               |
+|-------------|------------------|-------------------------------------------------------------------------------------------------------|
+| `microvm`   | QEMU microvm     | [microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging) |
+
+The target is meant for paravirtualized execution (e.g. `make qemu`).
 
 Emulated hardware with QEMU
 ===========================
@@ -196,11 +216,8 @@ An emulated target can be debugged with GDB using `make qemu-gdb`, this will
 make qemu waiting for a GDB connection that can be launched as follows:
 
 ```
-# ARM targets
-arm-none-eabi-gdb -ex "target remote 127.0.0.1:1234" example
-
-# RISC-V targets
-riscv64-elf-gdb -ex "target remote 127.0.0.1:1234" example
+# path should be adjusted on cross platforms (e.g. arm-none-eabi-gdb)
+gdb -ex "target remote 127.0.0.1:1234" example
 ```
 
 Breakpoints can be set in the usual way:

@@ -124,7 +124,7 @@ func (iface *Interface) Exec(term *term.Terminal, cmd []byte) {
 func (iface *Interface) Terminal(term *term.Terminal) {
 	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
 
-	fmt.Fprintf(term, "%s\n\n", Banner)
+	fmt.Fprintf(term, "\n%s\n\n", Banner)
 	fmt.Fprintf(term, "%s\n", Help(term))
 
 	for {

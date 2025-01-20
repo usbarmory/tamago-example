@@ -5,7 +5,7 @@
 // that can be found in the LICENSE file.
 
 // func sys_exit()
-TEXT ·sys_exit(SB), $0
+TEXT ·sys_exit(SB),$0
 	MOV	$0x18,    A0 // TARGET_SYS_EXIT
 	MOV	$0x20026, T1 // ADP_Stopped_ApplicationExit
 

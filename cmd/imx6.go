@@ -5,7 +5,6 @@
 // that can be found in the LICENSE file.
 
 //go:build mx6ullevk || usbarmory
-// +build mx6ullevk usbarmory
 
 package cmd
 
@@ -16,30 +15,32 @@ import (
 	"regexp"
 	"runtime"
 	"strconv"
+	_ "unsafe"
 
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/arm"
+	"github.com/usbarmory/tamago/dma"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/snvs"
 )
 
 const (
+	// Override standard memory allocation as having concurrent USB and
+	// Ethernet interfaces requires more than what the iRAM can handle.
+	dmaSize = 0xa00000 // 10MB
+	dmaStart = 0xa0000000 - dmaSize
+
 	romStart = 0x00000000
 	romSize  = 0x17000
 )
 
-func Target() (t string) {
-	t = fmt.Sprintf("%s %v MHz", imx6ul.Model(), float32(imx6ul.ARMFreq())/1000000)
-
-	if !imx6ul.Native {
-		t += " (emulated)"
-	}
-
-	return
-}
+//go:linkname ramSize runtime.ramSize
+var ramSize uint = 0x20000000 - dmaSize // 512MB - 10MB
 
 func init() {
+	dma.Init(dmaStart, dmaSize)
+
 	if !imx6ul.Native {
 		return
 	}
@@ -151,6 +152,16 @@ func cryptoTest() {
 	spawn(kemTest)
 	spawn(caamTest)
 	spawn(dcpTest)
+
+	return
+}
+
+func Target() (t string) {
+	t = fmt.Sprintf("%s %v MHz", imx6ul.Model(), float32(imx6ul.ARMFreq())/1000000)
+
+	if !imx6ul.Native {
+		t += " (emulated)"
+	}
 
 	return
 }
