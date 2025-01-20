@@ -25,7 +25,7 @@ GOENV := GOOS=tamago GOARCH=amd64
 QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc=on \
         -global virtio-mmio.force-legacy=false \
         -enable-kvm -cpu host,invtsc=on,kvmclock=on -no-reboot \
-        -m 1.25G \ -nographic -monitor none -serial stdio \
+        -m 4G -nographic -monitor none -serial stdio \
         -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 endif
 
@@ -33,7 +33,7 @@ ifeq ($(TARGET),sifive_u)
 GOENV := GOOS=tamago GOARCH=riscv64
 QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
         -nographic -monitor none -semihosting -serial stdio -net none \
-        -dtb $(CURDIR)/qemu.dtb -bios $(CURDIR)/bios/bios.bin
+        -dtb $(CURDIR)/qemu.dtb -bios $(CURDIR)/tools/bios.bin
 endif
 
 ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk usbarmory))
@@ -70,7 +70,7 @@ check_tamago:
 	fi
 
 clean:
-	@rm -fr $(APP) $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd cmd/IMX6UL*.yaml qemu.dtb bios/bios.bin
+	@rm -fr $(APP) $(APP).bin $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd cmd/IMX6UL*.yaml qemu.dtb tools/bios.bin
 
 #### generic targets ####
 
@@ -155,14 +155,15 @@ qemu.dtb:
 ifeq ($(TARGET),microvm)
 $(APP): check_tamago
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
+	cd $(CURDIR) && ./tools/add_pvh_elf_note.sh ${APP}
 endif
 
 ifeq ($(TARGET),sifive_u)
 $(APP): check_tamago qemu.dtb
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP} && \
 	RT0=$$(riscv64-linux-gnu-readelf -a $(APP)|grep -i 'Entry point' | cut -dx -f2) && \
-	echo ".equ RT0_RISCV64_TAMAGO, 0x$$RT0" > $(CURDIR)/bios/cfg.inc && \
-	cd $(CURDIR)/bios && ./build.sh
+	echo ".equ RT0_RISCV64_TAMAGO, 0x$$RT0" > $(CURDIR)/tools/bios.cfg && \
+	cd $(CURDIR)/tools && ./build_riscv64_bios.sh
 endif
 
 ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk usbarmory))

@@ -1,5 +1,5 @@
 .align 2
-.include "cfg.inc"
+.include "bios.cfg"
 
 .section .text
 .globl _start
