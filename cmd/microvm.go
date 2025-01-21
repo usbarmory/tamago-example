@@ -67,7 +67,7 @@ func rebootCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error)
 }
 
 func rtcCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
-	t, err := microvm.RTC0.Now()
+	t, err := microvm.RTC.Now()
 
 	if err != nil {
 		return

@@ -29,7 +29,7 @@ func Init(handler ConsoleHandler, hasUSB bool, hasEth bool) (dev *vnet.Net) {
 	}
 
 	dev = &vnet.Net{
-		Base: microvm.VIRTIO_NET_BASE,
+		Base: microvm.VIRTIO_NET0_BASE,
 	}
 
 	iface := vnet.Interface{}
