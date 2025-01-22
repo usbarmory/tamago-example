@@ -9,6 +9,8 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"math"
+	"runtime"
 	"sync"
 	"time"
 
@@ -80,13 +82,31 @@ func sleepTest() (tag string, res string) {
 	return
 }
 
+func wakeTest() (tag string, res string) {
+	start := time.Now()
+
+	gp, _ := runtime.GetG()
+
+	go func() {
+		time.Sleep(sleep)
+		runtime.Wake(uint(gp))
+	}()
+
+	time.Sleep(math.MaxInt64)
+	tag = fmt.Sprintf("WakeG after %s (actual %v)", sleep, time.Since(start))
+
+	return
+}
+
 func testCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
 	start := time.Now()
 
 	spawn(timerTest)
 	spawn(sleepTest)
+	spawn(wakeTest)
 	spawn(fsTest)
 	spawn(rngTest)
+
 	// spawns on its own
 	cryptoTest()
 
