@@ -3,19 +3,16 @@ TamaGo - bare metal Go for AMD64/ARM/RISC-V processors
 
 tamago | https://github.com/usbarmory/tamago  
 
-Copyright (c) WithSecure Corporation  
-https://foundry.withsecure.com
-
 ![TamaGo gopher](https://github.com/usbarmory/tamago/wiki/images/tamago.svg?sanitize=true)
 
 Authors
 =======
 
 Andrea Barisani  
-andrea.barisani@withsecure.com | andrea@inversepath.com  
+andrea@inversepath.com  
 
 Andrej Rosano  
-andrej.rosano@withsecure.com   | andrej@inversepath.com  
+andrej@inversepath.com  
 
 Introduction
 ============
