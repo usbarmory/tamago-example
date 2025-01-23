@@ -6,20 +6,14 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
-	"math"
-	"runtime"
-	"sync"
 	"time"
 
 	"golang.org/x/term"
 )
 
-const sleep = 100 * time.Millisecond
-
-var gr int
-var exit = make(chan bool)
+var (
+)
 
 func init() {
 	Add(Cmd{
@@ -29,16 +23,14 @@ func init() {
 	})
 }
 
-var mux sync.Mutex
-
-func spawn(fn func() (tag, res string)) {
-	gr += 1
+func (iface *Interface) spawn(fn func() (tag, res string)) {
+	iface.gr += 1
 
 	go func() {
 		tag, res := fn()
 
-		mux.Lock()
-		defer mux.Unlock()
+		iface.Lock()
+		defer iface.Unlock()
 
 		if len(tag) > 0 {
 			msg(tag)
@@ -48,70 +40,34 @@ func spawn(fn func() (tag, res string)) {
 			log.Print(res)
 		}
 
-		exit <- true
+		iface.exit <- true
 	}()
 }
 
-func wait() {
-	for i := 1; i <= gr; i++ {
-		<-exit
+func (iface *Interface) wait() {
+	for i := 1; i <= iface.gr; i++ {
+		<-iface.exit
 	}
 
-	gr = 0
+	iface.gr = 0
 }
 
-func timerTest() (tag string, res string) {
-	start := time.Now()
-	t := time.NewTimer(sleep)
-
-	for now := range t.C {
-		tag = fmt.Sprintf("timer expiration %v (actual %v)", sleep, now.Sub(start))
-		break
-	}
-
-	return
-}
-
-func sleepTest() (tag string, res string) {
-	start := time.Now()
-	time.Sleep(sleep)
-
-	tag = fmt.Sprintf("timer sleep %s (actual %v)", sleep, time.Since(start))
-
-	return
-}
-
-func wakeTest() (tag string, res string) {
+func testCmd(iface *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
+	iface.exit = make(chan bool)
 	start := time.Now()
 
-	gp, _ := runtime.GetG()
-
-	go func() {
-		time.Sleep(sleep)
-		runtime.Wake(uint(gp))
-	}()
-
-	time.Sleep(math.MaxInt64)
-	tag = fmt.Sprintf("WakeG after %s (actual %v)", sleep, time.Since(start))
-
-	return
-}
-
-func testCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
-	start := time.Now()
-
-	spawn(timerTest)
-	spawn(sleepTest)
-	spawn(wakeTest)
-	spawn(fsTest)
-	spawn(rngTest)
+	iface.spawn(timerTest)
+	iface.spawn(sleepTest)
+	iface.spawn(wakeTest)
+	iface.spawn(fsTest)
+	iface.spawn(rngTest)
 
 	// spawns on its own
-	cryptoTest()
+	iface.cryptoTest()
 
-	msg("launched %d test goroutines", gr)
+	msg("launched %d test goroutines", iface.gr)
 
-	wait()
+	iface.wait()
 
 	msg("completed all test goroutines (%s)", time.Since(start))
 

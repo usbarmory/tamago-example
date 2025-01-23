@@ -77,9 +77,9 @@ func rtcCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
 	return dateCmd(nil, nil, []string{""})
 }
 
-func cryptoTest() {
-	spawn(btcdTest)
-	spawn(kemTest)
+func (iface *Interface) cryptoTest() {
+	iface.spawn(btcdTest)
+	iface.spawn(kemTest)
 }
 
 func storageTest() {

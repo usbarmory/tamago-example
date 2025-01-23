@@ -15,6 +15,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 	"text/tabwriter"
 
 	"golang.org/x/term"
@@ -38,12 +39,18 @@ type Cmd struct {
 	Fn      CmdFn
 }
 
+var cmds = make(map[string]*Cmd)
+
 type Interface struct {
+	sync.Mutex
+
 	Log *os.File
+
+	exit chan bool
+	gr  int
 }
 
 var Banner string
-var cmds = make(map[string]*Cmd)
 var uart io.ReadWriter
 
 func Add(cmd Cmd) {

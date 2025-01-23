@@ -146,11 +146,11 @@ func freqCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err erro
 	return Target(), err
 }
 
-func cryptoTest() {
-	spawn(btcdTest)
-	spawn(kemTest)
-	spawn(caamTest)
-	spawn(dcpTest)
+func (iface *Interface) cryptoTest() {
+	iface.spawn(btcdTest)
+	iface.spawn(kemTest)
+	iface.spawn(caamTest)
+	iface.spawn(dcpTest)
 
 	return
 }
