@@ -14,17 +14,17 @@ require (
 	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/psanford/wormhole-william v1.0.7
-	github.com/transparency-dev/witness v0.0.0-20250117101548-ec87df96ac09
-	github.com/usbarmory/crucible v0.0.0-20241211103820-24318176ecf3
-	github.com/usbarmory/imx-enet v0.0.0-20250113164808-e835bbe2ca03
-	github.com/usbarmory/imx-usbnet v0.0.0-20250113164752-6c1aeb8a68b3
-	github.com/usbarmory/tamago v0.0.0-20250121134150-d5ba2e067352
-	github.com/usbarmory/virtio-net v0.0.0-20250120104704-e819fecdf7ed
+	github.com/transparency-dev/witness v0.0.0-20250127103510-3535e2ecee06
+	github.com/usbarmory/crucible v0.0.0-20250123114515-fa91eabf75f0
+	github.com/usbarmory/imx-enet v0.0.0-20250123113228-2e1bd913d818
+	github.com/usbarmory/imx-usbnet v0.0.0-20250123113617-d39929cd7171
+	github.com/usbarmory/tamago v0.0.0-20250129132924-689fad26adf3
+	github.com/usbarmory/virtio-net v0.0.0-20250123164805-d79dcb89f350
 	golang.org/x/crypto v0.32.0
 	golang.org/x/crypto/x509roots/fallback v0.0.0-20250118192723-a8ea4be81f07
 	golang.org/x/mod v0.22.0
 	golang.org/x/term v0.28.0
-	google.golang.org/grpc v1.69.4
+	google.golang.org/grpc v1.70.0
 	tailscale.com v1.78.3
 )
 
@@ -123,7 +123,7 @@ require (
 	golang.org/x/tools v0.26.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20241113202542-65e8d215514f // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20241202173237-19429a94021a // indirect
 	google.golang.org/protobuf v1.35.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

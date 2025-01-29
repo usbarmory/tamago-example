@@ -30,6 +30,9 @@ func init() {
 		Help:    "use RTC for runtime date and time",
 		Fn:      rtcCmd,
 	})
+
+	// set date and time at boot
+	rtcCmd(nil, nil, nil)
 }
 
 func date(epoch int64) {

@@ -58,9 +58,13 @@ func testCmd(iface *Interface, _ *term.Terminal, _ []string) (_ string, _ error)
 
 	iface.spawn(timerTest)
 	iface.spawn(sleepTest)
-	iface.spawn(wakeTest)
 	iface.spawn(fsTest)
 	iface.spawn(rngTest)
+
+	if hasUSB, hasETH := HasNetwork(); !hasUSB && !hasETH {
+		// test incompatible with interrupt handling
+		iface.spawn(wakeTest)
+	}
 
 	// spawns on its own
 	iface.cryptoTest()
