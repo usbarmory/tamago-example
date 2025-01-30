@@ -163,7 +163,7 @@ Building and executing on RISC-V targets
 Build the application executables as follows:
 
 ```
-make TARGET=sifive_u
+make example TARGET=sifive_u
 ```
 
 Available targets:
@@ -180,7 +180,7 @@ Building and executing on AMD64 targets
 Build the application executables as follows:
 
 ```
-make TARGET=microvm
+make example TARGET=microvm
 ```
 
 Available targets:
@@ -190,8 +190,19 @@ Available targets:
 | `microvm`     | QEMU microvm        | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               |
 | `firecracker` | Firecracker microvm | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) |
 
-Both targets are meant for paravirtualized execution, `make qemu` is supported
-for `microvm` while the `firecracker` output can be launched with `firectl`.
+Both targets are meant for paravirtualized execution, respectively with QEMU:
+
+```
+make qemu TARGET=microvm
+```
+
+Or Firecracker (shown in the example via
+[firectl](https://github.com/firecracker-microvm/firectl)):
+
+```
+make example TARGET=firecracker
+firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00:01 -c 1 -m 2048
+```
 
 Emulated hardware with QEMU
 ===========================
