@@ -26,6 +26,11 @@ QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc
         -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 endif
 
+ifeq ($(TARGET),firecracker)
+TEXT_START := 0x10010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
+GOENV := GOOS=tamago GOARCH=amd64
+endif
+
 ifeq ($(TARGET),sifive_u)
 GOENV := GOOS=tamago GOARCH=riscv64
 QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
@@ -149,7 +154,7 @@ qemu.dtb:
 
 #### application target ####
 
-ifeq ($(TARGET),microvm)
+ifeq ($(TARGET),$(filter $(TARGET), microvm firecracker))
 $(APP): check_tamago
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 	cd $(CURDIR) && ./tools/add_pvh_elf_note.sh ${APP}

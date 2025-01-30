@@ -24,13 +24,14 @@ This example Go application illustrates use of the
 [tamago](https://github.com/usbarmory/tamago) package
 execute bare metal Go code on the following platforms:
 
-| Processor             | Board                                                                                                                                                                                | SoC/CPU package                                                           | Board package                                                                        |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| NXP i.MX6ULZ/i.MX6UL  | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki/Mk-II-Introduction)                                                                                                   | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)     |
-| NXP i.MX6ULL/i.MX6UL  | [USB armory Mk II LAN](https://github.com/usbarmory/usbarmory/wiki/Mk-II-LAN)                                                                                                        | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)     |
-| NXP i.MX6ULL/i.MX6ULZ | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk) |
-| SiFive FU540          | [QEMU sifive_u](https://www.qemu.org/docs/master/system/riscv/sifive_u.html)                                                                                                         | [fu540](https://github.com/usbarmory/tamago/tree/master/soc/sifive/fu540) | [qemu/sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u) |
-| AMD/Intel 64-bit      | [microvm](https://www.qemu.org/docs/master/system/i386/microvm.html)                                                                                                                 | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm)   |
+| Processor             | Board                                                                                                                                                                                | SoC/CPU package                                                           | Board package                                                                                    |
+|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| NXP i.MX6ULZ/i.MX6UL  | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki/Mk-II-Introduction)                                                                                                   | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
+| NXP i.MX6ULL/i.MX6UL  | [USB armory Mk II LAN](https://github.com/usbarmory/usbarmory/wiki/Mk-II-LAN)                                                                                                        | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
+| NXP i.MX6ULL/i.MX6ULZ | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk)             |
+| SiFive FU540          | [QEMU sifive_u](https://www.qemu.org/docs/master/system/riscv/sifive_u.html)                                                                                                         | [fu540](https://github.com/usbarmory/tamago/tree/master/soc/sifive/fu540) | [qemu/sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u)             |
+| AMD/Intel 64-bit      | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html)                                                                                                            | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm)               |
+| AMD/Intel 64-bit      | [Firecracker microvm](https://firecracker-microvm.github.io)                                                                                                                         | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm) |
 
 Documentation
 =============
@@ -73,7 +74,7 @@ physical Ethernet interfaces.
 
 On the MCIMX6ULL-EVK the second Ethernet port is used.
 
-On microvm VirtIO networking is used.
+On QEMU and Firecracker microVMs VirtIO networking is used.
 
 The web servers expose the following routes:
 
@@ -184,16 +185,18 @@ make TARGET=microvm
 
 Available targets:
 
-| `TARGET`    | Board            | Executing and debugging                                                                               |
-|-------------|------------------|-------------------------------------------------------------------------------------------------------|
-| `microvm`   | QEMU microvm     | [microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging) |
+| `TARGET`      | Board               | Executing and debugging                                                                                                  |
+|---------------|---------------------|--------------------------------------------------------------------------------------------------------------------------|
+| `microvm`     | QEMU microvm        | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               |
+| `firecracker` | Firecracker microvm | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) |
 
-The target is meant for paravirtualized execution (e.g. `make qemu`).
+Both targets are meant for paravirtualized execution, `make qemu` is supported
+for `microvm` while the `firecracker` output can be launched with `firectl`.
 
 Emulated hardware with QEMU
 ===========================
 
-All targets can be executed under emulation as follows:
+QEMU supported targets can be executed under emulation as follows:
 
 ```
 make qemu
