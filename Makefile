@@ -82,6 +82,10 @@ elf: $(APP)
 
 qemu: GOFLAGS := $(GOFLAGS:native=semihosting)
 qemu: $(APP)
+	@if [ "${QEMU}" == "" ]; then \
+		echo 'qemu not available for this target'; \
+		exit 1; \
+	fi
 	$(QEMU) -kernel $(APP)
 
 qemu-gdb: GOFLAGS := $(GOFLAGS:native=semihosting)
