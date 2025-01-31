@@ -16,7 +16,6 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/board/firecracker/microvm"
-	"github.com/usbarmory/tamago/kvm/clock"
 	intel_uart "github.com/usbarmory/tamago/soc/intel/uart"
 )
 
@@ -52,7 +51,7 @@ func init() {
 	}
 
 	// set date and time at boot
-	t, err := kvmclock.Now()
+	t, err := microvm.AMD64.Now()
 
 	if err != nil {
 		return

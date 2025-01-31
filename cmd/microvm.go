@@ -16,7 +16,6 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/board/qemu/microvm"
-	"github.com/usbarmory/tamago/kvm/clock"
 	"github.com/usbarmory/virtio-net"
 )
 
@@ -27,7 +26,7 @@ func init() {
 	uart = microvm.UART0
 
 	// set date and time at boot
-	t, err := kvmclock.Now()
+	t, err := microvm.AMD64.Now()
 
 	if err != nil {
 		return
