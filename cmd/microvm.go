@@ -16,6 +16,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/board/qemu/microvm"
+	"github.com/usbarmory/tamago/kvm/clock"
 	"github.com/usbarmory/virtio-net"
 )
 
@@ -25,14 +26,14 @@ var NIC *vnet.Net
 func init() {
 	uart = microvm.UART0
 
-	Add(Cmd{
-		Name:    "rtc",
-		Help:    "use RTC for runtime date and time",
-		Fn:      rtcCmd,
-	})
-
 	// set date and time at boot
-	rtcCmd(nil, nil, nil)
+	t, err := kvmclock.Now()
+
+	if err != nil {
+		return
+	}
+
+	microvm.AMD64.SetTimer(t.UnixNano())
 }
 
 func date(epoch int64) {
@@ -66,18 +67,6 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 
 func rebootCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
 	return "", errors.New("unimplemented")
-}
-
-func rtcCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
-	t, err := microvm.RTC.Now()
-
-	if err != nil {
-		return
-	}
-
-	microvm.AMD64.SetTimer(t.UnixNano())
-
-	return dateCmd(nil, nil, []string{""})
 }
 
 func (iface *Interface) cryptoTest() {

@@ -51,14 +51,14 @@ func init() {
 		uart: microvm.UART0,
 	}
 
-	Add(Cmd{
-		Name:    "rtc",
-		Help:    "use KVM for runtime date and time",
-		Fn:      rtcCmd,
-	})
-
 	// set date and time at boot
-	rtcCmd(nil, nil, nil)
+	t, err := kvmclock.Now()
+
+	if err != nil {
+		return
+	}
+
+	microvm.AMD64.SetTimer(t.UnixNano())
 }
 
 func date(epoch int64) {
@@ -88,18 +88,6 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 
 func rebootCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
 	return "", errors.New("unimplemented")
-}
-
-func rtcCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
-	t, err := kvmclock.Now()
-
-	if err != nil {
-		return
-	}
-
-	microvm.AMD64.SetTimer(t.UnixNano())
-
-	return dateCmd(nil, nil, []string{""})
 }
 
 func (iface *Interface) cryptoTest() {
