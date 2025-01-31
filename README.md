@@ -201,7 +201,7 @@ Or Firecracker (shown in the example via
 
 ```
 make example TARGET=firecracker
-firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00:01 -c 1 -m 2048
+firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00:01 -c 1 -m 4096
 ```
 
 Emulated hardware with QEMU
