@@ -12,8 +12,7 @@ import (
 	"golang.org/x/term"
 )
 
-var (
-)
+var ()
 
 func init() {
 	Add(Cmd{

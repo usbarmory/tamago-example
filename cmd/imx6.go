@@ -27,7 +27,7 @@ import (
 const (
 	// Override standard memory allocation as having concurrent USB and
 	// Ethernet interfaces requires more than what the iRAM can handle.
-	dmaSize = 0xa00000 // 10MB
+	dmaSize  = 0xa00000 // 10MB
 	dmaStart = 0xa0000000 - dmaSize
 
 	romStart = 0x00000000

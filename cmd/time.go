@@ -1,4 +1,3 @@
-
 // Copyright (c) WithSecure Corporation
 //
 // Use of this source code is governed by the license

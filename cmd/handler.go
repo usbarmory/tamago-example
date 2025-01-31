@@ -47,7 +47,7 @@ type Interface struct {
 	Log *os.File
 
 	exit chan bool
-	gr  int
+	gr   int
 }
 
 var Banner string
