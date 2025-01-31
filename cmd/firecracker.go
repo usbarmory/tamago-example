@@ -16,6 +16,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/board/firecracker/microvm"
+	"github.com/usbarmory/tamago/kvm/clock"
 	intel_uart "github.com/usbarmory/tamago/soc/intel/uart"
 )
 
@@ -33,8 +34,8 @@ func (hw *UART) Write(buf []byte) (n int, _ error) {
 func (hw *UART) Read(buf []byte) (n int, _ error) {
 	n, _ = hw.uart.Read(buf)
 
-	// firecracker sends \n on Enter instead of \r
-	// which breaks term.ReadLine
+	// We need to workaround the fact that firecracker sends \n on Enter
+	// instead of \r which breaks term.ReadLine().
 	for i, _ := range buf {
 		if buf[i] == '\n' {
 			buf[i] = '\r'
@@ -52,7 +53,7 @@ func init() {
 
 	Add(Cmd{
 		Name:    "rtc",
-		Help:    "use RTC for runtime date and time",
+		Help:    "use KVM for runtime date and time",
 		Fn:      rtcCmd,
 	})
 
@@ -90,7 +91,7 @@ func rebootCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error)
 }
 
 func rtcCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
-	t, err := microvm.RTC.Now()
+	t, err := kvmclock.Now()
 
 	if err != nil {
 		return
