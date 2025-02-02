@@ -25,11 +25,11 @@ func Init(handler ConsoleHandler, hasUSB bool, hasEth bool) (dev *vnet.Net) {
 	}
 
 	startNet(handler, dev)
-
 	dev.Start(true)
 
 	// TODO
-	startInterruptHandler(dev, microvm.LAPIC, microvm.IOAPIC0)
+	// dev.Start(false)
+	// startInterruptHandler(dev, microvm.LAPIC, microvm.IOAPIC0)
 
 	return
 }
