@@ -94,7 +94,7 @@ func storageTest() {
 }
 
 func HasNetwork() (usb bool, eth bool) {
-	return false, false
+	return false, true
 }
 
 func Target() (t string) {

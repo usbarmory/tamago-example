@@ -3,14 +3,14 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build microvm
+//go:build firecracker
 
 package network
 
 import (
 	"log"
 
-	"github.com/usbarmory/tamago/board/qemu/microvm"
+	"github.com/usbarmory/tamago/board/firecracker/microvm"
 	"github.com/usbarmory/virtio-net"
 )
 
@@ -26,11 +26,10 @@ func Init(handler ConsoleHandler, hasUSB bool, hasEth bool) (dev *vnet.Net) {
 
 	startNet(handler, dev)
 
-	// This example illustrates IRQ handling, alternatively a poller can be
-	// used with `dev.Start(true)`.
-	dev.Start(false)
+	dev.Start(true)
 
-	startInterruptHandler(dev, microvm.LAPIC, microvm.IOAPIC1)
+	// TODO
+	startInterruptHandler(dev, microvm.LAPIC, microvm.IOAPIC0)
 
 	return
 }

@@ -3,7 +3,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build mx6ullevk || usbarmory
+//go:build firecracker || microvm
 
 package network
 
@@ -11,29 +11,38 @@ import (
 	"log"
 	"net"
 
-	imxenet "github.com/usbarmory/imx-enet"
-	"github.com/usbarmory/tamago/soc/nxp/enet"
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
+	"github.com/usbarmory/tamago/amd64"
+	"github.com/usbarmory/tamago/soc/intel/apic"
+	"github.com/usbarmory/virtio-net"
 )
 
-func handleEthernetInterrupt(eth *enet.ENET) {
-	for buf := eth.Rx(); buf != nil; buf = eth.Rx() {
-		eth.RxHandler(buf)
-		eth.ClearInterrupt(enet.IRQ_RXF)
+func startInterruptHandler(dev *vnet.Net, lapic *apic.LAPIC, ioapic *apic.IOAPIC) {
+	lapic.Enable()
+
+	if dev != nil {
+		ioapic.EnableInterrupt(dev.IRQ, dev.IRQ)
 	}
+
+	isr := func(irq int) {
+		switch {
+		case dev != nil && irq == dev.IRQ:
+			for buf := dev.Rx(); buf != nil; buf = dev.Rx() {
+				dev.RxHandler(buf)
+			}
+			lapic.ClearInterrupt()
+		default:
+			log.Printf("internal error, unexpected IRQ %d", irq)
+		}
+	}
+
+	amd64.ServiceInterrupts(isr)
 }
 
-func startEth(handler ConsoleHandler) (eth *enet.ENET) {
-	eth = imx6ul.ENET2
+func startNet(handler ConsoleHandler, dev *vnet.Net) {
+	iface := vnet.Interface{}
 
-	if !imx6ul.Native {
-		eth = imx6ul.ENET1
-	}
-
-	iface := imxenet.Interface{}
-
-	if err := iface.Init(eth, IP, Netmask, MAC, Gateway); err != nil {
-		log.Fatalf("could not initialize Ethernet networking, %v", err)
+	if err := iface.Init(dev, IP, Netmask, Gateway); err != nil {
+		log.Fatalf("could not initialize VirtIO networking, %v", err)
 	}
 
 	iface.EnableICMP()
@@ -62,12 +71,6 @@ func startEth(handler ConsoleHandler) (eth *enet.ENET) {
 
 	StartWebServer(listenerHTTP, IP, 80, false)
 	StartWebServer(listenerHTTPS, IP, 443, true)
-
-	// This example illustrates IRQ handling, alternatively a poller can be
-	// used with `eth.Start(true)`.
-
-	eth.EnableInterrupt(enet.IRQ_RXF)
-	eth.Start(false)
 
 	// hook interface into Go runtime
 	net.SocketFunc = iface.Socket

@@ -21,7 +21,9 @@ import (
 // configuration and stack.
 const (
 	MAC      = "1a:55:89:a2:69:41"
+	Netmask  = "255.255.255.0"
 	IP       = "10.0.0.1"
+	Gateway  = "10.0.0.2"
 	Resolver = "8.8.8.8:53"
 )
 
