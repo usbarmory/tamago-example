@@ -204,6 +204,8 @@ make example TARGET=firecracker
 firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00:01 -c 1 -m 4096
 ```
 
+In both cases networking can be configured as shown in the next section.
+
 Emulated hardware with QEMU
 ===========================
 
