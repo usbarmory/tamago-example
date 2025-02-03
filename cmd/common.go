@@ -44,6 +44,12 @@ func init() {
 	})
 
 	Add(Cmd{
+		Name:    "halt",
+		Help:    "halt the machine",
+		Fn:      haltCmd,
+	})
+
+	Add(Cmd{
 		Name: "stack",
 		Help: "goroutine stack trace (current)",
 		Fn:   stackCmd,
@@ -102,6 +108,12 @@ func helpCmd(_ *Interface, term *term.Terminal, _ []string) (string, error) {
 func exitCmd(_ *Interface, term *term.Terminal, _ []string) (string, error) {
 	fmt.Fprintf(term, "Goodbye from %s/%s\n", runtime.GOOS, runtime.GOARCH)
 	return "logout", io.EOF
+}
+
+func haltCmd(_ *Interface, term *term.Terminal, _ []string) (string, error) {
+	fmt.Fprintf(term, "Goodbye from %s/%s\n", runtime.GOOS, runtime.GOARCH)
+	go runtime.Exit(0)
+	return "halted", io.EOF
 }
 
 func stackCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {

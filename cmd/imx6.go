@@ -22,6 +22,8 @@ import (
 	"github.com/usbarmory/tamago/dma"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/snvs"
+
+	"github.com/usbarmory/tamago-example/internal/semihosting"
 )
 
 const (
@@ -41,6 +43,10 @@ func init() {
 	dma.Init(dmaStart, dmaSize)
 
 	if !imx6ul.Native {
+		runtime.Exit = func(_ int32) {
+			semihosting.Exit()
+		}
+
 		return
 	}
 
