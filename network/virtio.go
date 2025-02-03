@@ -20,19 +20,22 @@ import (
 const vector = 23
 
 func startInterruptHandler(dev *vnet.Net, lapic *apic.LAPIC, ioapic *apic.IOAPIC) {
-	lapic.Enable()
-
-	if dev != nil {
-		ioapic.EnableInterrupt(dev.IRQ, vector)
+	if dev == nil {
+		return
 	}
 
+	lapic.Enable()
+	ioapic.EnableInterrupt(dev.IRQ, vector)
+
 	isr := func(irq int) {
-		switch {
-		case dev != nil && irq == vector:
+		switch irq {
+		case vector:
 			for buf := dev.Rx(); buf != nil; buf = dev.Rx() {
 				dev.RxHandler(buf)
 			}
 			lapic.ClearInterrupt()
+		case  6:
+			// ignore this IRQ raised once at boot by Firecracker
 		default:
 			log.Printf("internal error, unexpected IRQ %d", irq)
 		}
