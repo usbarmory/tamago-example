@@ -25,11 +25,11 @@ func Init(handler ConsoleHandler, hasUSB bool, hasEth bool) (dev *vnet.Net) {
 	}
 
 	startNet(handler, dev)
-	dev.Start(true)
 
-	// TODO
-	// dev.Start(false)
-	// startInterruptHandler(dev, microvm.LAPIC, microvm.IOAPIC0)
+	// This example illustrates IRQ handling, alternatively a poller can be
+	// used with `dev.Start(true)`.
+	dev.Start(false)
+	startInterruptHandler(dev, microvm.LAPIC, microvm.IOAPIC0)
 
 	return
 }
