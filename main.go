@@ -42,9 +42,9 @@ func main() {
 
 	if hasUSB || hasEth {
 		network.SetupStaticWebAssets(cmd.Banner)
-		cmd.NIC = network.Init(console, hasUSB, hasEth)
+		network.Init(console, hasUSB, hasEth, &cmd.NIC)
 	} else {
-		cmd.SerialConsole(console)
+		cmd.StartTerminal(console)
 	}
 
 	if runtime.GOARCH != "amd64" {
