@@ -14,16 +14,17 @@ import (
 	"github.com/usbarmory/virtio-net"
 )
 
-func Init(handler ConsoleHandler, hasUSB bool, hasEth bool) (dev *vnet.Net) {
+func Init(handler ConsoleHandler, hasUSB bool, hasEth bool, nic **vnet.Net) {
 	if hasUSB {
 		log.Fatalf("unsupported")
 	}
 
-	dev = &vnet.Net{
+	dev := &vnet.Net{
 		Base: microvm.VIRTIO_NET0_BASE,
 		IRQ:  microvm.VIRTIO_NET0_IRQ,
 	}
 
+	*nic = dev
 	startNet(handler, dev)
 
 	// This example illustrates IRQ handling, alternatively a poller can be

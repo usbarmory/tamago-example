@@ -155,7 +155,7 @@ func (iface *Interface) Terminal(term *term.Terminal) {
 	}
 }
 
-func SerialConsole(iface *Interface) {
+func StartTerminal(iface *Interface) {
 	term := term.NewTerminal(uart, "")
 	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
 

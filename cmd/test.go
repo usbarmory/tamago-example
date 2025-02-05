@@ -12,8 +12,6 @@ import (
 	"golang.org/x/term"
 )
 
-var ()
-
 func init() {
 	Add(Cmd{
 		Name: "test",
@@ -56,14 +54,10 @@ func testCmd(iface *Interface, _ *term.Terminal, _ []string) (_ string, _ error)
 	start := time.Now()
 
 	iface.spawn(timerTest)
+	iface.spawn(wakeTest)
 	iface.spawn(sleepTest)
 	iface.spawn(fsTest)
 	iface.spawn(rngTest)
-
-	if hasUSB, hasETH := HasNetwork(); !hasUSB && !hasETH {
-		// test incompatible with interrupt handling
-		iface.spawn(wakeTest)
-	}
 
 	// spawns on its own
 	iface.cryptoTest()

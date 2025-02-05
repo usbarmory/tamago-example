@@ -34,7 +34,7 @@ func startInterruptHandler(dev *vnet.Net, lapic *apic.LAPIC, ioapic *apic.IOAPIC
 				dev.RxHandler(buf)
 			}
 			lapic.ClearInterrupt()
-		case  6:
+		case 6:
 			// ignore this IRQ raised once at boot by Firecracker
 		default:
 			log.Printf("internal error, unexpected IRQ %d", irq)

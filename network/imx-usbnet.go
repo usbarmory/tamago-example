@@ -27,7 +27,7 @@ func startUSB(handler ConsoleHandler) (port *usb.USB) {
 
 	iface := usbnet.Interface{}
 
-	if  err := iface.Init(IP, MAC, HostMAC); err != nil {
+	if err := iface.Init(IP, MAC, HostMAC); err != nil {
 		log.Fatalf("could not initialize USB networking, %v", err)
 	}
 

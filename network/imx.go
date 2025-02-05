@@ -43,8 +43,9 @@ func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 	arm.ServiceInterrupts(isr)
 }
 
-func Init(console ConsoleHandler, hasUSB bool, hasEth bool) (eth *enet.ENET) {
+func Init(console ConsoleHandler, hasUSB bool, hasEth bool, nic **enet.ENET) {
 	var usb *usb.USB
+	var eth *enet.ENET
 
 	if hasUSB {
 		usb = startUSB(console)
@@ -52,6 +53,7 @@ func Init(console ConsoleHandler, hasUSB bool, hasEth bool) (eth *enet.ENET) {
 
 	if hasEth {
 		eth = startEth(console)
+		*nic = eth
 	}
 
 	startInterruptHandler(usb, eth)
