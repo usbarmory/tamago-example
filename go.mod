@@ -16,7 +16,7 @@ require (
 	github.com/psanford/wormhole-william v1.0.7
 	github.com/transparency-dev/formats v0.0.0-20250203104447-f043a7da596c
 	github.com/transparency-dev/witness v0.0.0-20250203104351-2141e0e43f89
-	github.com/u-root/u-root v0.14.0
+	github.com/u-root/u-root v0.14.1-0.20250207205139-17f3654fd553
 	github.com/usbarmory/armory-boot v0.0.0-20250207173330-3cfbfb527102
 	github.com/usbarmory/crucible v0.0.0-20250123114515-fa91eabf75f0
 	github.com/usbarmory/imx-enet v0.0.0-20250123113228-2e1bd913d818
@@ -87,7 +87,7 @@ require (
 	github.com/mdlayher/genetlink v1.3.2 // indirect
 	github.com/mdlayher/netlink v1.7.3-0.20250113171957-fbb4dce95f42 // indirect
 	github.com/mdlayher/sdnotify v1.0.0 // indirect
-	github.com/mdlayher/socket v0.5.0 // indirect
+	github.com/mdlayher/socket v0.5.1 // indirect
 	github.com/miekg/dns v1.1.58 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
@@ -107,6 +107,7 @@ require (
 	github.com/tailscale/peercred v0.0.0-20250107143737-35a0c7bd7edc // indirect
 	github.com/tailscale/web-client-prebuilt v0.0.0-20250124233751-d4cd19a26976 // indirect
 	github.com/tailscale/wireguard-go v0.0.0-20250107165329-0b8b35511f19 // indirect
+	github.com/therootcompany/xz v1.0.1 // indirect
 	github.com/transparency-dev/merkle v0.0.3-0.20240919113952-3c979d16ee14 // indirect
 	github.com/transparency-dev/serverless-log v0.0.0-20240408141044-5d483a81bdb7 // indirect
 	github.com/transparency-dev/trillian-tessera v0.1.0 // indirect

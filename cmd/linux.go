@@ -25,6 +25,8 @@ const (
 	memoryStart = 0x80000000
 	memorySize  = 0x10000000
 	commandLine = "console=ttyS0,115200,8n1 mem=4G\x00"
+
+	defaultPath = "bzImage"
 )
 
 var memoryMap = []bzimage.E820Entry{
@@ -62,10 +64,14 @@ func linuxCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err err
 	var bzImage []byte
 	var mem *dma.Region
 
-	if path := strings.TrimSpace(arg[0]); len(path) > 0 {
-		if bzImage, err = os.ReadFile(path); err != nil {
-			return
-		}
+	path := strings.TrimSpace(arg[0])
+
+	if len(path) == 0 {
+		path = defaultPath
+	}
+
+	if bzImage, err = os.ReadFile(path); err != nil {
+		return
 	}
 
 	if mem, err = dma.NewRegion(memoryStart, memorySize, false); err != nil {
