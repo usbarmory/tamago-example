@@ -17,7 +17,7 @@ TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc
 TAGS := $(TARGET)
 
 ifeq ($(TARGET),microvm)
-TEXT_START := 0x10010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
+TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
 GOENV := GOOS=tamago GOARCH=amd64
 QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc=on \
         -global virtio-mmio.force-legacy=false \
@@ -27,7 +27,7 @@ QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc
 endif
 
 ifeq ($(TARGET),firecracker)
-TEXT_START := 0x10010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
+TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
 GOENV := GOOS=tamago GOARCH=amd64
 endif
 
