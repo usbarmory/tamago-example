@@ -61,7 +61,7 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
 
 endif
 
-GOFLAGS := -tags ${TAGS},native -trimpath -ldflags "-T $(TEXT_START) -R 0x1000 -X 'main.Build=${BUILD}' -X 'main.Revision=${REV}'"
+GOFLAGS := -tags ${TAGS},native -trimpath -ldflags "-T $(TEXT_START) -R 0x1000"
 
 .PHONY: clean qemu qemu-gdb
 

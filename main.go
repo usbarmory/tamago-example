@@ -17,17 +17,11 @@ import (
 	"github.com/usbarmory/tamago-example/network"
 )
 
-var Build string
-var Revision string
-
 func init() {
 	log.SetFlags(0)
 
-	cmd.Banner = fmt.Sprintf("%s/%s (%s) • %s %s",
-		runtime.GOOS, runtime.GOARCH, runtime.Version(),
-		Revision, Build)
-
-	cmd.Banner += fmt.Sprintf(" • %s", cmd.Target())
+	cmd.Banner = fmt.Sprintf("%s/%s (%s) • %s",
+		runtime.GOOS, runtime.GOARCH, runtime.Version(), cmd.Target())
 }
 
 func main() {

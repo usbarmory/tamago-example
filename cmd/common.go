@@ -36,6 +36,12 @@ func init() {
 	})
 
 	Add(Cmd{
+		Name: "build",
+		Help: "build information",
+		Fn:   buildInfoCmd,
+	})
+
+	Add(Cmd{
 		Name:    "exit, quit",
 		Args:    1,
 		Pattern: regexp.MustCompile(`^(exit|quit)$`),
@@ -103,6 +109,14 @@ func init() {
 
 func helpCmd(_ *Interface, term *term.Terminal, _ []string) (string, error) {
 	return Help(term), nil
+}
+
+func buildInfoCmd(_ *Interface, term *term.Terminal, _ []string) (string, error) {
+	if bi, ok := debug.ReadBuildInfo(); ok {
+		fmt.Fprintf(term, bi.String())
+	}
+
+	return "", nil
 }
 
 func exitCmd(_ *Interface, term *term.Terminal, _ []string) (string, error) {

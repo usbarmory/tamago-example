@@ -1,6 +1,6 @@
 module github.com/usbarmory/tamago-example
 
-go 1.23.6
+go 1.24.0
 
 require (
 	filippo.io/mlkem768 v0.0.0-20241021091500-d85de16e2039
@@ -14,21 +14,21 @@ require (
 	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/psanford/wormhole-william v1.0.7
-	github.com/transparency-dev/formats v0.0.0-20250203104447-f043a7da596c
-	github.com/transparency-dev/witness v0.0.0-20250203104351-2141e0e43f89
-	github.com/u-root/u-root v0.14.1-0.20250207205139-17f3654fd553
+	github.com/transparency-dev/formats v0.0.0-20250210090712-477e999072fe
+	github.com/transparency-dev/witness v0.0.0-20250210195220-96810b50a484
+	github.com/u-root/u-root v0.14.1-0.20250211171033-17c75c6542a1
 	github.com/usbarmory/armory-boot v0.0.0-20250207173330-3cfbfb527102
 	github.com/usbarmory/crucible v0.0.0-20250123114515-fa91eabf75f0
 	github.com/usbarmory/imx-enet v0.0.0-20250123113228-2e1bd913d818
 	github.com/usbarmory/imx-usbnet v0.0.0-20250123113617-d39929cd7171
-	github.com/usbarmory/tamago v0.0.0-20250207105025-86f85883b764
+	github.com/usbarmory/tamago v0.0.0-20250212123402-5facf762488d
 	github.com/usbarmory/virtio-net v0.0.0-20250202163829-dee249bb70ed
 	golang.org/x/crypto v0.33.0
-	golang.org/x/crypto/x509roots/fallback v0.0.0-20250204190303-9290511cd23a
+	golang.org/x/crypto/x509roots/fallback v0.0.0-20250210163342-e47973b1c108
 	golang.org/x/mod v0.23.0
 	golang.org/x/term v0.29.0
 	google.golang.org/grpc v1.70.0
-	tailscale.com v1.80.1
+	tailscale.com v1.80.2
 )
 
 require (
@@ -118,11 +118,11 @@ require (
 	go4.org/mem v0.0.0-20240501181205-ae6ca9944745 // indirect
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
 	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8 // indirect
-	golang.org/x/net v0.34.0 // indirect
+	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
-	golang.org/x/time v0.9.0 // indirect
+	golang.org/x/time v0.10.0 // indirect
 	golang.org/x/tools v0.29.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect

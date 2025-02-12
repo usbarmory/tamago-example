@@ -91,6 +91,7 @@ The SSH server exposes a console with the following commands (i.MX6UL boards):
 aes             <size> <sec> (soft)?                             # benchmark CAAM/DCP hardware encryption
 bee             <hex region0> <hex region1>                      # BEE OTF AES memory encryption
 ble                                                              # BLE serial console
+build                                                            # build information
 date            (time in RFC339 format)?                         # show/change runtime date and time
 dma             (free|used)?                                     # show allocation of default DMA region
 dns             <host>                                           # resolve domain
