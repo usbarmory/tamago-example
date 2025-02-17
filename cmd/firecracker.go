@@ -13,7 +13,7 @@ import (
 	intel_uart "github.com/usbarmory/tamago/soc/intel/uart"
 )
 
-var boardName = "firecracker"
+const boardName = "firecracker"
 
 type UART struct {
 	uart *intel_uart.UART

@@ -12,7 +12,7 @@ import (
 	"github.com/usbarmory/tamago/kvm/clock"
 )
 
-var boardName = "microvm"
+const boardName = "microvm"
 
 func init() {
 	uart = microvm.UART0

@@ -19,7 +19,8 @@ import (
 	"github.com/usbarmory/tamago/soc/sifive/fu540"
 )
 
-var boardName = "qemu-system-riscv64 (sifive_u)"
+const boardName = "qemu-system-riscv64 (sifive_u)"
+
 var NIC interface{}
 
 func init() {

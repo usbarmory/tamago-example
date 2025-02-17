@@ -50,9 +50,9 @@ func init() {
 	})
 
 	Add(Cmd{
-		Name:    "halt",
-		Help:    "halt the machine",
-		Fn:      haltCmd,
+		Name: "halt",
+		Help: "halt the machine",
+		Fn:   haltCmd,
 	})
 
 	Add(Cmd{
