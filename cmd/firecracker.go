@@ -39,7 +39,7 @@ func (hw *UART) Read(buf []byte) (n int, _ error) {
 
 func init() {
 	// Workaround for buggy firecracker COM1
-	uart = &UART{
+	Terminal = &UART{
 		uart: microvm.UART0,
 	}
 

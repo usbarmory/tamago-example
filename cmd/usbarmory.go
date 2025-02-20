@@ -12,6 +12,7 @@ import (
 
 	"golang.org/x/term"
 
+	"github.com/usbarmory/tamago-example/shell"
 	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
@@ -20,7 +21,7 @@ var boardName string
 
 func init() {
 	_, boardName = usbarmory.Model()
-	uart = usbarmory.UART2
+	Terminal = usbarmory.UART2
 
 	if !imx6ul.Native {
 		return
@@ -44,7 +45,7 @@ func init() {
 	MMC = append(MMC, usbarmory.MMC)
 }
 
-func rebootCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
+func rebootCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
 	usbarmory.Reset()
 	return
 }

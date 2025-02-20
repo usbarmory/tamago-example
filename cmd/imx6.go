@@ -24,6 +24,7 @@ import (
 	"github.com/usbarmory/tamago/soc/nxp/snvs"
 
 	"github.com/usbarmory/tamago-example/internal/semihosting"
+	"github.com/usbarmory/tamago-example/shell"
 )
 
 const (
@@ -57,7 +58,7 @@ func init() {
 		imx6ul.SetARMFreq(imx6ul.Freq528)
 	}
 
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name:    "freq",
 		Args:    1,
 		Pattern: regexp.MustCompile(`^freq (198|396|528|792|900)$`),
@@ -100,7 +101,7 @@ func mem(start uint, size int, w []byte) (b []byte) {
 	return memCopy(start, size, w)
 }
 
-func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
+func infoCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (string, error) {
 	var res bytes.Buffer
 
 	ramStart, ramEnd := runtime.MemRegion()
@@ -140,7 +141,7 @@ func infoCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
 	return res.String(), nil
 }
 
-func freqCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func freqCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	var mhz uint64
 
 	if mhz, err = strconv.ParseUint(arg[0], 10, 32); err != nil {
@@ -152,11 +153,11 @@ func freqCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err erro
 	return Target(), err
 }
 
-func (iface *Interface) cryptoTest() {
-	iface.spawn(btcdTest)
-	iface.spawn(kemTest)
-	iface.spawn(caamTest)
-	iface.spawn(dcpTest)
+func cryptoTest() {
+	spawn(btcdTest)
+	spawn(kemTest)
+	spawn(caamTest)
+	spawn(dcpTest)
 
 	return
 }

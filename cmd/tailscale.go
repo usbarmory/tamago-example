@@ -16,10 +16,11 @@ import (
 	"tailscale.com/tsnet"
 
 	"github.com/usbarmory/tamago-example/network"
+	"github.com/usbarmory/tamago-example/shell"
 )
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name:    "tailscale",
 		Args:    2,
 		Pattern: regexp.MustCompile(`^tailscale ([^\s]+)( verbose)?$`),
@@ -29,7 +30,7 @@ func init() {
 	})
 }
 
-func tailscaleCmd(iface *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func tailscaleCmd(iface *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	s := &tsnet.Server{
 		AuthKey:   arg[0],
 		Ephemeral: true,

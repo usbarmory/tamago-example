@@ -14,6 +14,7 @@ import (
 	"github.com/usbarmory/imx-usbnet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
+	"github.com/usbarmory/tamago-example/shell"
 )
 
 const HostMAC = "1a:55:89:a2:69:42"
@@ -22,7 +23,7 @@ func handleUSBInterrupt(usb *usb.USB) {
 	usb.ServiceInterrupts()
 }
 
-func startUSB(handler ConsoleHandler) (port *usb.USB) {
+func startUSB(handler *shell.Interface) (port *usb.USB) {
 	port = imx6ul.USB1
 
 	iface := usbnet.Interface{}

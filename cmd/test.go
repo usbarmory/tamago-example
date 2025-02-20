@@ -6,28 +6,55 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"time"
+	"strings"
+	"sync"
 
 	"golang.org/x/term"
+
+	"github.com/usbarmory/tamago-example/shell"
+)
+
+const (
+	testDiversifier = "\xde\xad\xbe\xef"
+	maxBufferSize = 102400
+
+	separator     = "-"
+	separatorSize = 80
+)
+
+var (
+	mux  sync.Mutex
+	exit chan bool
+	gr   int
 )
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name: "test",
 		Help: "launch tests",
 		Fn:   testCmd,
 	})
 }
 
-func (iface *Interface) spawn(fn func() (tag, res string)) {
-	iface.gr += 1
+func msg(format string, args ...interface{}) {
+	s := strings.Repeat(separator, 2) + " "
+	s += fmt.Sprintf(format, args...)
+	s += " " + strings.Repeat(separator, separatorSize-len(s))
+
+	log.Println(s)
+}
+
+func spawn(fn func() (tag, res string)) {
+	gr += 1
 
 	go func() {
 		tag, res := fn()
 
-		iface.Lock()
-		defer iface.Unlock()
+		mux.Lock()
+		defer mux.Unlock()
 
 		if len(tag) > 0 {
 			msg(tag)
@@ -37,34 +64,34 @@ func (iface *Interface) spawn(fn func() (tag, res string)) {
 			log.Print(res)
 		}
 
-		iface.exit <- true
+		exit <- true
 	}()
 }
 
-func (iface *Interface) wait() {
-	for i := 1; i <= iface.gr; i++ {
-		<-iface.exit
+func wait() {
+	for i := 1; i <= gr; i++ {
+		<-exit
 	}
 
-	iface.gr = 0
+	gr = 0
 }
 
-func testCmd(iface *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
-	iface.exit = make(chan bool)
+func testCmd(iface *shell.Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
+	exit = make(chan bool)
 	start := time.Now()
 
-	iface.spawn(timerTest)
-	iface.spawn(wakeTest)
-	iface.spawn(sleepTest)
-	iface.spawn(fsTest)
-	iface.spawn(rngTest)
+	spawn(timerTest)
+	spawn(wakeTest)
+	spawn(sleepTest)
+	spawn(fsTest)
+	spawn(rngTest)
 
 	// spawns on its own
-	iface.cryptoTest()
+	cryptoTest()
 
-	msg("launched %d test goroutines", iface.gr)
+	msg("launched %d test goroutines", gr)
 
-	iface.wait()
+	wait()
 
 	msg("completed all test goroutines (%s)", time.Since(start))
 

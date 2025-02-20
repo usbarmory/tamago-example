@@ -11,10 +11,11 @@ import (
 	"log"
 
 	"github.com/usbarmory/tamago/board/qemu/microvm"
+	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/virtio-net"
 )
 
-func Init(handler ConsoleHandler, hasUSB bool, hasEth bool, nic **vnet.Net) {
+func Init(handler *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 	if hasUSB {
 		log.Fatalf("unsupported")
 	}

@@ -18,16 +18,12 @@ import (
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
+
+	"github.com/usbarmory/tamago-example/shell"
 )
 
-type ConsoleHandler interface {
-	Exec(term *term.Terminal, cmd []byte)
-	Terminal(term *term.Terminal)
-	LogFile() *os.File
-}
-
-func handleTerminal(conn ssh.Channel, term *term.Terminal, handler ConsoleHandler) {
-	log.SetOutput(io.MultiWriter(os.Stdout, handler.LogFile(), term))
+func handleTerminal(conn ssh.Channel, term *term.Terminal, handler *shell.Interface) {
+	log.SetOutput(io.MultiWriter(os.Stdout, handler.Log, term))
 	defer log.SetOutput(io.MultiWriter(os.Stdout))
 
 	handler.Terminal(term)
@@ -36,7 +32,7 @@ func handleTerminal(conn ssh.Channel, term *term.Terminal, handler ConsoleHandle
 	conn.Close()
 }
 
-func handleChannel(newChannel ssh.NewChannel, handler ConsoleHandler) {
+func handleChannel(newChannel ssh.NewChannel, handler *shell.Interface) {
 	if t := newChannel.ChannelType(); t != "session" {
 		newChannel.Reject(ssh.UnknownChannelType, fmt.Sprintf("unknown channel type: %s", t))
 		return
@@ -99,13 +95,13 @@ func handleChannel(newChannel ssh.NewChannel, handler ConsoleHandler) {
 	}()
 }
 
-func handleChannels(chans <-chan ssh.NewChannel, handler ConsoleHandler) {
+func handleChannels(chans <-chan ssh.NewChannel, handler *shell.Interface) {
 	for newChannel := range chans {
 		go handleChannel(newChannel, handler)
 	}
 }
 
-func accept(listener net.Listener, handler ConsoleHandler, srv *ssh.ServerConfig) {
+func accept(listener net.Listener, handler *shell.Interface, srv *ssh.ServerConfig) {
 	for {
 		conn, err := listener.Accept()
 
@@ -128,7 +124,7 @@ func accept(listener net.Listener, handler ConsoleHandler, srv *ssh.ServerConfig
 	}
 }
 
-func StartSSHServer(listener net.Listener, handler ConsoleHandler) {
+func StartSSHServer(listener net.Listener, handler *shell.Interface) {
 	srv := &ssh.ServerConfig{
 		NoClientAuth: true,
 	}

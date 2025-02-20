@@ -3,7 +3,9 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-package cmd
+// Package shell implements a terminal console handler for user defined
+// commands.
+package shell
 
 import (
 	"bytes"
@@ -14,57 +16,48 @@ import (
 	"os"
 	"regexp"
 	"sort"
-	"strings"
-	"sync"
 	"text/tabwriter"
 
 	"golang.org/x/term"
 )
 
-const maxBufferSize = 102400
-
-const (
-	separator     = "-"
-	separatorSize = 80
-)
-
+// CmdFn represents a command handler.
 type CmdFn func(iface *Interface, term *term.Terminal, arg []string) (res string, err error)
 
+// Cmd represents a shell command.
 type Cmd struct {
-	Name    string
-	Args    int
+	// Name is the command name.
+	Name string
+	// Args defines the number of command arguments, meant to be in the
+	// Pattern capturing brackets.
+	Args int
+	// Pattern defines the command syntax and arguments.
 	Pattern *regexp.Regexp
-	Syntax  string
-	Help    string
-	Fn      CmdFn
+	// Syntax defines the Help() command syntax field.
+	Syntax string
+	// Help defines the Help() command description field.
+	Help string
+	// Fn defines the command handler.
+	Fn CmdFn
 }
 
 var cmds = make(map[string]*Cmd)
 
+// Interface represents a terminal interface.
 type Interface struct {
-	sync.Mutex
-
+	// Banner represents the welcome message
+	Banner string
+	// Log represents the interface log file
 	Log *os.File
-
-	exit chan bool
-	gr   int
 }
 
-var Banner string
-var uart io.ReadWriter
-
+// Add registers a terminal interface command.
 func Add(cmd Cmd) {
 	cmds[cmd.Name] = &cmd
 }
 
-func msg(format string, args ...interface{}) {
-	s := strings.Repeat(separator, 2) + " "
-	s += fmt.Sprintf(format, args...)
-	s += " " + strings.Repeat(separator, separatorSize-len(s))
-
-	log.Println(s)
-}
-
+// Help returns a formatted string with instructions for all registered
+// commands.
 func Help(term *term.Terminal) string {
 	var help bytes.Buffer
 	var names []string
@@ -117,20 +110,18 @@ func (iface *Interface) handle(term *term.Terminal, line string) (err error) {
 	return
 }
 
-func (iface *Interface) LogFile() *os.File {
-	return iface.Log
-}
-
+// Exec executes a terminal command.
 func (iface *Interface) Exec(term *term.Terminal, cmd []byte) {
 	if err := iface.handle(term, string(cmd)); err != nil {
 		fmt.Fprintf(term, "command error (%s), %v\n", cmd, err)
 	}
 }
 
+// Terminal handles terminal input.
 func (iface *Interface) Terminal(term *term.Terminal) {
 	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
 
-	fmt.Fprintf(term, "\n%s\n\n", Banner)
+	fmt.Fprintf(term, "\n%s\n\n", iface.Banner)
 	fmt.Fprintf(term, "%s\n", Help(term))
 
 	for {
@@ -155,8 +146,9 @@ func (iface *Interface) Terminal(term *term.Terminal) {
 	}
 }
 
-func StartTerminal(iface *Interface) {
-	term := term.NewTerminal(uart, "")
+// StartTerminal starts a terminal on a shell interface handler.
+func StartTerminal(iface *Interface, terminal io.ReadWriter) {
+	term := term.NewTerminal(terminal, "")
 	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
 
 	iface.Terminal(term)

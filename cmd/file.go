@@ -16,10 +16,14 @@ import (
 	"strings"
 
 	"golang.org/x/term"
+
+	"github.com/usbarmory/tamago-example/shell"
 )
 
+const testString = "Hello World!"
+
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name:    "ls",
 		Args:    1,
 		Pattern: regexp.MustCompile(`^ls(.*)`),
@@ -29,7 +33,7 @@ func init() {
 	})
 }
 
-func lsCmd(_ *Interface, term *term.Terminal, arg []string) (string, error) {
+func lsCmd(_ *shell.Interface, term *term.Terminal, arg []string) (string, error) {
 	path := strings.TrimSpace(arg[0])
 
 	if len(path) == 0 {
@@ -119,9 +123,9 @@ func fileTest(log *log.Logger) {
 		log.Fatal(err)
 	}
 
-	log.Printf("writing %d bytes to %s", len(Banner), path)
+	log.Printf("writing %d bytes to %s", len(testString), path)
 
-	if _, err = file.WriteString(Banner); err != nil {
+	if _, err = file.WriteString(testString); err != nil {
 		log.Fatal(err)
 	}
 
@@ -131,7 +135,7 @@ func fileTest(log *log.Logger) {
 		log.Fatal(err)
 	}
 
-	if strings.Compare(Banner, string(read)) != 0 {
+	if strings.Compare(testString, string(read)) != 0 {
 		log.Fatal("file comparison mismatch!")
 	} else {
 		log.Printf("read %s (%d bytes)", path, len(read))

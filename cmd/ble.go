@@ -16,6 +16,7 @@ import (
 
 	"golang.org/x/term"
 
+	"github.com/usbarmory/tamago-example/shell"
 	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
@@ -23,14 +24,14 @@ import (
 const CR = 0x0d
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name: "ble",
 		Help: "BLE serial console",
 		Fn:   bleCmd,
 	})
 }
 
-func bleCmd(_ *Interface, term *term.Terminal, _ []string) (_ string, err error) {
+func bleCmd(_ *shell.Interface, term *term.Terminal, _ []string) (_ string, err error) {
 	if !imx6ul.Native {
 		return "", errors.New("unsupported under emulation")
 	}

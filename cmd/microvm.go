@@ -15,7 +15,7 @@ import (
 const boardName = "microvm"
 
 func init() {
-	uart = microvm.UART0
+	Terminal = microvm.UART0
 
 	// set date and time at boot
 	microvm.AMD64.SetTimer(kvmclock.Now().UnixNano())

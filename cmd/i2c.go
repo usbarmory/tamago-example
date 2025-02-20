@@ -16,12 +16,13 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago/soc/nxp/i2c"
+	"github.com/usbarmory/tamago-example/shell"
 )
 
 var I2C []*i2c.I2C
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name:    "i2c",
 		Args:    4,
 		Pattern: regexp.MustCompile(`^i2c (\d) ([[:xdigit:]]+) ([[:xdigit:]]+) (\d+)$`),
@@ -31,7 +32,7 @@ func init() {
 	})
 }
 
-func i2cCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func i2cCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	n, err := strconv.ParseUint(arg[0], 10, 8)
 
 	if err != nil {

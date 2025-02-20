@@ -13,6 +13,7 @@ import (
 
 	"github.com/usbarmory/tamago/amd64"
 	"github.com/usbarmory/tamago/soc/intel/apic"
+	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/virtio-net"
 )
 
@@ -44,7 +45,7 @@ func startInterruptHandler(dev *vnet.Net, lapic *apic.LAPIC, ioapic *apic.IOAPIC
 	amd64.ServiceInterrupts(isr)
 }
 
-func startNet(handler ConsoleHandler, dev *vnet.Net) {
+func startNet(handler *shell.Interface, dev *vnet.Net) {
 	iface := vnet.Interface{}
 
 	if err := iface.Init(dev, IP, Netmask, Gateway); err != nil {

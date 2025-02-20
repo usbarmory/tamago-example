@@ -16,14 +16,15 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
-
 	"github.com/usbarmory/crucible/fusemap"
 	"github.com/usbarmory/crucible/otp"
+
+	"github.com/usbarmory/tamago-example/shell"
+	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name:    "otp",
 		Args:    2,
 		Pattern: regexp.MustCompile(`^otp (\d+) (\d+)$`),
@@ -82,7 +83,7 @@ func readOTP(bank int, word int) (res string, err error) {
 	return "", errors.New("invalid OTP register")
 }
 
-func otpCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func otpCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	bank, err := strconv.Atoi(arg[0])
 
 	if err != nil {

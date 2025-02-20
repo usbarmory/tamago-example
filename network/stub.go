@@ -7,9 +7,11 @@
 
 package network
 
-import "log"
+import (
+	"log"
+)
 
-func Init(_ ConsoleHandler, _ bool, _ bool, _ interface{}) (_ any) {
+func Init(_ any, _ bool, _ bool, _ interface{}) (_ any) {
 	log.Fatal("unsupported")
 	return
 }

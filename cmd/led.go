@@ -13,6 +13,7 @@ import (
 
 	"golang.org/x/term"
 
+	"github.com/usbarmory/tamago-example/shell"
 	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
 )
 
@@ -23,7 +24,7 @@ func init() {
 		leds += "|yellow|green"
 	}
 
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name:    "led",
 		Args:    2,
 		Pattern: regexp.MustCompile(fmt.Sprintf("^led (%s) (on|off)$", leds)),
@@ -33,7 +34,7 @@ func init() {
 	})
 }
 
-func ledCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func ledCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	var on bool
 
 	if arg[1] == "on" {

@@ -15,17 +15,19 @@ import (
 
 	"filippo.io/mlkem768/xwing"
 	"golang.org/x/term"
+
+	"github.com/usbarmory/tamago-example/shell"
 )
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name: "kem",
 		Help: "benchmark post-quantum KEM",
 		Fn:   kemCmd,
 	})
 }
 
-func kemCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func kemCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	return "", xwingRoundTrip(log.Default())
 }
 

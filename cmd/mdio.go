@@ -15,6 +15,7 @@ import (
 
 	"golang.org/x/term"
 
+	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 )
 
@@ -35,7 +36,7 @@ const (
 var NIC *enet.ENET
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name:    "mii",
 		Args:    3,
 		Pattern: regexp.MustCompile(`^mii ([[:xdigit:]]+) ([[:xdigit:]]+)(?: )?([[:xdigit:]]+)?`),
@@ -44,7 +45,7 @@ func init() {
 		Fn:      miiCmd,
 	})
 
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name:    "mmd",
 		Args:    4,
 		Pattern: regexp.MustCompile(`^mmd ([[:xdigit:]]+) ([[:xdigit:]]+) ([[:xdigit:]]+)(?: )?([[:xdigit:]]+)?`),
@@ -55,7 +56,7 @@ func init() {
 }
 
 // Clause 22 access to standard management registers (802.3-2008)
-func miiCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func miiCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	if NIC == nil {
 		return "", errors.New("MII not available")
 	}
@@ -88,7 +89,7 @@ func miiCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error
 }
 
 // Clause 22 access to Clause 45 MMD registers (802.3-2008)
-func mmdCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func mmdCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	if NIC == nil {
 		return "", errors.New("MII not available")
 	}

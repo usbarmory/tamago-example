@@ -15,30 +15,30 @@ import (
 	"github.com/usbarmory/tamago-example/cmd"
 	"github.com/usbarmory/tamago-example/internal/semihosting"
 	"github.com/usbarmory/tamago-example/network"
+	"github.com/usbarmory/tamago-example/shell"
 )
 
-func init() {
+func main() {
 	log.SetFlags(0)
 
-	cmd.Banner = fmt.Sprintf("%s/%s (%s) • %s",
-		runtime.GOOS, runtime.GOARCH, runtime.Version(), cmd.Target())
-}
-
-func main() {
 	logFile, _ := os.OpenFile("/tamago-example.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 
-	console := &cmd.Interface{
-		Log: logFile,
+	banner := fmt.Sprintf("%s/%s (%s) • %s",
+		runtime.GOOS, runtime.GOARCH, runtime.Version(), cmd.Target())
+
+	console := &shell.Interface{
+		Banner: banner,
+		Log:    logFile,
 	}
 
 	hasUSB, hasEth := cmd.HasNetwork()
 
 	if hasUSB || hasEth {
-		network.SetupStaticWebAssets(cmd.Banner)
+		network.SetupStaticWebAssets(banner)
 		network.Init(console, hasUSB, hasEth, &cmd.NIC)
 	} else {
-		cmd.StartTerminal(console)
+		shell.StartTerminal(console, cmd.Terminal)
 	}
 
 	if runtime.GOARCH != "amd64" {

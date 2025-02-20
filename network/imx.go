@@ -14,6 +14,7 @@ import (
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
+	"github.com/usbarmory/tamago-example/shell"
 )
 
 func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
@@ -43,7 +44,7 @@ func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 	arm.ServiceInterrupts(isr)
 }
 
-func Init(console ConsoleHandler, hasUSB bool, hasEth bool, nic **enet.ENET) {
+func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **enet.ENET) {
 	var usb *usb.USB
 	var eth *enet.ENET
 

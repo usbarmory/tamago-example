@@ -30,6 +30,7 @@
 //
 // By default, it will export / over a TCP on port 5640 under the username
 // of "harvey".
+
 package cmd
 
 import (
@@ -42,17 +43,18 @@ import (
 	"github.com/Harvey-OS/ninep/protocol"
 
 	"github.com/usbarmory/tamago-example/network"
+	"github.com/usbarmory/tamago-example/shell"
 )
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name: "9p",
 		Help: "start 9p remote file server",
 		Fn:   ninepCmd,
 	})
 }
 
-func ninepCmd(iface *Interface, _ *term.Terminal, _ []string) (_ string, err error) {
+func ninepCmd(iface *shell.Interface, _ *term.Terminal, _ []string) (_ string, err error) {
 	log.Printf("starting 9p remote filesystem server")
 	log.Printf("access with: `mount -t 9p -o trans=tcp,noextend %s <path>`", network.IP)
 

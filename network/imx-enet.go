@@ -14,6 +14,7 @@ import (
 	imxenet "github.com/usbarmory/imx-enet"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
+	"github.com/usbarmory/tamago-example/shell"
 )
 
 func handleEthernetInterrupt(eth *enet.ENET) {
@@ -23,7 +24,7 @@ func handleEthernetInterrupt(eth *enet.ENET) {
 	}
 }
 
-func startEth(handler ConsoleHandler) (eth *enet.ENET) {
+func startEth(handler *shell.Interface) (eth *enet.ENET) {
 	eth = imx6ul.ENET2
 
 	if !imx6ul.Native {

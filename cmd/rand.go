@@ -13,6 +13,8 @@ import (
 	"time"
 
 	"golang.org/x/term"
+
+	"github.com/usbarmory/tamago-example/shell"
 )
 
 const (
@@ -21,14 +23,14 @@ const (
 )
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name: "rand",
 		Help: "gather 32 random bytes",
 		Fn:   randCmd,
 	})
 }
 
-func randCmd(_ *Interface, _ *term.Terminal, _ []string) (string, error) {
+func randCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (string, error) {
 	buf := make([]byte, 32)
 	rand.Read(buf)
 	return fmt.Sprintf("%x", buf), nil

@@ -17,10 +17,12 @@ import (
 
 	"github.com/psanford/wormhole-william/wormhole"
 	"golang.org/x/term"
+
+	"github.com/usbarmory/tamago-example/shell"
 )
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name:    "wormhole",
 		Args:    2,
 		Pattern: regexp.MustCompile(`^wormhole (send|receive|recv) (.*)$`),
@@ -30,7 +32,7 @@ func init() {
 	})
 }
 
-func wormholeCmd(iface *Interface, term *term.Terminal, arg []string) (res string, err error) {
+func wormholeCmd(iface *shell.Interface, term *term.Terminal, arg []string) (res string, err error) {
 	ctx := context.Background()
 	client := &wormhole.Client{}
 

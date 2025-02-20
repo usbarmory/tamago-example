@@ -10,6 +10,7 @@ package cmd
 import (
 	"golang.org/x/term"
 
+	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/board/nxp/mx6ullevk"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
@@ -17,7 +18,7 @@ import (
 const boardName = "MCIMX6ULL-EVK"
 
 func init() {
-	uart = mx6ullevk.UART1
+	Terminal = mx6ullevk.UART1
 
 	if !imx6ul.Native {
 		return
@@ -33,7 +34,7 @@ func init() {
 	MMC = append(MMC, mx6ullevk.SD2)
 }
 
-func rebootCmd(_ *Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
+func rebootCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
 	mx6ullevk.Reset()
 	return
 }

@@ -16,6 +16,7 @@ import (
 
 	"golang.org/x/term"
 
+	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
@@ -26,7 +27,7 @@ var (
 )
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name:    "sha",
 		Args:    3,
 		Pattern: regexp.MustCompile(`^sha (\d+) (\d+)( soft)?$`),
@@ -36,7 +37,7 @@ func init() {
 	})
 }
 
-func shaCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func shaCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	var fn func([]byte) (string, error)
 
 	switch {

@@ -15,18 +15,19 @@ import (
 
 	"golang.org/x/term"
 
+	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name: "huk",
 		Help: "CAAM/DCP hardware unique key derivation",
 		Fn:   hukCmd,
 	})
 }
 
-func hukCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func hukCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	var key []byte
 
 	if !imx6ul.Native {

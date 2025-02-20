@@ -18,6 +18,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/usbarmory/armory-boot/exec"
+	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/dma"
 )
 
@@ -50,7 +51,7 @@ var memoryMap = []bzimage.E820Entry{
 }
 
 func init() {
-	Add(Cmd{
+	shell.Add(shell.Cmd{
 		Name:    "linux",
 		Args:    1,
 		Pattern: regexp.MustCompile(`^linux(.*)`),
@@ -60,7 +61,7 @@ func init() {
 	})
 }
 
-func linuxCmd(_ *Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func linuxCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
 	var bzImage []byte
 	var mem *dma.Region
 
