@@ -28,15 +28,20 @@ type CmdFn func(iface *Interface, term *term.Terminal, arg []string) (res string
 type Cmd struct {
 	// Name is the command name.
 	Name string
+
 	// Args defines the number of command arguments, meant to be in the
 	// Pattern capturing brackets.
 	Args int
+
 	// Pattern defines the command syntax and arguments.
 	Pattern *regexp.Regexp
+
 	// Syntax defines the Help() command syntax field.
 	Syntax string
+
 	// Help defines the Help() command description field.
 	Help string
+
 	// Fn defines the command handler.
 	Fn CmdFn
 }
@@ -47,6 +52,7 @@ var cmds = make(map[string]*Cmd)
 type Interface struct {
 	// Banner represents the welcome message
 	Banner string
+
 	// Log represents the interface log file
 	Log *os.File
 }
