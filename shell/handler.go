@@ -155,7 +155,5 @@ func (iface *Interface) Terminal(term *term.Terminal) {
 // StartTerminal starts a terminal on a shell interface handler.
 func StartTerminal(iface *Interface, terminal io.ReadWriter) {
 	term := term.NewTerminal(terminal, "")
-	term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
-
 	iface.Terminal(term)
 }
