@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"filippo.io/mlkem768/xwing"
-	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago-example/shell"
 )
@@ -27,7 +26,7 @@ func init() {
 	})
 }
 
-func kemCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func kemCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	return "", xwingRoundTrip(log.Default())
 }
 

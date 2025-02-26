@@ -11,8 +11,6 @@ import (
 	"log"
 	"regexp"
 
-	"golang.org/x/term"
-
 	"tailscale.com/tsnet"
 
 	"github.com/usbarmory/tamago-example/network"
@@ -30,7 +28,7 @@ func init() {
 	})
 }
 
-func tailscaleCmd(iface *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func tailscaleCmd(console *shell.Interface, arg []string) (res string, err error) {
 	s := &tsnet.Server{
 		AuthKey:   arg[0],
 		Ephemeral: true,
@@ -59,7 +57,8 @@ func tailscaleCmd(iface *shell.Interface, _ *term.Terminal, arg []string) (res s
 		return
 	}
 
-	network.StartSSHServer(listenerSSH, iface)
+	c := *console
+	network.StartSSHServer(listenerSSH, &c)
 
 	listenerHTTP, err := s.Listen("tcp", fmt.Sprintf(":%d", 80))
 

@@ -15,7 +15,7 @@ import (
 	"github.com/usbarmory/virtio-net"
 )
 
-func Init(handler *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
+func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 	if hasUSB {
 		log.Fatalf("unsupported")
 	}
@@ -27,7 +27,7 @@ func Init(handler *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 	}
 
 	*nic = dev
-	startNet(handler, dev)
+	startNet(console, dev)
 
 	// This example illustrates IRQ handling, alternatively a poller can be
 	// used with `dev.Start(true)`.

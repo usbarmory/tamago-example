@@ -13,10 +13,8 @@ import (
 	"regexp"
 	"strconv"
 
-	"golang.org/x/term"
-
-	"github.com/usbarmory/tamago/soc/nxp/i2c"
 	"github.com/usbarmory/tamago-example/shell"
+	"github.com/usbarmory/tamago/soc/nxp/i2c"
 )
 
 var I2C []*i2c.I2C
@@ -32,7 +30,7 @@ func init() {
 	})
 }
 
-func i2cCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func i2cCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	n, err := strconv.ParseUint(arg[0], 10, 8)
 
 	if err != nil {

@@ -23,7 +23,7 @@ func handleUSBInterrupt(usb *usb.USB) {
 	usb.ServiceInterrupts()
 }
 
-func startUSB(handler *shell.Interface) (port *usb.USB) {
+func startUSB(console *shell.Interface) (port *usb.USB) {
 	port = imx6ul.USB1
 
 	iface := usbnet.Interface{}
@@ -36,7 +36,7 @@ func startUSB(handler *shell.Interface) (port *usb.USB) {
 
 	iface.EnableICMP()
 
-	if handler != nil {
+	if console != nil {
 		listenerSSH, err := iface.ListenerTCP4(22)
 
 		if err != nil {
@@ -44,7 +44,7 @@ func startUSB(handler *shell.Interface) (port *usb.USB) {
 		}
 
 		// wait for server to start before responding to USB requests
-		StartSSHServer(listenerSSH, handler)
+		StartSSHServer(listenerSSH, console)
 	}
 
 	listenerHTTP, err := iface.ListenerTCP4(80)

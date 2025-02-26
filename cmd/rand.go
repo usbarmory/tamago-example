@@ -12,8 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 )
 
@@ -30,7 +28,7 @@ func init() {
 	})
 }
 
-func randCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (string, error) {
+func randCmd(_ *shell.Interface, _ []string) (string, error) {
 	buf := make([]byte, 32)
 	rand.Read(buf)
 	return fmt.Sprintf("%x", buf), nil

@@ -10,8 +10,6 @@ package cmd
 import (
 	"time"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
@@ -45,7 +43,7 @@ func init() {
 	MMC = append(MMC, usbarmory.MMC)
 }
 
-func rebootCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
+func rebootCmd(_ *shell.Interface, _ []string) (_ string, _ error) {
 	usbarmory.Reset()
 	return
 }

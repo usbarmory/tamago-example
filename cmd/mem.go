@@ -17,8 +17,6 @@ import (
 	"runtime/debug"
 	"strconv"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/dma"
 )
@@ -69,7 +67,7 @@ func memCopy(start uint, size int, w []byte) (b []byte) {
 	return
 }
 
-func memReadCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func memReadCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	addr, err := strconv.ParseUint(arg[0], 16, 32)
 
 	if err != nil {
@@ -93,7 +91,7 @@ func memReadCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string,
 	return hex.Dump(mem(uint(addr), int(size), nil)), nil
 }
 
-func memWriteCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func memWriteCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	addr, err := strconv.ParseUint(arg[0], 16, 32)
 
 	if err != nil {

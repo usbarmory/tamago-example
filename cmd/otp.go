@@ -14,8 +14,6 @@ import (
 	"regexp"
 	"strconv"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/crucible/fusemap"
 	"github.com/usbarmory/crucible/otp"
 
@@ -83,7 +81,7 @@ func readOTP(bank int, word int) (res string, err error) {
 	return "", errors.New("invalid OTP register")
 }
 
-func otpCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func otpCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	bank, err := strconv.Atoi(arg[0])
 
 	if err != nil {

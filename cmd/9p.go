@@ -37,8 +37,6 @@ import (
 	"log"
 	"net"
 
-	"golang.org/x/term"
-
 	ufs "github.com/Harvey-OS/ninep/filesystem"
 	"github.com/Harvey-OS/ninep/protocol"
 
@@ -54,7 +52,7 @@ func init() {
 	})
 }
 
-func ninepCmd(iface *shell.Interface, _ *term.Terminal, _ []string) (_ string, err error) {
+func ninepCmd(_ *shell.Interface, _ []string) (_ string, err error) {
 	log.Printf("starting 9p remote filesystem server")
 	log.Printf("access with: `mount -t 9p -o trans=tcp,noextend %s <path>`", network.IP)
 

@@ -14,8 +14,6 @@ import (
 	"log"
 	"runtime"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
@@ -31,7 +29,7 @@ func init() {
 	})
 }
 
-func bleCmd(_ *shell.Interface, term *term.Terminal, _ []string) (_ string, err error) {
+func bleCmd(console *shell.Interface, _ []string) (_ string, err error) {
 	if !imx6ul.Native {
 		return "", errors.New("unsupported under emulation")
 	}
@@ -47,8 +45,10 @@ func bleCmd(_ *shell.Interface, term *term.Terminal, _ []string) (_ string, err 
 		usbarmory.BLE.Reset()
 	}()
 
-	term.SetPrompt(string(term.Escape.Blue) + "BLE> " + string(term.Escape.Reset))
-	defer term.SetPrompt(string(term.Escape.Red) + "> " + string(term.Escape.Reset))
+	t := console.Terminal
+
+	t.SetPrompt(string(t.Escape.Blue) + "BLE> " + string(t.Escape.Reset))
+	defer t.SetPrompt(string(t.Escape.Red) + "> " + string(t.Escape.Reset))
 
 	exit := make(chan bool)
 
@@ -67,14 +67,14 @@ func bleCmd(_ *shell.Interface, term *term.Terminal, _ []string) (_ string, err 
 				continue
 			}
 
-			fmt.Fprintf(term, "%s", string(c))
+			fmt.Fprintf(t, "%s", string(c))
 		}
 	}()
 
 	var tx string
 
 	for {
-		tx, err = term.ReadLine()
+		tx, err = t.ReadLine()
 
 		if err == io.EOF {
 			continue

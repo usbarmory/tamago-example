@@ -13,8 +13,6 @@ import (
 	"regexp"
 	"strconv"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 )
@@ -56,7 +54,7 @@ func init() {
 }
 
 // Clause 22 access to standard management registers (802.3-2008)
-func miiCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func miiCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	if NIC == nil {
 		return "", errors.New("MII not available")
 	}
@@ -89,7 +87,7 @@ func miiCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err
 }
 
 // Clause 22 access to Clause 45 MMD registers (802.3-2008)
-func mmdCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func mmdCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	if NIC == nil {
 		return "", errors.New("MII not available")
 	}

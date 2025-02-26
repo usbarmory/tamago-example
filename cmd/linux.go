@@ -15,7 +15,6 @@ import (
 	"strings"
 
 	"github.com/u-root/u-root/pkg/boot/bzimage"
-	"golang.org/x/term"
 
 	"github.com/usbarmory/armory-boot/exec"
 	"github.com/usbarmory/tamago-example/shell"
@@ -61,7 +60,7 @@ func init() {
 	})
 }
 
-func linuxCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func linuxCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	var bzImage []byte
 	var mem *dma.Region
 

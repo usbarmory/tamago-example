@@ -13,8 +13,6 @@ import (
 	"errors"
 	"fmt"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
@@ -27,7 +25,7 @@ func init() {
 	})
 }
 
-func hukCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func hukCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	var key []byte
 
 	if !imx6ul.Native {

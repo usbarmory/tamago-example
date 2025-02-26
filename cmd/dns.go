@@ -12,8 +12,6 @@ import (
 	"net"
 	"regexp"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 )
 
@@ -28,7 +26,7 @@ func init() {
 	})
 }
 
-func dnsCmd(iface *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func dnsCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	cname, err := net.LookupHost(arg[0])
 
 	if err != nil {

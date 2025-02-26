@@ -14,8 +14,6 @@ import (
 	"regexp"
 	"runtime"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
@@ -37,7 +35,7 @@ func init() {
 	})
 }
 
-func shaCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func shaCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	var fn func([]byte) (string, error)
 
 	switch {

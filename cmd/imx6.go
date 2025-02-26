@@ -16,8 +16,6 @@ import (
 	"strconv"
 	_ "unsafe"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago/arm"
 	"github.com/usbarmory/tamago/dma"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
@@ -101,7 +99,7 @@ func mem(start uint, size int, w []byte) (b []byte) {
 	return memCopy(start, size, w)
 }
 
-func infoCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (string, error) {
+func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	var res bytes.Buffer
 
 	ramStart, ramEnd := runtime.MemRegion()
@@ -141,7 +139,7 @@ func infoCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (string, error) {
 	return res.String(), nil
 }
 
-func freqCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func freqCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	var mhz uint64
 
 	if mhz, err = strconv.ParseUint(arg[0], 10, 32); err != nil {

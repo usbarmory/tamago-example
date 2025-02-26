@@ -14,8 +14,6 @@ import (
 	"regexp"
 	"strconv"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/arm"
 	"github.com/usbarmory/tamago/soc/nxp/bee"
@@ -37,7 +35,7 @@ func init() {
 	}
 }
 
-func beeCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func beeCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	if !(imx6ul.Native && imx6ul.BEE != nil) {
 		return "", errors.New("unsupported under emulation or unsupported hardware")
 	}

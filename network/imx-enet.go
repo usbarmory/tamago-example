@@ -24,7 +24,7 @@ func handleEthernetInterrupt(eth *enet.ENET) {
 	}
 }
 
-func startEth(handler *shell.Interface) (eth *enet.ENET) {
+func startEth(console *shell.Interface) (eth *enet.ENET) {
 	eth = imx6ul.ENET2
 
 	if !imx6ul.Native {
@@ -39,14 +39,14 @@ func startEth(handler *shell.Interface) (eth *enet.ENET) {
 
 	iface.EnableICMP()
 
-	if handler != nil {
+	if console != nil {
 		listenerSSH, err := iface.ListenerTCP4(22)
 
 		if err != nil {
 			log.Fatalf("could not initialize SSH listener, %v", err)
 		}
 
-		StartSSHServer(listenerSSH, handler)
+		StartSSHServer(listenerSSH, console)
 	}
 
 	listenerHTTP, err := iface.ListenerTCP4(80)

@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/beevik/ntp"
-	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago-example/shell"
 )
@@ -31,7 +30,7 @@ func init() {
 	})
 }
 
-func ntpCmd(iface *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func ntpCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	ip, err := net.DefaultResolver.LookupIP(context.Background(), "ip4", arg[0])
 
 	if err != nil {

@@ -15,8 +15,6 @@ import (
 	"regexp"
 	"strings"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 )
 
@@ -33,7 +31,7 @@ func init() {
 	})
 }
 
-func lsCmd(_ *shell.Interface, term *term.Terminal, arg []string) (string, error) {
+func lsCmd(_ *shell.Interface, arg []string) (string, error) {
 	path := strings.TrimSpace(arg[0])
 
 	if len(path) == 0 {

@@ -15,8 +15,6 @@ import (
 	"strconv"
 	"time"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/dma"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
@@ -44,7 +42,7 @@ func init() {
 	})
 }
 
-func usdhcCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func usdhcCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	n, err := strconv.ParseUint(arg[0], 10, 8)
 
 	if err != nil {

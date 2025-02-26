@@ -38,7 +38,8 @@ func main() {
 		network.SetupStaticWebAssets(banner)
 		network.Init(console, hasUSB, hasEth, &cmd.NIC)
 	} else {
-		shell.StartTerminal(console, cmd.Terminal)
+		console.ReadWriter = cmd.Terminal
+		console.Start(true)
 	}
 
 	if runtime.GOARCH != "amd64" {

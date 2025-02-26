@@ -8,18 +8,16 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"time"
 	"strings"
 	"sync"
-
-	"golang.org/x/term"
+	"time"
 
 	"github.com/usbarmory/tamago-example/shell"
 )
 
 const (
 	testDiversifier = "\xde\xad\xbe\xef"
-	maxBufferSize = 102400
+	maxBufferSize   = 102400
 
 	separator     = "-"
 	separatorSize = 80
@@ -76,7 +74,7 @@ func wait() {
 	gr = 0
 }
 
-func testCmd(iface *shell.Interface, _ *term.Terminal, _ []string) (_ string, _ error) {
+func testCmd(_ *shell.Interface, _ []string) (_ string, _ error) {
 	exit = make(chan bool)
 	start := time.Now()
 

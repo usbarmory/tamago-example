@@ -13,8 +13,6 @@ import (
 	"fmt"
 	"runtime"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/board/qemu/sifive_u"
 	"github.com/usbarmory/tamago/soc/sifive/fu540"
@@ -40,7 +38,7 @@ func mem(start uint, size int, w []byte) (b []byte) {
 	return memCopy(start, size, w)
 }
 
-func infoCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (string, error) {
+func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	var res bytes.Buffer
 
 	ramStart, ramEnd := runtime.MemRegion()
@@ -53,7 +51,7 @@ func infoCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (string, error) {
 	return res.String(), nil
 }
 
-func rebootCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (_ string, err error) {
+func rebootCmd(_ *shell.Interface, _ []string) (_ string, err error) {
 	return "", errors.New("unimplemented")
 }
 

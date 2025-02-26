@@ -11,8 +11,6 @@ import (
 	"fmt"
 	"regexp"
 
-	"golang.org/x/term"
-
 	"github.com/usbarmory/tamago-example/shell"
 	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
 )
@@ -34,7 +32,7 @@ func init() {
 	})
 }
 
-func ledCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func ledCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	var on bool
 
 	if arg[1] == "on" {

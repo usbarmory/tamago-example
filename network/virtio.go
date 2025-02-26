@@ -45,7 +45,7 @@ func startInterruptHandler(dev *vnet.Net, lapic *apic.LAPIC, ioapic *apic.IOAPIC
 	amd64.ServiceInterrupts(isr)
 }
 
-func startNet(handler *shell.Interface, dev *vnet.Net) {
+func startNet(console *shell.Interface, dev *vnet.Net) {
 	iface := vnet.Interface{}
 
 	if err := iface.Init(dev, IP, Netmask, Gateway); err != nil {
@@ -54,14 +54,14 @@ func startNet(handler *shell.Interface, dev *vnet.Net) {
 
 	iface.EnableICMP()
 
-	if handler != nil {
+	if console != nil {
 		listenerSSH, err := iface.ListenerTCP4(22)
 
 		if err != nil {
 			log.Fatalf("could not initialize SSH listener, %v", err)
 		}
 
-		StartSSHServer(listenerSSH, handler)
+		StartSSHServer(listenerSSH, console)
 	}
 
 	listenerHTTP, err := iface.ListenerTCP4(80)

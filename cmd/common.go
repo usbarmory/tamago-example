@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"github.com/hako/durafmt"
-	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/dma"
@@ -29,12 +28,6 @@ import (
 var Terminal io.ReadWriter
 
 func init() {
-	shell.Add(shell.Cmd{
-		Name: "help",
-		Help: "this help",
-		Fn:   helpCmd,
-	})
-
 	shell.Add(shell.Cmd{
 		Name: "build",
 		Help: "build information",
@@ -70,7 +63,7 @@ func init() {
 	shell.Add(shell.Cmd{
 		Name:    "dma",
 		Args:    1,
-		Pattern: regexp.MustCompile(`^dma(?:(?: )(free|used))?$`),
+		Pattern: regexp.MustCompile(`^dma(?: (free|used))?$`),
 		Help:    "show allocation of default DMA region",
 		Syntax:  "(free|used)?",
 		Fn:      dmaCmd,
@@ -107,41 +100,39 @@ func init() {
 	})
 }
 
-func helpCmd(_ *shell.Interface, term *term.Terminal, _ []string) (string, error) {
-	return shell.Help(term), nil
-}
+func buildInfoCmd(_ *shell.Interface, _ []string) (string, error) {
+	var res bytes.Buffer
 
-func buildInfoCmd(_ *shell.Interface, term *term.Terminal, _ []string) (string, error) {
 	if bi, ok := debug.ReadBuildInfo(); ok {
-		fmt.Fprintf(term, bi.String())
+		res.WriteString(bi.String())
 	}
 
-	return "", nil
+	return res.String(), nil
 }
 
-func exitCmd(_ *shell.Interface, term *term.Terminal, _ []string) (string, error) {
-	fmt.Fprintf(term, "Goodbye from %s/%s\n", runtime.GOOS, runtime.GOARCH)
+func exitCmd(console *shell.Interface, _ []string) (string, error) {
+	fmt.Fprintf(console.Output, "Goodbye from %s/%s\n", runtime.GOOS, runtime.GOARCH)
 	return "logout", io.EOF
 }
 
-func haltCmd(_ *shell.Interface, term *term.Terminal, _ []string) (string, error) {
-	fmt.Fprintf(term, "Goodbye from %s/%s\n", runtime.GOOS, runtime.GOARCH)
+func haltCmd(console *shell.Interface, _ []string) (string, error) {
+	fmt.Fprintf(console.Output, "Goodbye from %s/%s\n", runtime.GOOS, runtime.GOARCH)
 	go runtime.Exit(0)
 	return "halted", io.EOF
 }
 
-func stackCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (string, error) {
+func stackCmd(_ *shell.Interface, _ []string) (string, error) {
 	return string(debug.Stack()), nil
 }
 
-func stackallCmd(_ *shell.Interface, _ *term.Terminal, _ []string) (string, error) {
+func stackallCmd(_ *shell.Interface, _ []string) (string, error) {
 	buf := new(bytes.Buffer)
 	pprof.Lookup("goroutine").WriteTo(buf, 1)
 
 	return buf.String(), nil
 }
 
-func dmaCmd(_ *shell.Interface, term *term.Terminal, arg []string) (string, error) {
+func dmaCmd(_ *shell.Interface, arg []string) (string, error) {
 	var res []string
 
 	if dma.Default() == nil {
@@ -178,7 +169,7 @@ func dmaCmd(_ *shell.Interface, term *term.Terminal, arg []string) (string, erro
 	return strings.Join(res, "\n"), nil
 }
 
-func dateCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, err error) {
+func dateCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	if len(arg[0]) > 1 {
 		t, err := time.Parse(time.RFC3339, arg[0][1:])
 
@@ -192,7 +183,7 @@ func dateCmd(_ *shell.Interface, _ *term.Terminal, arg []string) (res string, er
 	return fmt.Sprintf("%s", time.Now().Format(time.RFC3339)), nil
 }
 
-func uptimeCmd(_ *shell.Interface, term *term.Terminal, _ []string) (string, error) {
+func uptimeCmd(_ *shell.Interface, _ []string) (string, error) {
 	return fmt.Sprintf("%s", durafmt.Parse(time.Duration(uptime())*time.Nanosecond)), nil
 }
 
