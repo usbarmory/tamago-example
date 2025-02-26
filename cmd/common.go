@@ -117,7 +117,12 @@ func exitCmd(console *shell.Interface, _ []string) (string, error) {
 
 func haltCmd(console *shell.Interface, _ []string) (string, error) {
 	fmt.Fprintf(console.Output, "Goodbye from %s/%s\n", runtime.GOOS, runtime.GOARCH)
-	go runtime.Exit(0)
+
+	time.AfterFunc(
+		100*time.Millisecond,
+		func() { runtime.Exit(0) },
+	)
+
 	return "halted", io.EOF
 }
 
