@@ -18,7 +18,7 @@ import (
 )
 
 // redirection vector for IOAPIC IRQ to CPU IRQ
-const vector = 23
+const vector = 32
 
 func startInterruptHandler(dev *vnet.Net, lapic *apic.LAPIC, ioapic *apic.IOAPIC) {
 	if dev == nil {
