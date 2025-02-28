@@ -36,7 +36,9 @@ func startInterruptHandler(dev *vnet.Net, lapic *apic.LAPIC, ioapic *apic.IOAPIC
 			}
 			lapic.ClearInterrupt()
 		case 6:
-			// ignore this IRQ raised once at boot by Firecracker
+			// Firecracker bug (?), raised once on
+			//   `xorps  %xmm15,%xmm15`
+			// which is valid as SSE is enabled.
 		default:
 			log.Printf("internal error, unexpected IRQ %d", irq)
 		}
