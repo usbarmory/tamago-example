@@ -42,11 +42,13 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	var res bytes.Buffer
 
 	ramStart, ramEnd := runtime.MemRegion()
+	name, freq := Target()
 
 	fmt.Fprintf(&res, "Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	fmt.Fprintf(&res, "RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024))
 	fmt.Fprintf(&res, "Board ........: %s\n", boardName)
-	fmt.Fprintf(&res, "SoC ..........: %s\n", Target())
+	fmt.Fprintf(&res, "SoC ..........: %s\n", name)
+	fmt.Fprintf(&res, "Frequency ....: %v MHz\n", float32(freq)/1e6)
 
 	return res.String(), nil
 }
@@ -68,6 +70,6 @@ func HasNetwork() (usb bool, eth bool) {
 	return false, false
 }
 
-func Target() (t string) {
-	return fmt.Sprintf("%s %v MHz", fu540.Model(), float32(fu540.Freq())/1000000)
+func Target() (name string, freq uint32) {
+	return fu540.Model(), fu540.Freq()
 }

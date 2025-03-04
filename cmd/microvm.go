@@ -29,6 +29,6 @@ func uptime() (ns int64) {
 	return int64(float64(microvm.AMD64.TimerFn()) * microvm.AMD64.TimerMultiplier)
 }
 
-func Target() (t string) {
-	return microvm.AMD64.Name()
+func Target() (name string, freq uint32) {
+	return microvm.AMD64.Name(), microvm.AMD64.Freq()
 }

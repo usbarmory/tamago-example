@@ -24,8 +24,10 @@ func main() {
 	logFile, _ := os.OpenFile("/tamago-example.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 
+	name, _ := cmd.Target()
+
 	banner := fmt.Sprintf("%s/%s (%s) • %s",
-		runtime.GOOS, runtime.GOARCH, runtime.Version(), cmd.Target())
+		runtime.GOOS, runtime.GOARCH, runtime.Version(), name)
 
 	console := &shell.Interface{
 		Banner: banner,

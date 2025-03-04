@@ -103,11 +103,13 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	var res bytes.Buffer
 
 	ramStart, ramEnd := runtime.MemRegion()
+	name, freq := Target()
 
 	fmt.Fprintf(&res, "Runtime ......: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	fmt.Fprintf(&res, "RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024))
 	fmt.Fprintf(&res, "Board ........: %s\n", boardName)
-	fmt.Fprintf(&res, "SoC ..........: %s\n", Target())
+	fmt.Fprintf(&res, "SoC ..........: %s\n", name)
+	fmt.Fprintf(&res, "Frequency ....: %v MHz\n", float32(freq)/1e6)
 
 	if NIC != nil {
 		fmt.Fprintf(&res, "ENET%d ........: %s %d\n", NIC.Index, NIC.MAC, NIC.Stats)
@@ -147,8 +149,9 @@ func freqCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	}
 
 	err = imx6ul.SetARMFreq(uint32(mhz))
+	_, freq := Target()
 
-	return Target(), err
+	return fmt.Sprintf("%v MHz", float32(freq)/1e6), err
 }
 
 func cryptoTest() {
@@ -160,12 +163,14 @@ func cryptoTest() {
 	return
 }
 
-func Target() (t string) {
-	t = fmt.Sprintf("%s %v MHz", imx6ul.Model(), float32(imx6ul.ARMFreq())/1000000)
+func Target() (name string, freq uint32) {
+	name = imx6ul.Model()
 
 	if !imx6ul.Native {
-		t += " (emulated)"
+		name += " (emulated)"
 	}
+
+	freq = imx6ul.ARMFreq()
 
 	return
 }
