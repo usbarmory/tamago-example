@@ -30,7 +30,7 @@ const (
 )
 
 var memoryMap = []bzimage.E820Entry{
-	// should always be usable (?)
+	// should always be usable
 	bzimage.E820Entry{
 		Addr:    uint64(0x00000000),
 		Size:    uint64(0x0009f000),
@@ -60,6 +60,8 @@ func init() {
 	})
 }
 
+// For a full bare metal Go bootloader implementation see
+// https://github.com/usbarmory/go-boot
 func linuxCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	var bzImage []byte
 	var mem *dma.Region
