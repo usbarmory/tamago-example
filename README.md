@@ -26,12 +26,12 @@ execute bare metal Go code on the following platforms:
 
 | Processor             | Board                                                                                                                                                                                | SoC/CPU package                                                           | Board package                                                                                    |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| AMD/Intel 64-bit      | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html)                                                                                                            | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm)               |
+| AMD/Intel 64-bit      | [Firecracker microvm](https://firecracker-microvm.github.io)                                                                                                                         | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm) |
 | NXP i.MX6ULZ/i.MX6UL  | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki/Mk-II-Introduction)                                                                                                   | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
 | NXP i.MX6ULL/i.MX6UL  | [USB armory Mk II LAN](https://github.com/usbarmory/usbarmory/wiki/Mk-II-LAN)                                                                                                        | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
 | NXP i.MX6ULL/i.MX6ULZ | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk)             |
 | SiFive FU540          | [QEMU sifive_u](https://www.qemu.org/docs/master/system/riscv/sifive_u.html)                                                                                                         | [fu540](https://github.com/usbarmory/tamago/tree/master/soc/sifive/fu540) | [qemu/sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u)             |
-| AMD/Intel 64-bit      | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html)                                                                                                            | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm)               |
-| AMD/Intel 64-bit      | [Firecracker microvm](https://firecracker-microvm.github.io)                                                                                                                         | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm) |
 
 Documentation
 =============
@@ -142,6 +142,38 @@ cd tamago-go-latest/src && ./all.bash
 cd ../bin && export TAMAGO=`pwd`/go
 ```
 
+Building and executing on AMD64 targets
+=======================================
+
+Build the application executables as follows:
+
+```
+make example TARGET=microvm
+```
+
+Available targets:
+
+| `TARGET`      | Board               | Executing and debugging                                                                                                  |
+|---------------|---------------------|--------------------------------------------------------------------------------------------------------------------------|
+| `microvm`     | QEMU microvm        | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               |
+| `firecracker` | Firecracker microvm | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) |
+
+Both targets are meant for paravirtualized execution, respectively with QEMU:
+
+```
+make qemu TARGET=microvm
+```
+
+Or Firecracker (shown in the example via
+[firectl](https://github.com/firecracker-microvm/firectl)):
+
+```
+make example TARGET=firecracker
+firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00:01 -c 1 -m 4096
+```
+
+In both cases networking can be configured as shown in the next section.
+
 Building and executing on ARM targets
 =====================================
 
@@ -177,38 +209,6 @@ Available targets:
 | `sifive_u`  | QEMU sifive_u    | [sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u#executing-and-debugging) |
 
 The target has only been tested with emulated execution (e.g. `make qemu`).
-
-Building and executing on AMD64 targets
-=======================================
-
-Build the application executables as follows:
-
-```
-make example TARGET=microvm
-```
-
-Available targets:
-
-| `TARGET`      | Board               | Executing and debugging                                                                                                  |
-|---------------|---------------------|--------------------------------------------------------------------------------------------------------------------------|
-| `microvm`     | QEMU microvm        | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               |
-| `firecracker` | Firecracker microvm | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) |
-
-Both targets are meant for paravirtualized execution, respectively with QEMU:
-
-```
-make qemu TARGET=microvm
-```
-
-Or Firecracker (shown in the example via
-[firectl](https://github.com/firecracker-microvm/firectl)):
-
-```
-make example TARGET=firecracker
-firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00:01 -c 1 -m 4096
-```
-
-In both cases networking can be configured as shown in the next section.
 
 Emulated hardware with QEMU
 ===========================
