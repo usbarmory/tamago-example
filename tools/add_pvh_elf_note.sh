@@ -7,19 +7,3 @@ echo -e -n "Go \x00"          >> note.bin # name
 echo -e -n "$DESC"            >> note.bin # desc (** change me to Entry point address **)
 
 objcopy --update-section .note.go.buildid=note.bin $1
-
-#echo "launching qemu"
-#
-#OPTS=""
-#
-#if [ "$1" == "gdb" ]; then
-#  OPTS="-S -s"
-#fi
-#
-#qemu-system-x86_64 \
-#  -machine microvm,x-option-roms=on,pit=off,pic=off,rtc=on \
-#  -global virtio-mmio.force-legacy=false \
-#  -enable-kvm -cpu host,invtsc=on,kvmclock=on -no-reboot \
-#  -m 4G -nographic -monitor none -serial stdio \
-#  -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
-#  -kernel example $OPTS # -d unimp,guest_errors,trace:*virtio*
