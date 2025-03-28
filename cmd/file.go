@@ -78,7 +78,9 @@ func ls(path string) (string, error) {
 func devTest(log *log.Logger) {
 	res, err := ls("/dev")
 
-	log.Print(res)
+	for l := range strings.Lines(res) {
+		log.Print(l)
+	}
 
 	if err != nil {
 		log.Fatal(err)
@@ -141,7 +143,9 @@ func fileTest(log *log.Logger) {
 
 	res, err := ls("/dir")
 
-	log.Print(res)
+	for l := range strings.Lines(res) {
+		log.Print(l)
+	}
 
 	if err != nil {
 		log.Fatal(err)
@@ -152,10 +156,11 @@ func fsTest() (tag string, res string) {
 	tag = "fs"
 
 	b := &strings.Builder{}
-	log := log.New(b, "", 0)
+	l := log.New(b, "", 0)
+	l.SetPrefix(log.Prefix())
 
-	devTest(log)
-	fileTest(log)
+	devTest(l)
+	fileTest(l)
 
 	return tag, b.String()
 }

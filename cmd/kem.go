@@ -34,9 +34,10 @@ func kemTest() (tag string, res string) {
 	tag = "post-quantum KEM"
 
 	b := &strings.Builder{}
-	log := log.New(b, "", 0)
+	l := log.New(b, "", 0)
+	l.SetPrefix(log.Prefix())
 
-	xwingRoundTrip(log)
+	xwingRoundTrip(l)
 
 	return tag, b.String()
 }

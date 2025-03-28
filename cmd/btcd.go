@@ -188,6 +188,7 @@ func btcdTest() (tag string, res string) {
 
 	b := &strings.Builder{}
 	l := log.New(b, "", 0)
+	l.SetPrefix(log.Prefix())
 
 	examplePayToAddrScript(l)
 	exampleExtractPkScriptAddrs(l)

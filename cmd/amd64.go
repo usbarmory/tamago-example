@@ -94,7 +94,3 @@ func cryptoTest() {
 func storageTest() {
 	return
 }
-
-func HasNetwork() (usb bool, eth bool) {
-	return false, true
-}

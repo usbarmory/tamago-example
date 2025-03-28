@@ -24,14 +24,18 @@ This example Go application illustrates use of the
 [tamago](https://github.com/usbarmory/tamago) package
 execute bare metal Go code on the following platforms:
 
-| Processor             | Board                                                                                                                                                                                | SoC/CPU package                                                           | Board package                                                                                    |
+| Processor             | Platform                                                                                                                                                                             | SoC/CPU package                                                           | Support package                                                                                  |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| AMD/Intel 64-bit      | [Cloud Hypervisor](https://www.cloudhypervisor.org)                                                                                                                                  | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [cloud_hypervisor/vm](https://github.com/usbarmory/tamago/tree/master/board/cloud_hypervisor/vm) |
 | AMD/Intel 64-bit      | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html)                                                                                                            | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm)               |
 | AMD/Intel 64-bit      | [Firecracker microvm](https://firecracker-microvm.github.io)                                                                                                                         | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm) |
 | NXP i.MX6ULZ/i.MX6UL  | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki/Mk-II-Introduction)                                                                                                   | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
 | NXP i.MX6ULL/i.MX6UL  | [USB armory Mk II LAN](https://github.com/usbarmory/usbarmory/wiki/Mk-II-LAN)                                                                                                        | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
 | NXP i.MX6ULL/i.MX6ULZ | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk)             |
 | SiFive FU540          | [QEMU sifive_u](https://www.qemu.org/docs/master/system/riscv/sifive_u.html)                                                                                                         | [fu540](https://github.com/usbarmory/tamago/tree/master/soc/sifive/fu540) | [qemu/sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u)             |
+
+> [!NOTE]
+> TamaGo also supports [UEFI](https://uefi.org/), for an example see [go-boot](https://github.com/usbarmory/go-boot/)
 
 Documentation
 =============
@@ -44,8 +48,6 @@ For more information about TamaGo see its
 
 Operation
 =========
-
-![Example screenshot](https://github.com/usbarmory/tamago/wiki/images/ssh.png)
 
 The example application performs a variety of simple test procedures, each in
 its separate goroutine, to demonstrate bare metal execution of Go standard and
@@ -67,9 +69,9 @@ The following network services are started:
   * HTTP server on 10.0.0.1:80
   * HTTPS server on 10.0.0.1:443
 
-On the USB armory Mk II the network interface is exposed over [Ethernet over
-USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication) (ECM
-protocol, supported on Linux and macOS hosts).
+On the USB armory Mk II the network interface is exposed over
+[Ethernet over USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication)
+(ECM protocol, supported on Linux and macOS hosts).
 
 On the USB armory Mk II LAN the network interface is exposed on both USB and
 physical Ethernet interfaces.
@@ -126,8 +128,9 @@ usdhc           <n> <hex offset> <size>                          # SD/MMC card r
 wormhole        (send <path>|recv <code>)                        # transfer file through magic wormhole
 ```
 
-On emulated runs (e.g. `make qemu`) for `usbarmory` and `sifive_u` targets the
-console is exposed directly on the terminal, otherwise networking is used.
+On the `cloud_hypervisor` target and emulated runs (e.g. `make qemu`) for
+`usbarmory` and `sifive_u` targets the console is exposed directly on the
+terminal, otherwise networking is used.
 
 Building the compiler
 =====================
@@ -145,37 +148,50 @@ cd ../bin && export TAMAGO=`pwd`/go
 Building and executing on AMD64 targets
 =======================================
 
-Build the application executables as follows:
+| `TARGET`           | Platform            | Executing and debugging                                                                                                  |
+|--------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------|
+| `cloud_hypervisor` | Cloud Hypervisor    | [cloud_hypervisor/vm](https://github.com/usbarmory/tamago/tree/master/board/cloud_hypervisor/vm#executing-and-debugging) |
+| `microvm`          | QEMU microvm        | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               |
+| `firecracker`      | Firecracker microvm | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) |
+
+These targets are meant for paravirtualized execution.
+
+On QEMU and Firecracker microVMs VirtIO networking is used, the network
+interface can be configured identically as shown in section _Emulated hardware
+with QEMU_.
+
+Cloud Hypervisor
+----------------
 
 ```
-make example TARGET=microvm
+make example TARGET=cloud_hypervisor
+cloud-hypervisor --kernel example --cpus boot=1 --memory size=4096M --net "tap=tap0" --serial tty --console off
 ```
 
-Available targets:
-
-| `TARGET`      | Board               | Executing and debugging                                                                                                  |
-|---------------|---------------------|--------------------------------------------------------------------------------------------------------------------------|
-| `microvm`     | QEMU microvm        | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               |
-| `firecracker` | Firecracker microvm | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) |
-
-Both targets are meant for paravirtualized execution, respectively with QEMU:
+QEMU
+----
 
 ```
 make qemu TARGET=microvm
 ```
 
-Or Firecracker (shown in the example via
-[firectl](https://github.com/firecracker-microvm/firectl)):
+Firecracker
+-----------
+
+Example shown via [firectl](https://github.com/firecracker-microvm/firectl):
 
 ```
 make example TARGET=firecracker
 firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00:01 -c 1 -m 4096
 ```
 
-In both cases networking can be configured as shown in the next section.
-
 Building and executing on ARM targets
 =====================================
+
+| `TARGET`    | Board            | Executing and debugging                                                                                  |
+|-------------|------------------|----------------------------------------------------------------------------------------------------------|
+| `usbarmory` | USB armory Mk II | [usbarmory](https://github.com/usbarmory/tamago/tree/master/board/usbarmory#executing-and-debugging)     |
+| `mx6ullevk` | MCIMX6ULL-EVK    | [mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk#executing-and-debugging) |
 
 Build the application executables as follows:
 
@@ -183,30 +199,21 @@ Build the application executables as follows:
 make imx TARGET=usbarmory
 ```
 
-The following targets are available:
-
-| `TARGET`    | Board            | Executing and debugging                                                                                  |
-|-------------|------------------|----------------------------------------------------------------------------------------------------------|
-| `usbarmory` | USB armory Mk II | [usbarmory](https://github.com/usbarmory/tamago/tree/master/board/usbarmory#executing-and-debugging)     |
-| `mx6ullevk` | MCIMX6ULL-EVK    | [mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk#executing-and-debugging) |
-
 The targets support native (see relevant documentation links in the table above)
 as well as emulated execution (e.g. `make qemu`).
 
 Building and executing on RISC-V targets
 ========================================
 
+| `TARGET`    | Board            | Executing and debugging                                                                                 |
+|-------------|------------------|---------------------------------------------------------------------------------------------------------|
+| `sifive_u`  | QEMU sifive_u    | [sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u#executing-and-debugging) |
+
 Build the application executables as follows:
 
 ```
 make example TARGET=sifive_u
 ```
-
-Available targets:
-
-| `TARGET`    | Board            | Executing and debugging                                                                                 |
-|-------------|------------------|---------------------------------------------------------------------------------------------------------|
-| `sifive_u`  | QEMU sifive_u    | [sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u#executing-and-debugging) |
 
 The target has only been tested with emulated execution (e.g. `make qemu`).
 

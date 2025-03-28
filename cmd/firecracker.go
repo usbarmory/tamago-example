@@ -58,3 +58,7 @@ func uptime() (ns int64) {
 func Target() (name string, freq uint32) {
 	return microvm.AMD64.Name(), microvm.AMD64.Freq()
 }
+
+func HasNetwork() (usb bool, eth bool) {
+	return false, true
+}

@@ -38,31 +38,34 @@ func rngTest() (tag string, res string) {
 	tag = "rng"
 
 	b := &strings.Builder{}
-	log := log.New(b, "", 0)
+	l := log.New(b, "", 0)
+	l.SetPrefix(log.Prefix())
 
 	n := rngSize
 	buf := make([]byte, rngSize)
 
-	log.Printf("%d reads of %d random bytes", rngRounds, n)
+	l.Printf("%d reads of %d random bytes", rngRounds, n)
 	start := time.Now()
 
 	for i := 0; i < rngRounds; i++ {
 		rand.Read(buf)
-		log.Printf("  %x", buf)
+		l.Printf("  %x", buf)
 	}
 
-	log.Printf("done (%s)", time.Since(start))
+	l.Printf("done (%s)", time.Since(start))
 
 	n = rngSize * rngRounds * 10
 	buf = make([]byte, n)
 
-	log.Printf("single read of %d random bytes", n)
+	l.Printf("single read of %d random bytes", n)
 	start = time.Now()
 
 	rand.Read(buf)
 
-	log.Printf("  %x\n  ...\n  %x", buf[0:rngSize], buf[n-rngSize:len(buf)])
-	log.Printf("done (%s)", time.Since(start))
+	l.Printf("  %x", buf[0:rngSize])
+	l.Printf("  ...")
+	l.Printf("  %x", buf[n-rngSize:len(buf)])
+	l.Printf("done (%s)", time.Since(start))
 
 	return tag, b.String()
 }

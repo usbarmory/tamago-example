@@ -20,7 +20,12 @@ QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc
         -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 endif
 
-ifeq ($(TARGET),firecracker)
+ifeq ($(TARGET),$(filter $(TARGET), firecracker cloud_hypervisor))
+TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
+GOENV := GOOS=tamago GOARCH=amd64
+endif
+
+ifeq ($(TARGET),cloud_hypervisor)
 TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
 GOENV := GOOS=tamago GOARCH=amd64
 endif
@@ -152,10 +157,9 @@ qemu.dtb:
 
 #### application target ####
 
-ifeq ($(TARGET),$(filter $(TARGET), microvm firecracker))
+ifeq ($(TARGET),$(filter $(TARGET), microvm firecracker cloud_hypervisor))
 $(APP): check_tamago
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
-	cd $(CURDIR) && ./tools/add_pvh_elf_note.sh ${APP}
 endif
 
 ifeq ($(TARGET),sifive_u)

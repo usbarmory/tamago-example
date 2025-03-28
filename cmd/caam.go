@@ -152,29 +152,30 @@ func caamTest() (tag string, res string) {
 	tag = "imx6_caam"
 
 	b := &strings.Builder{}
-	log := log.New(b, "", 0)
+	l := log.New(b, "", 0)
+	l.SetPrefix(log.Prefix())
 
 	if !(imx6ul.Native && imx6ul.CAAM != nil) {
-		log.Printf("skipping tests under emulation or unsupported hardware")
+		l.Printf("skipping tests under emulation or unsupported hardware")
 		return tag, b.String()
 	}
 
-	if err := testHashCAAM(log); err != nil {
-		log.Printf("hash error, %v", err)
+	if err := testHashCAAM(l); err != nil {
+		l.Printf("hash error, %v", err)
 	}
 
 	for _, n := range []int{128, 192, 256} {
-		if err := testCipherCAAM(n, log); err != nil {
-			log.Printf("cipher error, %v", err)
+		if err := testCipherCAAM(n, l); err != nil {
+			l.Printf("cipher error, %v", err)
 		}
 	}
 
-	if err := testKeyDerivationCAAM(log); err != nil {
-		log.Printf("key derivation error, %v", err)
+	if err := testKeyDerivationCAAM(l); err != nil {
+		l.Printf("key derivation error, %v", err)
 	}
 
-	if err := testSignatureCAAM(log); err != nil {
-		log.Printf("signature error, %v", err)
+	if err := testSignatureCAAM(l); err != nil {
+		l.Printf("signature error, %v", err)
 	}
 
 	return tag, b.String()

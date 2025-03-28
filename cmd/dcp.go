@@ -102,23 +102,24 @@ func dcpTest() (tag string, res string) {
 	tag = "imx6_dcp"
 
 	b := &strings.Builder{}
-	log := log.New(b, "", 0)
+	l := log.New(b, "", 0)
+	l.SetPrefix(l.Prefix())
 
 	if !(imx6ul.Native && imx6ul.DCP != nil) {
-		log.Printf("skipping tests under emulation or unsupported hardware")
+		l.Printf("skipping tests under emulation or unsupported hardware")
 		return tag, b.String()
 	}
 
-	if err := testHashDCP(log); err != nil {
-		log.Printf("hash error, %v", err)
+	if err := testHashDCP(l); err != nil {
+		l.Printf("hash error, %v", err)
 	}
 
-	if err := testCipherDCP(128, log); err != nil {
-		log.Printf("cipher error, %v", err)
+	if err := testCipherDCP(128, l); err != nil {
+		l.Printf("cipher error, %v", err)
 	}
 
-	if err := testKeyDerivationDCP(log); err != nil {
-		log.Printf("key derivation error, %v", err)
+	if err := testKeyDerivationDCP(l); err != nil {
+		l.Printf("key derivation error, %v", err)
 	}
 
 	return tag, b.String()
