@@ -80,8 +80,8 @@ func memReadCmd(_ *shell.Interface, arg []string) (res string, err error) {
 		return "", fmt.Errorf("invalid size, %v", err)
 	}
 
-	if (addr%4) != 0 || (size%4) != 0 {
-		return "", fmt.Errorf("only 32-bit aligned accesses are supported")
+	if (addr%dma.DefaultAlignment) != 0 || (size%dma.DefaultAlignment) != 0 {
+		return "", fmt.Errorf("only %d-bit aligned accesses are supported", dma.DefaultAlignment*8)
 	}
 
 	if size > maxBufferSize {
