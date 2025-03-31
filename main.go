@@ -34,15 +34,13 @@ func main() {
 		Log:    logFile,
 	}
 
-	hasUSB, hasEth := cmd.HasNetwork()
-
-	if hasUSB || hasEth {
+	if hasUSB, hasEth := cmd.HasNetwork(); hasUSB || hasEth {
 		network.SetupStaticWebAssets(banner)
 		network.Init(console, hasUSB, hasEth, &cmd.NIC)
-	} else {
-		console.ReadWriter = cmd.Terminal
-		console.Start(true)
 	}
+
+	console.ReadWriter = cmd.Terminal
+	console.Start(true)
 
 	if runtime.GOARCH != "amd64" {
 		semihosting.Exit()

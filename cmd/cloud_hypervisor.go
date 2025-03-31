@@ -38,5 +38,5 @@ func Target() (name string, freq uint32) {
 }
 
 func HasNetwork() (usb bool, eth bool) {
-	return false, false
+	return false, true
 }
