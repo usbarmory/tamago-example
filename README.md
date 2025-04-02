@@ -78,7 +78,7 @@ physical Ethernet interfaces.
 
 On the MCIMX6ULL-EVK the second Ethernet port is used.
 
-On QEMU and Firecracker microVMs VirtIO networking is used.
+On KVMs (Cloud Hypervisor, QEMU, Firecracker) VirtIO networking is used.
 
 The web servers expose the following routes:
 
@@ -128,9 +128,8 @@ usdhc           <n> <hex offset> <size>                          # SD/MMC card r
 wormhole        (send <path>|recv <code>)                        # transfer file through magic wormhole
 ```
 
-On the `cloud_hypervisor` target and emulated runs (e.g. `make qemu`) for
-`usbarmory` and `sifive_u` targets the console is exposed directly on the
-terminal, otherwise networking is used.
+On emulated runs (e.g. `make qemu`) for `usbarmory` and `sifive_u` targets the
+console is exposed directly on the terminal, otherwise networking is used.
 
 Building the compiler
 =====================
@@ -154,11 +153,9 @@ Building and executing on AMD64 targets
 | `microvm`          | QEMU microvm        | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               |
 | `firecracker`      | Firecracker microvm | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) |
 
-These targets are meant for paravirtualized execution.
-
-On QEMU and Firecracker microVMs VirtIO networking is used, the network
-interface can be configured identically as shown in section _Emulated hardware
-with QEMU_.
+These targets are meant for paravirtualized execution, VirtIO networking is
+used and the network interface can be configured identically as shown in
+section _Emulated hardware with QEMU_.
 
 Cloud Hypervisor
 ----------------

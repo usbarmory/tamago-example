@@ -10,8 +10,9 @@ package network
 import (
 	"log"
 
-	"github.com/usbarmory/tamago/board/qemu/microvm"
 	"github.com/usbarmory/tamago-example/shell"
+	"github.com/usbarmory/tamago/board/qemu/microvm"
+	"github.com/usbarmory/tamago/kvm/virtio"
 	"github.com/usbarmory/virtio-net"
 )
 
@@ -21,13 +22,19 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 	}
 
 	dev := &vnet.Net{
-		Base:         microvm.VIRTIO_NET0_BASE,
+		Transport: &virtio.MMIO{
+			Base: microvm.VIRTIO_NET0_BASE,
+		},
 		IRQ:          microvm.VIRTIO_NET0_IRQ,
 		HeaderLength: 10,
 	}
 
 	*nic = dev
-	startNet(console, dev)
+
+	if err := startNet(console, dev); err != nil {
+		log.Printf("could not start networking, %v", err)
+		return
+	}
 
 	// This example illustrates IRQ handling, alternatively a poller can be
 	// used with `dev.Start(true)`.
