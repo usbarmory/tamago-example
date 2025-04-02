@@ -8,6 +8,7 @@
 package network
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -46,11 +47,11 @@ func startInterruptHandler(dev *vnet.Net, lapic *apic.LAPIC, ioapic *apic.IOAPIC
 	amd64.ServiceInterrupts(isr)
 }
 
-func startNet(console *shell.Interface, dev *vnet.Net) {
+func startNet(console *shell.Interface, dev *vnet.Net) (err error) {
 	iface := vnet.Interface{}
 
 	if err := iface.Init(dev, IP, Netmask, Gateway); err != nil {
-		log.Fatalf("could not initialize VirtIO networking, %v", err)
+		return fmt.Errorf("could not initialize VirtIO networking, %v", err)
 	}
 
 	iface.EnableICMP()
@@ -59,7 +60,7 @@ func startNet(console *shell.Interface, dev *vnet.Net) {
 		listenerSSH, err := iface.ListenerTCP4(22)
 
 		if err != nil {
-			log.Fatalf("could not initialize SSH listener, %v", err)
+			return fmt.Errorf("could not initialize SSH listener, %v", err)
 		}
 
 		StartSSHServer(listenerSSH, console)
@@ -68,13 +69,13 @@ func startNet(console *shell.Interface, dev *vnet.Net) {
 	listenerHTTP, err := iface.ListenerTCP4(80)
 
 	if err != nil {
-		log.Fatalf("could not initialize HTTP listener, %v", err)
+		return fmt.Errorf("could not initialize HTTP listener, %v", err)
 	}
 
 	listenerHTTPS, err := iface.ListenerTCP4(443)
 
 	if err != nil {
-		log.Fatalf("could not initialize HTTP listener, %v", err)
+		return fmt.Errorf("could not initialize HTTP listener, %v", err)
 	}
 
 	StartWebServer(listenerHTTP, IP, 80, false)
