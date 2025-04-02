@@ -68,7 +68,7 @@ func memCopy(start uint, size int, w []byte) (b []byte) {
 }
 
 func memReadCmd(_ *shell.Interface, arg []string) (res string, err error) {
-	addr, err := strconv.ParseUint(arg[0], 16, 32)
+	addr, err := strconv.ParseUint(arg[0], 16, dma.DefaultAlignment*8)
 
 	if err != nil {
 		return "", fmt.Errorf("invalid address, %v", err)
@@ -92,7 +92,7 @@ func memReadCmd(_ *shell.Interface, arg []string) (res string, err error) {
 }
 
 func memWriteCmd(_ *shell.Interface, arg []string) (res string, err error) {
-	addr, err := strconv.ParseUint(arg[0], 16, 32)
+	addr, err := strconv.ParseUint(arg[0], 16, dma.DefaultAlignment*8)
 
 	if err != nil {
 		return "", fmt.Errorf("invalid address, %v", err)
