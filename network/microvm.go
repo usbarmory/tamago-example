@@ -39,6 +39,7 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 	// This example illustrates IRQ handling, alternatively a poller can be
 	// used with `dev.Start(true)`.
 	dev.Start(false)
+
 	startInterruptHandler(dev, microvm.LAPIC, microvm.IOAPIC1)
 
 	return

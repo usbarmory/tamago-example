@@ -26,8 +26,13 @@ func startInterruptHandler(dev *vnet.Net, lapic *apic.LAPIC, ioapic *apic.IOAPIC
 		return
 	}
 
-	lapic.Enable()
-	ioapic.EnableInterrupt(dev.IRQ, vector)
+	if lapic != nil {
+		lapic.Enable()
+	}
+
+	if ioapic != nil {
+		ioapic.EnableInterrupt(dev.IRQ, vector)
+	}
 
 	isr := func(irq int) {
 		switch irq {

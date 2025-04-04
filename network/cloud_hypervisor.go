@@ -17,20 +17,25 @@ import (
 	"github.com/usbarmory/virtio-net"
 )
 
+// chosen by the application for MSI-X signaling
+const VIRTIO_NET0_IRQ = 32
+
 func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 	if hasUSB {
 		log.Fatalf("unsupported")
 	}
 
+	transport := &virtio.PCI{
+		Device: pci.Probe(
+			0,
+			vm.VIRTIO_NET_PCI_VENDOR,
+			vm.VIRTIO_NET_PCI_DEVICE,
+		),
+	}
+
 	dev := &vnet.Net{
-		Transport: &virtio.PCI{
-			Device: pci.Probe(
-				0,
-				vm.VIRTIO_NET_PCI_VENDOR,
-				vm.VIRTIO_NET_PCI_DEVICE,
-			),
-		},
-		IRQ:          0, // FIXME
+		Transport:    transport,
+		IRQ:          VIRTIO_NET0_IRQ,
 		HeaderLength: 12,
 	}
 
@@ -43,8 +48,10 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 
 	// This example illustrates IRQ handling, alternatively a poller can be
 	// used with `dev.Start(true)`.
-	dev.Start(true)
-	//startInterruptHandler(dev, vm.LAPIC, vm.IOAPIC0)
+	dev.Start(false)
+
+	transport.EnableInterrupt(VIRTIO_NET0_IRQ, vm.LAPIC, vnet.ReceiveQueue)
+	startInterruptHandler(dev, vm.LAPIC, nil)
 
 	return
 }
