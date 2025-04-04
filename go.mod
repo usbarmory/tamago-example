@@ -1,6 +1,6 @@
 module github.com/usbarmory/tamago-example
 
-go 1.24.1
+go 1.24.2
 
 require (
 	filippo.io/mlkem768 v0.0.0-20241021091500-d85de16e2039
