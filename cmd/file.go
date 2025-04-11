@@ -29,16 +29,15 @@ func init() {
 		Help:    "list directory contents",
 		Fn:      lsCmd,
 	})
-}
 
-func lsCmd(_ *shell.Interface, arg []string) (string, error) {
-	path := strings.TrimSpace(arg[0])
-
-	if len(path) == 0 {
-		path = "/"
-	}
-
-	return ls(path)
+	shell.Add(shell.Cmd{
+		Name:    "cat",
+		Args:    1,
+		Pattern: regexp.MustCompile(`^cat (.*)`),
+		Syntax:  "<path>",
+		Help:    "show file contents",
+		Fn:      catCmd,
+	})
 }
 
 func ls(path string) (string, error) {
@@ -73,6 +72,26 @@ func ls(path string) (string, error) {
 	}
 
 	return res.String(), nil
+}
+
+func lsCmd(_ *shell.Interface, arg []string) (string, error) {
+	path := strings.TrimSpace(arg[0])
+
+	if len(path) == 0 {
+		path = "/"
+	}
+
+	return ls(path)
+}
+
+func catCmd(_ *shell.Interface, arg []string) (res string, err error) {
+	buf, err := os.ReadFile(arg[0])
+
+	if err != nil {
+		return "", fmt.Errorf("could not read file, %v", err)
+	}
+
+	return string(buf), nil
 }
 
 func devTest(log *log.Logger) {

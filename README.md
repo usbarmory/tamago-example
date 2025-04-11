@@ -96,6 +96,7 @@ aes             <size> <sec> (soft)?                             # benchmark CAA
 bee             <hex region0> <hex region1>                      # BEE OTF AES memory encryption
 ble                                                              # BLE serial console
 build                                                            # build information
+cat             <path>                                           # show file contents
 date            (time in RFC339 format)?                         # show/change runtime date and time
 dma             (free|used)?                                     # show allocation of default DMA region
 dns             <host>                                           # resolve domain

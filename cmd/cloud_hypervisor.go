@@ -30,9 +30,9 @@ func init() {
 	log.SetPrefix("\r")
 
 	shell.Add(shell.Cmd{
-		Name:    "lspci",
-		Help:    "list PCI devices",
-		Fn:      lspciCmd,
+		Name: "lspci",
+		Help: "list PCI devices",
+		Fn:   lspciCmd,
 	})
 }
 
