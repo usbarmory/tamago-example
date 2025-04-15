@@ -9,16 +9,27 @@ package network
 
 import (
 	"log"
+	"runtime"
 
+	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/arm"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
-	"github.com/usbarmory/tamago-example/shell"
 )
 
 func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 	imx6ul.GIC.Init(true, false)
+	imx6ul.GIC.EnableInterrupt(imx6ul.TIMER_IRQ, true)
+
+	runtime.Idle = func(pollUntil int64) {
+		if pollUntil == 0 {
+			return
+		}
+
+		imx6ul.ARM.SetAlarm(pollUntil)
+		imx6ul.ARM.Halt()
+	}
 
 	if usb != nil {
 		imx6ul.GIC.EnableInterrupt(usb.IRQ, true)
@@ -32,6 +43,8 @@ func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 		irq := imx6ul.GIC.GetInterrupt(true)
 
 		switch {
+		case irq == imx6ul.TIMER_IRQ:
+			imx6ul.ARM.SetAlarm(0)
 		case usb != nil && irq == usb.IRQ:
 			handleUSBInterrupt(usb)
 		case eth != nil && irq == eth.IRQ:

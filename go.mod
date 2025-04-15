@@ -21,7 +21,7 @@ require (
 	github.com/usbarmory/crucible v0.0.0-20250123114515-fa91eabf75f0
 	github.com/usbarmory/imx-enet v0.0.0-20250123113228-2e1bd913d818
 	github.com/usbarmory/imx-usbnet v0.0.0-20250123113617-d39929cd7171
-	github.com/usbarmory/tamago v0.0.0-20250404105904-e8ad6f5a15d6
+	github.com/usbarmory/tamago v0.0.0-20250415173919-331889ed1048
 	github.com/usbarmory/virtio-net v0.0.0-20250404103528-b6d7d034de85
 	golang.org/x/crypto v0.36.0
 	golang.org/x/crypto/x509roots/fallback v0.0.0-20250317152234-d0a798f77473
