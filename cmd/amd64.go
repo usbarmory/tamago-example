@@ -48,6 +48,7 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	fmt.Fprintf(&res, "RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024))
 	fmt.Fprintf(&res, "Board ........: %s\n", boardName)
 	fmt.Fprintf(&res, "CPU ..........: %s\n", name)
+	fmt.Fprintf(&res, "Cores ........: %d\n", amd64.NumCPU())
 	fmt.Fprintf(&res, "Frequency ....: %v GHz\n", float32(freq)/1e9)
 
 	if NIC != nil {
