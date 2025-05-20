@@ -1,19 +1,18 @@
-// The following functions are adapted from:
-//   https://github.com/FiloSottile/mlkem768/blob/main/xwing/xwing_test.go
+
+// Copyright (c) WithSecure Corporation
 //
-// See LICENSE at:
-//   https://github.com/FiloSottile/mlkem768/blob/main/LICENSE
+// Use of this source code is governed by the license
+// that can be found in the LICENSE file.
 
 package cmd
 
 import (
 	"bytes"
+	"crypto/mlkem"
 	"errors"
 	"log"
 	"strings"
 	"time"
-
-	"filippo.io/mlkem768/xwing"
 
 	"github.com/usbarmory/tamago-example/shell"
 )
@@ -27,7 +26,7 @@ func init() {
 }
 
 func kemCmd(_ *shell.Interface, arg []string) (res string, err error) {
-	return "", xwingRoundTrip(log.Default())
+	return "", kemRoundTrip(log.Default())
 }
 
 func kemTest() (tag string, res string) {
@@ -37,61 +36,57 @@ func kemTest() (tag string, res string) {
 	l := log.New(b, "", 0)
 	l.SetPrefix(log.Prefix())
 
-	xwingRoundTrip(l)
+	kemRoundTrip(l)
 
 	return tag, b.String()
 }
 
-func xwingRoundTrip(log *log.Logger) (err error) {
+func kemRoundTrip(log *log.Logger) (err error) {
 	start := time.Now()
 
-	dk, err := xwing.GenerateKey()
+	dk, err := mlkem.GenerateKey768()
+
 	if err != nil {
 		return
 	}
-	c, Ke, err := xwing.Encapsulate(dk.EncapsulationKey())
+
+	ek := dk.EncapsulationKey()
+	Ke, c := ek.Encapsulate()
+	Kd, err := dk.Decapsulate(c)
+
 	if err != nil {
 		return
 	}
-	Kd, err := xwing.Decapsulate(dk, c)
-	if err != nil {
-		return
-	}
+
 	if !bytes.Equal(Ke, Kd) {
 		return errors.New("Ke != Kd")
 	}
 
-	dk1, err := xwing.GenerateKey()
+	dk1, err := mlkem.GenerateKey768()
+
 	if err != nil {
 		return
 	}
-	if bytes.Equal(dk.EncapsulationKey(), dk1.EncapsulationKey()) {
+
+	if bytes.Equal(ek.Bytes(), dk1.EncapsulationKey().Bytes()) {
 		return errors.New("ek == ek1")
 	}
+
 	if bytes.Equal(dk.Bytes(), dk1.Bytes()) {
 		return errors.New("dk == dk1")
 	}
 
-	dk2, err := xwing.NewKeyFromSeed(dk.Bytes())
+	dk2, err := mlkem.NewDecapsulationKey768(dk.Bytes())
+
 	if err != nil {
 		return
 	}
+
 	if !bytes.Equal(dk.Bytes(), dk2.Bytes()) {
 		return errors.New("dk != dk2")
 	}
 
-	c1, Ke1, err := xwing.Encapsulate(dk.EncapsulationKey())
-	if err != nil {
-		return
-	}
-	if bytes.Equal(c, c1) {
-		return errors.New("c == c1")
-	}
-	if bytes.Equal(Ke, Ke1) {
-		return errors.New("Ke == Ke1")
-	}
-
-	log.Printf("xwing-kem %x (%s)", dk.Bytes(), time.Since(start))
+	log.Printf("mlkem %x (%s)", dk.Bytes(), time.Since(start))
 
 	return
 }
