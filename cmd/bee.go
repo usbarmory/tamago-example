@@ -37,7 +37,7 @@ func init() {
 
 func beeCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	if !(imx6ul.Native && imx6ul.BEE != nil) {
-		return "", errors.New("unsupported under emulation or unsupported hardware")
+		return "", errors.New("unavailable under emulation or unsupported hardware")
 	}
 
 	region0, err := strconv.ParseUint(arg[0], 16, 32)

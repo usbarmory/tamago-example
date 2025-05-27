@@ -44,15 +44,15 @@ func init() {
 	}
 
 	// set date and time at boot
-	microvm.AMD64.SetTimer(kvmclock.Now().UnixNano())
+	microvm.AMD64.SetTime(kvmclock.Now().UnixNano())
 }
 
 func date(epoch int64) {
-	microvm.AMD64.SetTimer(epoch)
+	microvm.AMD64.SetTime(epoch)
 }
 
 func uptime() (ns int64) {
-	return int64(float64(microvm.AMD64.TimerFn()) * microvm.AMD64.TimerMultiplier)
+	return microvm.AMD64.GetTime() - microvm.AMD64.TimerOffset
 }
 
 func Target() (name string, freq uint32) {

@@ -35,7 +35,7 @@ func rticCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	var blocks []caam.MemoryBlock
 
 	if !(imx6ul.Native && imx6ul.CAAM != nil) {
-		return "", errors.New("unsupported under emulation or unsupported hardware")
+		return "", errors.New("unavailable under emulation or unsupported hardware")
 	}
 
 	if len(arg[0]) > 0 && len(arg[1]) > 0 {

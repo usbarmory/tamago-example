@@ -25,7 +25,7 @@ func init() {
 	Terminal = vm.UART0
 
 	// set date and time at boot
-	vm.AMD64.SetTimer(kvmclock.Now().UnixNano())
+	vm.AMD64.SetTime(kvmclock.Now().UnixNano())
 
 	log.SetPrefix("\r")
 
@@ -37,11 +37,11 @@ func init() {
 }
 
 func date(epoch int64) {
-	vm.AMD64.SetTimer(epoch)
+	vm.AMD64.SetTime(epoch)
 }
 
 func uptime() (ns int64) {
-	return int64(float64(vm.AMD64.TimerFn()) * vm.AMD64.TimerMultiplier)
+	return vm.AMD64.GetTime() - vm.AMD64.TimerOffset
 }
 
 func lspciCmd(_ *shell.Interface, arg []string) (string, error) {

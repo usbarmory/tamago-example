@@ -82,11 +82,11 @@ func init() {
 }
 
 func date(epoch int64) {
-	imx6ul.ARM.SetTimer(epoch)
+	imx6ul.ARM.SetTime(epoch)
 }
 
 func uptime() (ns int64) {
-	return int64(imx6ul.ARM.TimerFn() * imx6ul.ARM.TimerMultiplier)
+	return imx6ul.ARM.GetTime() - imx6ul.ARM.TimerOffset
 }
 
 func mem(start uint, size int, w []byte) (b []byte) {
