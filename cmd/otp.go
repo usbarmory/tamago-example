@@ -131,7 +131,7 @@ func habCmd(console *shell.Interface, arg []string) (res string, err error) {
 	ssm := imx6ul.SNVS.Monitor()
 
 	if ssm.State != snvs.SSM_STATE_NONSECURE {
-		return "", fmt.Errorf("invalid state (%#.4bv)", ssm.State)
+		return "", fmt.Errorf("invalid state (%#.4b)", ssm.State)
 	}
 
 	return "", hab.Activate(srk)
