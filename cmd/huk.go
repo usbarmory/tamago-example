@@ -29,7 +29,7 @@ func hukCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	var key []byte
 
 	if !imx6ul.Native {
-		return "", errors.New("unsupported under emulation")
+		return "", errors.New("unavailable under emulation")
 	}
 
 	switch {

@@ -31,7 +31,7 @@ func init() {
 
 func bleCmd(console *shell.Interface, _ []string) (_ string, err error) {
 	if !imx6ul.Native {
-		return "", errors.New("unsupported under emulation")
+		return "", errors.New("unavailable under emulation")
 	}
 
 	if usbarmory.BLE.UART == nil {
