@@ -102,6 +102,7 @@ dma             (free|used)?                                     # show allocati
 dns             <host>                                           # resolve domain
 ecdsa           <sec> (soft)?                                    # benchmark CAAM/DCP hardware signing
 exit, quit                                                       # close session
+hab             <srk table hash>                                 # HAB activation (use with extreme caution)
 halt                                                             # halt the machine
 freq            (198|396|528|792|900)                            # change ARM core frequency
 help                                                             # this help

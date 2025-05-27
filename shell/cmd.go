@@ -45,6 +45,25 @@ func Add(cmd Cmd) {
 	cmds[cmd.Name] = &cmd
 }
 
+// Confirm displays the argument prompt and waits for a "y" or "n" answer which
+// is converted as return value.
+func (c *Interface) Confirm(msg string) bool {
+	if c.Terminal == nil {
+		return false
+	}
+
+	c.Terminal.SetPrompt(msg)
+	defer c.Terminal.SetPrompt(string(c.Terminal.Escape.Red) + c.Prompt + string(c.Terminal.Escape.Reset))
+
+	input, err := c.Terminal.ReadLine()
+
+	if err != nil {
+		return false
+	}
+
+	return input == "y"
+}
+
 // Help returns a formatted string with instructions for all registered
 // commands.
 func (c *Interface) Help(_ *Interface, _ []string) (res string, _ error) {
