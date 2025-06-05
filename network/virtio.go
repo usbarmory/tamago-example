@@ -13,7 +13,8 @@ import (
 	"net"
 
 	"github.com/usbarmory/tamago/amd64"
-	"github.com/usbarmory/tamago/soc/intel/apic"
+	"github.com/usbarmory/tamago/amd64/lapic"
+	"github.com/usbarmory/tamago/soc/intel/ioapic"
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/virtio-net"
 )
@@ -21,7 +22,7 @@ import (
 // redirection vector for IOAPIC IRQ to CPU IRQ
 const vector = 32
 
-func startInterruptHandler(dev *vnet.Net, lapic *apic.LAPIC, ioapic *apic.IOAPIC) {
+func startInterruptHandler(dev *vnet.Net, lapic *lapic.LAPIC, ioapic *ioapic.IOAPIC) {
 	if dev == nil {
 		return
 	}
