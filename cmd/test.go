@@ -13,6 +13,8 @@ import (
 	"time"
 
 	"github.com/usbarmory/tamago-example/shell"
+
+	"github.com/usbarmory/tamago/board/qemu/microvm"
 )
 
 const (
@@ -39,6 +41,7 @@ func init() {
 
 func msg(format string, args ...interface{}) {
 	s := strings.Repeat(separator, 2) + " "
+	s += fmt.Sprintf(" CPU %d • ", microvm.AMD64.LAPIC.ID())
 	s += fmt.Sprintf(format, args...)
 	s += " " + strings.Repeat(separator, separatorSize-len(s))
 
@@ -90,11 +93,11 @@ func testCmd(_ *shell.Interface, _ []string) (_ string, _ error) {
 	msg("launched %d test goroutines", gr)
 
 	wait()
-
 	msg("completed all test goroutines (%s)", time.Since(start))
 
 	memTest()
 	storageTest()
+	msg("completed all tests (%s)", time.Since(start))
 
 	return
 }

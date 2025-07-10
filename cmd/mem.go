@@ -135,7 +135,7 @@ func memTest() {
 
 	for run := 1; run <= runs; run++ {
 		go func() {
-			log.Printf("allocating %d * %d MiB chunks (%d/%d)", chunks, chunkSize/(1024*1024), run, runs)
+			msg("allocating %d * %d MiB chunks (%d/%d)", chunks, chunkSize/(1024*1024), run, runs)
 
 			buf := make([][]byte, chunks)
 
