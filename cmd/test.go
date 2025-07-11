@@ -8,13 +8,12 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/usbarmory/tamago-example/shell"
-
-	"github.com/usbarmory/tamago/board/qemu/microvm"
 )
 
 const (
@@ -41,7 +40,11 @@ func init() {
 
 func msg(format string, args ...interface{}) {
 	s := strings.Repeat(separator, 2) + " "
-	s += fmt.Sprintf(" CPU %d • ", microvm.AMD64.LAPIC.ID())
+
+	if runtime.ProcID != nil {
+		s += fmt.Sprintf(" CPU %d • ", runtime.ProcID())
+	}
+
 	s += fmt.Sprintf(format, args...)
 	s += " " + strings.Repeat(separator, separatorSize-len(s))
 
