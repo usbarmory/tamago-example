@@ -8,7 +8,6 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -40,11 +39,6 @@ func init() {
 
 func msg(format string, args ...interface{}) {
 	s := strings.Repeat(separator, 2) + " "
-
-	if runtime.ProcID != nil {
-		s += fmt.Sprintf(" CPU %d • ", runtime.ProcID())
-	}
-
 	s += fmt.Sprintf(format, args...)
 	s += " " + strings.Repeat(separator, separatorSize-len(s))
 

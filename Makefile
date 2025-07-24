@@ -14,7 +14,7 @@ ifeq ($(TARGET),microvm)
 TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
 GOENV := GOOS=tamago GOARCH=amd64
 QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc=on \
-        -smp 2 \
+        -smp 4 \
         -global virtio-mmio.force-legacy=false \
         -enable-kvm -cpu host,invtsc=on,kvmclock=on -no-reboot \
         -m 4G -nographic -monitor none -serial stdio \
