@@ -109,6 +109,10 @@ func smpCmd(console *shell.Interface, arg []string) (string, error) {
 	ncpu := runtime.NumCPU()
 	wg.Add(n)
 
+	if runtime.ProcID == nil || runtime.Task == nil {
+		return "", errors.New("no SMP detected")
+	}
+
 	fmt.Fprintf(console.Output,"%d cores detected, launching %d goroutines from CPU%2d\n", ncpu, n, runtime.ProcID())
 
 	for i := 0; i < n; i++ {

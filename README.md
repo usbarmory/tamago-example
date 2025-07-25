@@ -171,7 +171,7 @@ QEMU
 ----
 
 ```
-make qemu TARGET=microvm
+make qemu TARGET=microvm SMP=4
 ```
 
 Firecracker
@@ -181,7 +181,7 @@ Example shown via [firectl](https://github.com/firecracker-microvm/firectl):
 
 ```
 make example TARGET=firecracker
-firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00:01 -c 1 -m 4096
+firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00:01 -c 4 -m 4096
 ```
 
 Building and executing on ARM targets
