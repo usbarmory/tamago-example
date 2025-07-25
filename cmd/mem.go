@@ -16,7 +16,6 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strconv"
-	"sync"
 
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/dma"
@@ -115,7 +114,6 @@ func memWriteCmd(_ *shell.Interface, arg []string) (res string, err error) {
 
 func memTest() {
 	var memstats runtime.MemStats
-	var wg sync.WaitGroup
 
 	chunks := rand.Intn(chunksMax) + 1
 	chunkSize := fillSize / chunks
@@ -131,23 +129,17 @@ func memTest() {
 	debug.SetMemoryLimit(int64(math.Round(memoryLimit)))
 
 	msg("memory allocation (%d runs)", runs)
-	wg.Add(runs)
 
 	for run := 1; run <= runs; run++ {
-		go func() {
-			msg("allocating %d * %d MiB chunks (%d/%d)", chunks, chunkSize/(1024*1024), run, runs)
+		log.Printf("allocating %d * %d MiB chunks (%d/%d)", chunks, chunkSize/(1024*1024), run, runs)
 
-			buf := make([][]byte, chunks)
+		buf := make([][]byte, chunks)
 
-			for i := 0; i <= chunks-1; i++ {
-				buf[i] = make([]byte, chunkSize)
-			}
-
-			wg.Done()
-		}()
+		for i := 0; i <= chunks-1; i++ {
+			buf[i] = make([]byte, chunkSize)
+		}
 	}
 
-	wg.Wait()
 	runtime.GC()
 
 	runtime.ReadMemStats(&memstats)
