@@ -42,7 +42,9 @@ func wakeTest() (tag string, res string) {
 
 	go func() {
 		time.Sleep(sleep)
-		runtime.Wake(uint(gp))
+		if !runtime.Wake(uint(gp)) {
+			panic("WakeG failed")
+		}
 	}()
 
 	time.Sleep(math.MaxInt64)

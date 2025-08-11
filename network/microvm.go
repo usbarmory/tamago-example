@@ -40,7 +40,7 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 	// used with `dev.Start(true)`.
 	dev.Start(false)
 
-	startInterruptHandler(dev, microvm.AMD64.LAPIC, microvm.IOAPIC1)
+	startInterruptHandler(dev, microvm.AMD64, microvm.IOAPIC1)
 
 	return
 }

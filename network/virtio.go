@@ -13,7 +13,6 @@ import (
 	"net"
 
 	"github.com/usbarmory/tamago/amd64"
-	"github.com/usbarmory/tamago/amd64/lapic"
 	"github.com/usbarmory/tamago/soc/intel/ioapic"
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/virtio-net"
@@ -22,13 +21,13 @@ import (
 // redirection vector for IOAPIC IRQ to CPU IRQ
 const vector = 32
 
-func startInterruptHandler(dev *vnet.Net, lapic *lapic.LAPIC, ioapic *ioapic.IOAPIC) {
+func startInterruptHandler(dev *vnet.Net, cpu *amd64.CPU, ioapic *ioapic.IOAPIC) {
 	if dev == nil {
 		return
 	}
 
-	if lapic != nil {
-		lapic.Enable()
+	if cpu.LAPIC != nil {
+		cpu.LAPIC.Enable()
 	}
 
 	if ioapic != nil {
@@ -41,7 +40,6 @@ func startInterruptHandler(dev *vnet.Net, lapic *lapic.LAPIC, ioapic *ioapic.IOA
 			for buf := dev.Rx(); buf != nil; buf = dev.Rx() {
 				dev.RxHandler(buf)
 			}
-			lapic.ClearInterrupt()
 		case 6:
 			// On Firecracker #UD is raised just once at IRQ
 			// enabling for no apparent reason (bug?).
@@ -50,7 +48,7 @@ func startInterruptHandler(dev *vnet.Net, lapic *lapic.LAPIC, ioapic *ioapic.IOA
 		}
 	}
 
-	amd64.ServiceInterrupts(isr)
+	cpu.ServiceInterrupts(isr)
 }
 
 func startNet(console *shell.Interface, dev *vnet.Net) (err error) {

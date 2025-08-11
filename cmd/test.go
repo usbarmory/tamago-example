@@ -90,11 +90,11 @@ func testCmd(_ *shell.Interface, _ []string) (_ string, _ error) {
 	msg("launched %d test goroutines", gr)
 
 	wait()
-
 	msg("completed all test goroutines (%s)", time.Since(start))
 
 	memTest()
 	storageTest()
+	msg("completed all tests (%s)", time.Since(start))
 
 	return
 }
