@@ -1,6 +1,6 @@
 module github.com/usbarmory/tamago-example
 
-go 1.24.4
+go 1.24.6
 
 require (
 	github.com/Harvey-OS/ninep v0.0.0-20200724082702-d30a6d4f9789
