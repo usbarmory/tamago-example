@@ -1,6 +1,6 @@
 module github.com/usbarmory/tamago-example
 
-go 1.24.6
+go 1.25.0
 
 require (
 	github.com/Harvey-OS/ninep v0.0.0-20200724082702-d30a6d4f9789
@@ -18,7 +18,7 @@ require (
 	github.com/usbarmory/crucible v0.0.0-20250604093418-7a23c45afd19
 	github.com/usbarmory/imx-enet v0.0.0-20250123113228-2e1bd913d818
 	github.com/usbarmory/imx-usbnet v0.0.0-20250123113617-d39929cd7171
-	github.com/usbarmory/tamago v0.0.0-20250811152003-24ca488864f4
+	github.com/usbarmory/tamago v0.0.0-20250819083339-4bb13deae827
 	github.com/usbarmory/virtio-net v0.0.0-20250404103528-b6d7d034de85
 	golang.org/x/crypto v0.39.0
 	golang.org/x/crypto/x509roots/fallback v0.0.0-20250605174209-3bf9d2afd4f0

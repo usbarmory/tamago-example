@@ -106,7 +106,7 @@ func smpCmd(console *shell.Interface, arg []string) (string, error) {
 		return "", fmt.Errorf("invalid goroutine count: %v", err)
 	}
 
-	ncpu := runtime.NumCPU()
+	ncpu := amd64.NumCPU()
 	wg.Add(n)
 
 	if runtime.ProcID == nil || runtime.Task == nil {
