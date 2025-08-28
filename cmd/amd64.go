@@ -20,6 +20,7 @@ import (
 
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/amd64"
+	"github.com/usbarmory/tamago/amd64/lapic"
 	"github.com/usbarmory/virtio-net"
 )
 
@@ -41,8 +42,17 @@ func init() {
 		Pattern: regexp.MustCompile(`^smp (\d+)$`),
 		Syntax:  "<n>",
 
-		Help:    "launch SMP test",
-		Fn:      smpCmd,
+		Help: "launch SMP test",
+		Fn:   smpCmd,
+	})
+
+	shell.Add(shell.Cmd{
+		Name:    "irq",
+		Args:    2,
+		Pattern: regexp.MustCompile(`^irq (\d+) (\d+)$`),
+		Syntax:  "<vector> <apic>",
+		Help:    "interrupt request",
+		Fn:      irqCmd,
 	})
 }
 
@@ -113,7 +123,7 @@ func smpCmd(console *shell.Interface, arg []string) (string, error) {
 		return "", errors.New("no SMP detected")
 	}
 
-	fmt.Fprintf(console.Output,"%d cores detected, launching %d goroutines from CPU%2d\n", ncpu, n, runtime.ProcID())
+	fmt.Fprintf(console.Output, "%d cores detected, launching %d goroutines from CPU%2d\n", ncpu, n, runtime.ProcID())
 
 	for i := 0; i < n; i++ {
 		go func() {
@@ -144,6 +154,28 @@ func smpCmd(console *shell.Interface, arg []string) (string, error) {
 	fmt.Fprintf(&res, "Total %3d\n", total)
 
 	return res.String(), nil
+}
+
+func irqCmd(_ *shell.Interface, arg []string) (string, error) {
+	vector, err := strconv.Atoi(arg[0])
+
+	if err != nil {
+		return "", fmt.Errorf("invalid vector, %v", err)
+	}
+
+	apic, err := strconv.Atoi(arg[1])
+
+	if err != nil {
+		return "", fmt.Errorf("invalid APIC ID, %v", err)
+	}
+
+	lapic := lapic.LAPIC{
+		Base: amd64.LAPIC_BASE,
+	}
+
+	lapic.IPI(apic, vector, 0)
+
+	return "", nil
 }
 
 func rebootCmd(_ *shell.Interface, _ []string) (_ string, err error) {
