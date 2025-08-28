@@ -254,7 +254,7 @@ License
 =======
 
 tamago | https://github.com/usbarmory/tamago  
-Copyright (c) WithSecure Corporation
+Copyright (c) The TamaGo Authors. All Rights Reserved.
 
 These source files are distributed under the BSD-style license found in the
 [LICENSE](https://github.com/usbarmory/tamago-example/blob/master/LICENSE) file.
