@@ -161,17 +161,17 @@ func irqCmd(_ *shell.Interface, arg []string) (string, error) {
 		return "", fmt.Errorf("invalid vector, %v", err)
 	}
 
-	apic, err := strconv.Atoi(arg[1])
+	id, err := strconv.Atoi(arg[1])
 
 	if err != nil {
 		return "", fmt.Errorf("invalid APIC ID, %v", err)
 	}
 
-	lapic := lapic.LAPIC{
+	apic := lapic.LAPIC{
 		Base: amd64.LAPIC_BASE,
 	}
 
-	lapic.IPI(apic, vector, 0)
+	apic.IPI(id, vector, lapic.ICR_DLV_IRQ)
 
 	return "", nil
 }
