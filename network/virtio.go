@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"runtime"
 
 	"github.com/usbarmory/tamago/amd64"
 	"github.com/usbarmory/tamago/soc/intel/ioapic"
@@ -45,6 +46,20 @@ func startInterruptHandler(dev *vnet.Net, cpu *amd64.CPU, ioapic *ioapic.IOAPIC)
 			// enabling for no apparent reason (bug?).
 		default:
 			log.Printf("internal error, unexpected IRQ %d", irq)
+		}
+	}
+
+	// optimize CPU idle management as IRQs are enabled
+	if cpu.NumCPU() == 1 {
+		// this pattern currently only works on single-core
+		runtime.Idle = func(pollUntil int64) {
+			if pollUntil == 0 {
+				return
+			}
+
+			cpu.SetAlarm(pollUntil)
+			cpu.WaitInterrupt()
+			cpu.SetAlarm(0)
 		}
 	}
 

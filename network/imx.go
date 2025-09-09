@@ -22,15 +22,6 @@ func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 	imx6ul.GIC.Init(true, false)
 	imx6ul.GIC.EnableInterrupt(imx6ul.TIMER_IRQ, true)
 
-	runtime.Idle = func(pollUntil int64) {
-		if pollUntil == 0 {
-			return
-		}
-
-		imx6ul.ARM.SetAlarm(pollUntil)
-		imx6ul.ARM.Halt()
-	}
-
 	if usb != nil {
 		imx6ul.GIC.EnableInterrupt(usb.IRQ, true)
 	}
@@ -52,6 +43,16 @@ func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 		default:
 			log.Printf("internal error, unexpected IRQ %d", irq)
 		}
+	}
+
+	// optimize CPU idle management as IRQs are enabled
+	runtime.Idle = func(pollUntil int64) {
+		if pollUntil == 0 {
+			return
+		}
+
+		imx6ul.ARM.SetAlarm(pollUntil)
+		imx6ul.ARM.WaitInterrupt()
 	}
 
 	arm.ServiceInterrupts(isr)
