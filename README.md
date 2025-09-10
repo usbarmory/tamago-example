@@ -216,9 +216,9 @@ Ethernet connectivity, in the latter case tap0 should be configured as follows
 (Linux example):
 
 ```
+ip tuntap add dev tap0 mode tap group <your user group>
 ip addr add 10.0.0.2/24 dev tap0
 ip link set tap0 up
-ip tuntap add dev tap0 mode tap group <your user group>
 ```
 
 An emulated target can be debugged with GDB using `make qemu-gdb`, this will
