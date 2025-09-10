@@ -35,7 +35,7 @@ execute bare metal Go code on the following platforms:
 | SiFive FU540          | [QEMU sifive_u](https://www.qemu.org/docs/master/system/riscv/sifive_u.html)                                                                                                         | [fu540](https://github.com/usbarmory/tamago/tree/master/soc/sifive/fu540) | [qemu/sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u)             |
 
 > [!NOTE]
-> TamaGo also supports [UEFI](https://uefi.org/), for an example see [go-boot](https://github.com/usbarmory/go-boot/)
+> TamaGo also supports [UEFI](https://uefi.org/), see [go-boot](https://github.com/usbarmory/go-boot/)
 
 Documentation
 =============
@@ -54,13 +54,13 @@ its separate goroutine, to demonstrate bare metal execution of Go standard and
 external libraries:
 
   * Directory and file write/read from an in-memory filesystem.
-  * SD/MMC card detection and read (only on non-emulated runs).
+  * SD/MMC card detection and read (only on non-emulated runs, if available).
   * Timer operation.
   * Sleep operation.
   * Random bytes collection (gathered from SoC TRNG on non-emulated runs).
   * Test BTC transaction creation and signing.
   * Test post-quantum key encapsulation (KEM).
-  * Hardware accelerated encryption, hashing, key derivation (on non-emulated runs).
+  * Hardware accelerated encryption (on non-emulated runs, if available).
   * Large memory allocation.
 
 The following network services are started:
@@ -68,17 +68,6 @@ The following network services are started:
   * SSH server on 10.0.0.1:22
   * HTTP server on 10.0.0.1:80
   * HTTPS server on 10.0.0.1:443
-
-On the USB armory Mk II the network interface is exposed over
-[Ethernet over USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication)
-(ECM protocol, supported on Linux and macOS hosts).
-
-On the USB armory Mk II LAN the network interface is exposed on both USB and
-physical Ethernet interfaces.
-
-On the MCIMX6ULL-EVK the second Ethernet port is used.
-
-On KVMs (Cloud Hypervisor, QEMU, Firecracker) VirtIO networking is used.
 
 The web servers expose the following routes:
 
@@ -130,9 +119,6 @@ usdhc           <n> <hex offset> <size>                          # SD/MMC card r
 wormhole        (send <path>|recv <code>)                        # transfer file through magic wormhole
 ```
 
-On emulated runs (e.g. `make qemu`) for `usbarmory` and `sifive_u` targets the
-console is exposed directly on the terminal, otherwise networking is used.
-
 Building the compiler
 =====================
 
@@ -149,15 +135,16 @@ cd ../bin && export TAMAGO=`pwd`/go
 Building and executing on AMD64 targets
 =======================================
 
-| `TARGET`           | Platform            | Executing and debugging                                                                                                  |
-|--------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------|
-| `cloud_hypervisor` | Cloud Hypervisor    | [cloud_hypervisor/vm](https://github.com/usbarmory/tamago/tree/master/board/cloud_hypervisor/vm#executing-and-debugging) |
-| `microvm`          | QEMU microvm        | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               |
-| `firecracker`      | Firecracker microvm | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) |
+| `TARGET`           | Platform                                                                  | Executing and debugging                                                                                                  | Interface          |
+|--------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|--------------------|
+| `cloud_hypervisor` | [Cloud Hypervisor](https://www.cloudhypervisor.org/)                      | [cloud_hypervisor/vm](https://github.com/usbarmory/tamago/tree/master/board/cloud_hypervisor/vm#executing-and-debugging) | VirtIO networking¹ |
+| `microvm`          | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html) | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               | VirtIO networking¹ |
+| `firecracker`      | [Firecracker microvm](https://firecracker-microvm.github.io/)             | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) | VirtIO networking¹ |
 
-These targets are meant for paravirtualized execution, VirtIO networking is
-used and the network interface can be configured identically as shown in
-section _Emulated hardware with QEMU_.
+¹ network configuration example in  _Emulated hardware with QEMU_
+
+These targets are meant for paravirtualized execution as described in the
+following sections.
 
 Cloud Hypervisor
 ----------------
@@ -187,10 +174,11 @@ firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00
 Building and executing on ARM targets
 =====================================
 
-| `TARGET`    | Board            | Executing and debugging                                                                                  |
-|-------------|------------------|----------------------------------------------------------------------------------------------------------|
-| `usbarmory` | USB armory Mk II | [usbarmory](https://github.com/usbarmory/tamago/tree/master/board/usbarmory#executing-and-debugging)     |
-| `mx6ullevk` | MCIMX6ULL-EVK    | [mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk#executing-and-debugging) |
+| `TARGET`    | Board                                                                                                                                                                                                          | Executing and debugging                                                                                  | Interface                                                                                |
+|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| `usbarmory` | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki/Mk-II-Introduction)                                                                                                                             | [usbarmory](https://github.com/usbarmory/tamago/tree/master/board/usbarmory#executing-and-debugging)     | [Ethernet over USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication)      |
+| `usbarmory` | [USB armory Mk II LAN](https://github.com/usbarmory/usbarmory/wiki/Mk-II-LAN)                                                                                                                                  | [usbarmory](https://github.com/usbarmory/tamago/tree/master/board/usbarmory#executing-and-debugging)     | [Ethernet over USB](https://github.com/usbarmory/usbarmory/wiki/Host-communication), LAN |
+| `mx6ullevk` | [MCIMX6ULL-EVK](https://www.nxp.com/design/design-center/development-boards-and-designs/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk#executing-and-debugging) | LAN (2nd port)                                                                           |
 
 Build the application executables as follows:
 
@@ -204,17 +192,15 @@ as well as emulated execution (e.g. `make qemu`).
 Building and executing on RISC-V targets
 ========================================
 
-| `TARGET`    | Board            | Executing and debugging                                                                                 |
-|-------------|------------------|---------------------------------------------------------------------------------------------------------|
-| `sifive_u`  | QEMU sifive_u    | [sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u#executing-and-debugging) |
+| `TARGET`    | Board            | Executing and debugging                                                                                 | Interface       |
+|-------------|------------------|---------------------------------------------------------------------------------------------------------|-----------------|
+| `sifive_u`  | QEMU sifive_u    | [sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u#executing-and-debugging) | Serial console  |
 
 Build the application executables as follows:
 
 ```
-make example TARGET=sifive_u
+make qemu TARGET=sifive_u
 ```
-
-The target has only been tested with emulated execution (e.g. `make qemu`).
 
 Emulated hardware with QEMU
 ===========================
