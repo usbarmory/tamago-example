@@ -17,6 +17,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/hako/durafmt"
@@ -26,6 +27,11 @@ import (
 )
 
 var Terminal io.ReadWriter
+
+var (
+	once sync.Once
+	idle func(pollUntil int64)
+)
 
 func init() {
 	shell.Add(shell.Cmd{
@@ -58,6 +64,15 @@ func init() {
 		Name: "stackall",
 		Help: "goroutine stack trace (all)",
 		Fn:   stackallCmd,
+	})
+
+	shell.Add(shell.Cmd{
+		Name:    "cpuidle",
+		Args:    1,
+		Pattern: regexp.MustCompile(`^cpuidle (on|off)$`),
+		Help:    "CPU idle time management control",
+		Syntax:  "(on|off)?",
+		Fn:      cpuidleCmd,
 	})
 
 	shell.Add(shell.Cmd{
@@ -135,6 +150,21 @@ func stackallCmd(_ *shell.Interface, _ []string) (string, error) {
 	pprof.Lookup("goroutine").WriteTo(buf, 1)
 
 	return buf.String(), nil
+}
+
+func cpuidleCmd(_ *shell.Interface, arg []string) (string, error) {
+	once.Do(func() {
+		idle = runtime.Idle
+	})
+
+	switch arg[0] {
+	case "on":
+		runtime.Idle = idle
+	case "off":
+		runtime.Idle = nil
+	}
+
+	return "", nil
 }
 
 func dmaCmd(_ *shell.Interface, arg []string) (string, error) {

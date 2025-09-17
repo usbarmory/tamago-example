@@ -86,6 +86,7 @@ bee             <hex region0> <hex region1>                      # BEE OTF AES m
 ble                                                              # BLE serial console
 build                                                            # build information
 cat             <path>                                           # show file contents
+cpuidle         (on|off)?                                        # CPU idle time management control
 date            (time in RFC339 format)?                         # show/change runtime date and time
 dma             (free|used)?                                     # show allocation of default DMA region
 dns             <host>                                           # resolve domain
@@ -151,7 +152,7 @@ Cloud Hypervisor
 
 ```
 make example TARGET=cloud_hypervisor
-cloud-hypervisor --kernel example --cpus boot=1 --memory size=4096M --net "tap=tap0" --serial tty --console off
+cloud-hypervisor --kernel example --cpus boot=1 --memory size=4096M --net "tap=tap0" --serial tty --console off --seccomp false
 ```
 
 QEMU
