@@ -66,7 +66,7 @@ func (c *Interface) Confirm(msg string) bool {
 
 // Help returns a formatted string with instructions for all registered
 // commands.
-func (c *Interface) Help(_ *Interface, _ []string) (res string, _ error) {
+func Help(c *Interface, _ []string) (_ string, _ error) {
 	var help bytes.Buffer
 	var names []string
 
@@ -83,11 +83,13 @@ func (c *Interface) Help(_ *Interface, _ []string) (res string, _ error) {
 	}
 
 	_ = t.Flush()
-	res = help.String()
+	res := help.String()
 
 	if c.Terminal != nil {
 		res = string(c.Terminal.Escape.Cyan) + res + string(c.Terminal.Escape.Reset)
 	}
+
+	fmt.Fprintln(c.Output, res)
 
 	return
 }
