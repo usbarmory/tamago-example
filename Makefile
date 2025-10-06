@@ -34,11 +34,11 @@ QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
         -dtb $(CURDIR)/qemu.dtb -bios $(CURDIR)/tools/bios.bin
 endif
 
-ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk usbarmory))
+ifeq ($(TARGET),$(filter $(TARGET), imx8mpevk mx6ullevk usbarmory))
 
 TAGS := $(TARGET),linkramsize
 
-ifeq ($(TARGET),mx6ullevk)
+ifeq ($(TARGET),$(filter $(TARGET), imx8mpevk mx6ullevk))
 UART1 := stdio
 UART2 := null
 NET   := nic,model=imx.enet,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
@@ -50,10 +50,19 @@ UART2 := stdio
 NET   := none
 endif
 
+ifeq ($(TARGET),imx8mpevk)
+GOENV := GOOS=tamago GOARCH=arm64
+QEMU ?= qemu-system-aarch64 -machine imx8mp-evk -m 512M \
+        -nographic -monitor none -semihosting \
+        -serial $(UART1) -serial $(UART2) -net $(NET)
+endif
+
+ifeq ($(TARGET), $(filter $(TARGET), mx6ullevk usbarmory))
 GOENV := GOOS=tamago GOARM=7 GOARCH=arm
 QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -nographic -monitor none -semihosting \
         -serial $(UART1) -serial $(UART2) -net $(NET)
+endif
 
 endif
 
@@ -89,6 +98,20 @@ qemu-gdb: GOFLAGS := $(GOFLAGS:-w=)
 qemu-gdb: GOFLAGS := $(GOFLAGS:-s=)
 qemu-gdb: $(APP)
 	$(QEMU) -kernel $(APP) -S -s
+
+#### AMD64 targets ####
+
+ifeq ($(TARGET),$(filter $(TARGET), microvm firecracker cloud_hypervisor))
+$(APP): check_tamago
+	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
+endif
+
+#### ARM64 targets ####
+
+ifeq ($(TARGET),imx8mpevk)
+$(APP): check_tamago
+	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
+endif
 
 #### ARM targets ####
 
@@ -143,6 +166,11 @@ $(APP).dcd:
 		exit 1; \
 	fi
 
+ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk usbarmory))
+$(APP): check_tamago IMX6UL.yaml IMX6ULL.yaml
+	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
+endif
+
 #### RISC-V targets ####
 
 qemu.dtb: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
@@ -152,24 +180,12 @@ qemu.dtb:
 	echo $(TAMAGO_PKG)
 	dtc -I dts -O dtb $(GOMODCACHE)/$(TAMAGO_PKG)/board/qemu/sifive_u/qemu-riscv64-sifive_u.dts -o $(CURDIR)/qemu.dtb 2> /dev/null
 
-#### application target ####
-
-ifeq ($(TARGET),$(filter $(TARGET), microvm firecracker cloud_hypervisor))
-$(APP): check_tamago
-	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
-endif
-
 ifeq ($(TARGET),sifive_u)
 $(APP): check_tamago qemu.dtb
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP} && \
 	RT0=$$(riscv64-linux-gnu-readelf -a $(APP)|grep -i 'Entry point' | cut -dx -f2) && \
 	echo ".equ RT0_RISCV64_TAMAGO, 0x$$RT0" > $(CURDIR)/tools/bios.cfg && \
 	cd $(CURDIR)/tools && ./build_riscv64_bios.sh
-endif
-
-ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk usbarmory))
-$(APP): check_tamago IMX6UL.yaml IMX6ULL.yaml
-	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 endif
 
 #### HAB secure boot ####
