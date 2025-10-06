@@ -43,6 +43,11 @@ init:
 	mov ds, ax
 	mov ss, ax
 
+	; disable 8259 PIC
+	mov al, 0xff
+	out 0xa1, al
+	out 0x21, al
+
 	cli
 	mov eax, base
 	mov [stack.real], ax
