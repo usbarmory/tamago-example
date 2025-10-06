@@ -22,7 +22,7 @@ QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc
         -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 
 # emulate cloud VM (ops onprem)
-QEMU-img ?= qemu-system-x86_64 -machine q35 -m 4G -s \
+QEMU-img ?= qemu-system-x86_64 -machine q35 -m 4G \
             -machine accel=kvm:tcg -cpu max \
             -vga none -display none -serial stdio \
             -device pcie-root-port,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x3 \
