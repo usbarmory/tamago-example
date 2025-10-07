@@ -17,7 +17,6 @@ import (
 	_ "unsafe"
 
 	"github.com/usbarmory/tamago/arm64"
-	"github.com/usbarmory/tamago/dma"
 	"github.com/usbarmory/tamago/soc/nxp/imx8mp"
 	"github.com/usbarmory/tamago/soc/nxp/snvs"
 
@@ -26,21 +25,11 @@ import (
 )
 
 const (
-	// Override standard memory allocation as having concurrent USB and
-	// Ethernet interfaces requires more than what the iRAM can handle.
-	dmaSize  = 0xa00000 // 10MB
-	dmaStart = 0x60000000 - dmaSize
-
 	romStart = 0x00000000
 	romSize  = 0x3f000
 )
 
-//go:linkname ramSize runtime.ramSize
-var ramSize uint = 0x20000000 - dmaSize // 512MB - 10MB
-
 func init() {
-	dma.Init(dmaStart, dmaSize)
-
 	runtime.Exit = func(_ int32) {
 		semihosting.Exit()
 	}

@@ -34,10 +34,6 @@ QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
         -dtb $(CURDIR)/qemu.dtb -bios $(CURDIR)/tools/bios.bin
 endif
 
-ifeq ($(TARGET),$(filter $(TARGET), imx8mpevk mx6ullevk usbarmory))
-
-TAGS := $(TARGET),linkramsize
-
 ifeq ($(TARGET),$(filter $(TARGET), imx8mpevk mx6ullevk))
 UART1 := stdio
 UART2 := null
@@ -48,6 +44,7 @@ ifeq ($(TARGET),usbarmory)
 UART1 := null
 UART2 := stdio
 NET   := none
+TAGS  := $(TARGET),linkramsize
 endif
 
 ifeq ($(TARGET),imx8mpevk)
@@ -62,8 +59,6 @@ GOENV := GOOS=tamago GOARM=7 GOARCH=arm
 QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -nographic -monitor none -semihosting \
         -serial $(UART1) -serial $(UART2) -net $(NET)
-endif
-
 endif
 
 GOFLAGS := -tags ${TAGS},native -trimpath -ldflags "-T $(TEXT_START) -R 0x1000"
