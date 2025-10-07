@@ -1,5 +1,5 @@
-TamaGo - bare metal Go for AMD64/ARM/RISC-V processors
-======================================================
+TamaGo - bare metal Go
+======================
 
 tamago | https://github.com/usbarmory/tamago  
 
