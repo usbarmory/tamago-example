@@ -139,8 +139,9 @@ Building and executing on AMD64 targets
 | `TARGET`           | Platform                                                                  | Executing and debugging                                                                                                  | Interface          |
 |--------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|--------------------|
 | `cloud_hypervisor` | [Cloud Hypervisor](https://www.cloudhypervisor.org/)                      | [cloud_hypervisor/vm](https://github.com/usbarmory/tamago/tree/master/board/cloud_hypervisor/vm#executing-and-debugging) | VirtIO networking¹ |
-| `microvm`          | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html) | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               | VirtIO networking¹ |
 | `firecracker`      | [Firecracker microvm](https://firecracker-microvm.github.io/)             | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) | VirtIO networking¹ |
+| `microvm`          | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html) | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               | VirtIO networking¹ |
+| `microvm`          | [Google Compute Engine](https://cloud.google.com/products/compute)        | [tools](https://github.com/usbarmory/tamago-example/tree/master/tools)                                                   | WiP (serial only)  |
 
 ¹ network configuration example in  _Emulated hardware with QEMU_
 
@@ -155,13 +156,6 @@ make example TARGET=cloud_hypervisor
 cloud-hypervisor --kernel example --cpus boot=1 --memory size=4096M --net "tap=tap0" --serial tty --console off --seccomp false
 ```
 
-QEMU
-----
-
-```
-make qemu TARGET=microvm SMP=4
-```
-
 Firecracker
 -----------
 
@@ -171,6 +165,19 @@ Example shown via [firectl](https://github.com/firecracker-microvm/firectl):
 make example TARGET=firecracker
 firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00:01 -c 4 -m 4096
 ```
+
+QEMU
+----
+
+```
+make qemu TARGET=microvm SMP=4
+```
+
+Google Compute Engine
+---------------------
+
+The `microvm` target can be executed on [Google Compute Engine](https://cloud.google.com/products/compute), see
+[tools](https://github.com/usbarmory/tamago-example/tree/master/tools) for more information.
 
 Building and executing on ARM targets
 =====================================
