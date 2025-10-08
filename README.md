@@ -172,6 +172,39 @@ make example TARGET=firecracker
 firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00:01 -c 4 -m 4096
 ```
 
+Google Compute Engine
+---------------------
+
+The following example uses Google Cloud CLI.
+
+Upload the raw image in a bucket and create an instance:
+
+```
+make example TARGET=microvm img
+cp example.img disk.raw
+tar --format=oldgnu -Sczf compressed-image.tar.gz disk.raw
+gcloud storage buckets create gs://tamago-bucket
+gcloud storage cp compressed-image.tar.gz gs://tamago-bucket
+gcloud compute images create tamago-example --source-uri gs://tamago-bucket/compressed-image.tar.gz --architecture=X86_64
+gcloud compute instances create tamago-example --zone=europe-west1-b --machine-type=n1-standard-2 --metadata="serial-port-enable=true" --image tamago-example
+```
+
+Check the serial port output:
+
+```
+gcloud compute instances get-serial-port-output tamago-example --zone=europe-west1-b --port=1
+```
+
+Clean up:
+
+```
+gcloud storage rm gs://tamago-bucket/compressed-image.tar.gz
+gcloud storage buckets delete gs://tamago-bucket
+gcloud compute instances stop tamago-example --zone europe-west1-b
+gcloud compute instances delete tamago-example --zone europe-west1-b
+gcloud compute images delete tamago-example
+```
+
 Building and executing on ARM targets
 =====================================
 
