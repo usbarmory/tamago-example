@@ -11,6 +11,7 @@ TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc
 TAGS := $(TARGET)
 
 ifeq ($(TARGET),microvm)
+
 SMP ?= $(shell nproc)
 TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
 GOENV := GOOS=tamago GOARCH=amd64
@@ -36,6 +37,7 @@ QEMU-img ?= qemu-system-x86_64 -machine q35 -m 4G -smp $(SMP) \
             -device virtio-net,bus=pci.3,addr=0x0,netdev=n0,mac=9e:f0:e8:26:9a:1b \
             -drive file=$(APP).img,format=raw,if=none,id=hd0 \
             -netdev user,id=n0
+
 endif
 
 ifeq ($(TARGET),$(filter $(TARGET), firecracker cloud_hypervisor))
@@ -50,27 +52,25 @@ QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
         -dtb $(CURDIR)/qemu.dtb -bios $(CURDIR)/tools/bios.bin
 endif
 
-ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk usbarmory))
-
-TAGS := $(TARGET),linkramsize
-
-ifeq ($(TARGET),mx6ullevk)
+ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk))
 UART1 := stdio
 UART2 := null
 NET   := nic,model=imx.enet,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
+TAGS  := $(TARGET),linkramsize
 endif
 
 ifeq ($(TARGET),usbarmory)
 UART1 := null
 UART2 := stdio
 NET   := none
+TAGS  := $(TARGET),linkramsize
 endif
 
+ifeq ($(TARGET), $(filter $(TARGET), mx6ullevk usbarmory))
 GOENV := GOOS=tamago GOARM=7 GOARCH=arm
 QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -nographic -monitor none -semihosting \
         -serial $(UART1) -serial $(UART2) -net $(NET)
-
 endif
 
 GOFLAGS := -tags ${TAGS},native -trimpath -ldflags "-T $(TEXT_START) -R 0x1000"
@@ -115,7 +115,11 @@ qemu-img-gdb: $(APP).img
 
 #### AMD64 targets ####
 
-ifeq ($(TARGET),microvm)
+ifeq ($(TARGET),$(filter $(TARGET), microvm firecracker cloud_hypervisor))
+
+$(APP): check_tamago
+	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
+
 img: $(APP).img
 
 $(APP).bin: $(APP)
@@ -136,11 +140,16 @@ $(APP).img: $(APP).bin tools/mbr.bin
 	dd if=/dev/zero of=$(APP).img bs=1M count=100 status=none
 	dd if=tools/mbr.bin of=$(APP).img conv=notrunc status=none
 	dd if=$(APP).bin of=$(APP).img bs=1024 seek=100 conv=notrunc status=none
+
 endif
 
 #### ARM targets ####
 
 ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk usbarmory))
+
+$(APP): check_tamago IMX6UL.yaml IMX6ULL.yaml
+	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
+
 imx: $(APP).imx
 
 imx_signed: $(APP)-signed.imx
@@ -191,38 +200,6 @@ $(APP).dcd:
 		echo "invalid target - options are: usbarmory, mx6ullevk"; \
 		exit 1; \
 	fi
-endif
-
-#### RISC-V targets ####
-
-qemu.dtb: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
-qemu.dtb: TAMAGO_PKG=$(shell grep "github.com/usbarmory/tamago v" go.mod | awk '{print $$1"@"$$2}')
-qemu.dtb:
-	echo $(GOMODCACHE)
-	echo $(TAMAGO_PKG)
-	dtc -I dts -O dtb $(GOMODCACHE)/$(TAMAGO_PKG)/board/qemu/sifive_u/qemu-riscv64-sifive_u.dts -o $(CURDIR)/qemu.dtb 2> /dev/null
-
-#### application target ####
-
-ifeq ($(TARGET),$(filter $(TARGET), microvm firecracker cloud_hypervisor))
-$(APP): check_tamago
-	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
-endif
-
-ifeq ($(TARGET),sifive_u)
-$(APP): check_tamago qemu.dtb
-	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP} && \
-	RT0=$$(riscv64-linux-gnu-readelf -a $(APP)|grep -i 'Entry point' | cut -dx -f2) && \
-	echo ".equ RT0_RISCV64_TAMAGO, 0x$$RT0" > $(CURDIR)/tools/bios.cfg && \
-	cd $(CURDIR)/tools && ./build_riscv64_bios.sh
-endif
-
-ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk usbarmory))
-$(APP): check_tamago IMX6UL.yaml IMX6ULL.yaml
-	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
-endif
-
-#### HAB secure boot ####
 
 $(APP)-signed.imx: check_tamago check_hab_keys $(APP).imx
 	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool@latest
@@ -237,3 +214,24 @@ $(APP)-signed.imx: check_tamago check_hab_keys $(APP).imx
 		-i $(APP).imx \
 		-o $(APP).csf && \
 	cat $(APP).imx $(APP).csf > $(APP)-signed.imx
+
+endif
+
+#### RISC-V targets ####
+
+ifeq ($(TARGET),$(filter $(TARGET), sifive_u))
+
+qemu.dtb: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
+qemu.dtb: TAMAGO_PKG=$(shell grep "github.com/usbarmory/tamago v" go.mod | awk '{print $$1"@"$$2}')
+qemu.dtb:
+	echo $(GOMODCACHE)
+	echo $(TAMAGO_PKG)
+	dtc -I dts -O dtb $(GOMODCACHE)/$(TAMAGO_PKG)/board/qemu/sifive_u/qemu-riscv64-sifive_u.dts -o $(CURDIR)/qemu.dtb 2> /dev/null
+
+$(APP): check_tamago qemu.dtb
+	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP} && \
+	RT0=$$(riscv64-linux-gnu-readelf -a $(APP)|grep -i 'Entry point' | cut -dx -f2) && \
+	echo ".equ RT0_RISCV64_TAMAGO, 0x$$RT0" > $(CURDIR)/tools/bios.cfg && \
+	cd $(CURDIR)/tools && ./build_riscv64_bios.sh
+
+endif
