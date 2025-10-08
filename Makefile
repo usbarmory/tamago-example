@@ -22,7 +22,7 @@ QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc
         -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 
 # emulate cloud VM (ops onprem)
-QEMU-img ?= qemu-system-x86_64 -machine q35 -m 4G \
+QEMU-img ?= qemu-system-x86_64 -machine q35 -m 4G -smp $(SMP) \
             -machine accel=kvm:tcg -cpu max \
             -vga none -display none -serial stdio \
             -device pcie-root-port,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x3 \
@@ -126,19 +126,7 @@ $(APP).bin: $(APP)
 	    $(APP) -O binary $(APP).bin
 
 tools/mbr.bin: tools/mbr.s $(APP) $(APP).bin
-	OFFSET=200 && \
-	  SIZE=$$(stat -c %s $(APP).bin) && \
-	  ENTRY=0x$$(dd if=$(APP) bs=1 count=4 skip=24 | xxd -e -g4 | xxd -r | xxd -p) && \
-	  START=$(TEXT_START) && \
-	  echo "TAMAGO_OFFSET = $$OFFSET" && \
-	  echo "TAMAGO_SIZE = $$SIZE" && \
-	  echo "TAMAGO_ENTRY = $$ENTRY" && \
-	  echo "TAMAGO_START = $$START" && \
-	  nasm -l tools/mbr.lst tools/mbr.s -o $@ \
-	    -dTAMAGO_OFFSET=$$OFFSET \
-	    -dTAMAGO_SIZE=$$SIZE \
-	    -dTAMAGO_START=$$START \
-	    -dTAMAGO_ENTRY=$$ENTRY
+	cd $(CURDIR)/tools && ./build_mbr.sh ../$(APP) ../$(APP).bin $(TEXT_START)
 	@if (( $$(stat -c %s tools/mbr.bin) != 512 )); then \
 		echo "ERROR: tools/mbr.bin size != 512."; \
 		exit 1; \

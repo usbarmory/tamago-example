@@ -1,3 +1,12 @@
+; Copyright (c) The TamaGo Authors. All Rights Reserved.
+;
+; Use of this source code is governed by the license
+; that can be found in the LICENSE file.
+
+; Implement a simple Master Boot Record that set up 32-bit protected mode,
+; reads TamaGo image from disk and jumps to it.
+; Reference: https://wiki.osdev.org/MBR_(x86)
+
 base equ 0x7c00
 buffer equ 0x10000 ; 0x10000 - 0x1ffff: 64kB readsectors buffer
 
@@ -106,21 +115,22 @@ dap:
 
 ; TAMAGO_* parameters should be provided externally
 tamago:
-	.offset		dq TAMAGO_OFFSET		;tamago image start sector
-	.sector_size	dq TAMAGO_SIZE/512		;tamago size in sectors
-	.start		dq TAMAGO_START			;tamago binary destination address
-	.entry		dq TAMAGO_ENTRY			;tamago entry point
+	.offset		dq TAMAGO_OFFSET	; tamago image start sector
+	.sector_size	dq TAMAGO_SIZE/512	; tamago size in sectors
+	.start		dq TAMAGO_START		; tamago binary destination address
+	.entry		dq TAMAGO_ENTRY		; tamago entry point
 
+; read disk sectors using BIOS interrupt call (INT 13h)
 readsectors:
-	bits 16:
+	bits 16
 	mov si, dap
-	mov ah, 0x42
-	mov dl, 0x80
+	mov ah, 0x42	; Extended Read Sectors From Drive
+	mov dl, 0x80	; First Hard Drive
 	int 0x13
 	ret
 
 memcpy32:
-	bits 32:
+	bits 32
 	mov ebx, 0
 	mov ecx, [tamago.start]
 	mov edx, buffer
@@ -135,5 +145,5 @@ copy:	mov eax, [edx]
 	ret
 
 times (446-$+$$) db 0	; ensure output binary is 512 bytes
-times 64 db 0		; parition table
+times 64 db 0		; partition table
 dw 0xAA55		; mbr signature
