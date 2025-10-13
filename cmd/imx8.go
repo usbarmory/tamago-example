@@ -9,16 +9,9 @@ package cmd
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"fmt"
-	"regexp"
 	"runtime"
-	"strconv"
 	_ "unsafe"
-
-	"github.com/usbarmory/tamago/arm64"
-	"github.com/usbarmory/tamago/soc/nxp/imx8mp"
-	"github.com/usbarmory/tamago/soc/nxp/snvs"
 
 	"github.com/usbarmory/tamago-example/internal/semihosting"
 	"github.com/usbarmory/tamago-example/shell"
@@ -36,20 +29,18 @@ func init() {
 }
 
 func date(epoch int64) {
-	imx8mp.ARM64.SetTime(epoch)
+	// TODO
+	// imx8mp.ARM64.SetTime(epoch)
 }
 
 func uptime() (ns int64) {
-	return imx8mp.ARM64.GetTime() - imx8mp.ARM64.TimerOffset
+	// TODO
+	// return imx8mp.ARM64.GetTime() - imx8mp.ARM64.TimerOffset
+	return 0
 }
 
 func mem(start uint, size int, w []byte) (b []byte) {
-	// temporarily map page zero if required
-	if z := uint32(1 << 20); uint32(start) < z {
-		imx8mp.ARM64.ConfigureMMU(0, z, 0, (arm64.TTE_AP_001<<10)|arm64.TTE_SECTION)
-		defer imx8mp.ARM64.ConfigureMMU(0, z, 0, 0)
-	}
-
+	// TODO: temporarily map page zero if required
 	return memCopy(start, size, w)
 }
 
@@ -75,17 +66,15 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 func cryptoTest() {
 	spawn(btcdTest)
 	spawn(kemTest)
-	spawn(caamTest)
-	spawn(dcpTest)
 
 	return
 }
 
-func Target() (name string, freq uint32) {
-	name = imx8mp.Model()
-	name += " (emulated)"
-
-	freq = imx8mp.ARMFreq()
-
+func storageTest() {
 	return
+}
+
+func Target() (name string, freq uint32) {
+	// TODO
+	return "(emulated)", 0
 }
