@@ -17,11 +17,6 @@ import (
 	"github.com/usbarmory/tamago-example/shell"
 )
 
-const (
-	romStart = 0x00000000
-	romSize  = 0x3f000
-)
-
 func init() {
 	runtime.Exit = func(_ int32) {
 		semihosting.Exit()
@@ -55,10 +50,6 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	fmt.Fprintf(&res, "Board ........: %s\n", boardName)
 	fmt.Fprintf(&res, "SoC ..........: %s\n", name)
 	fmt.Fprintf(&res, "Frequency ....: %v MHz\n", float32(freq)/1e6)
-
-	if NIC != nil {
-		fmt.Fprintf(&res, "ENET%d ........: %s %d\n", NIC.Index, NIC.MAC, NIC.Stats)
-	}
 
 	return res.String(), nil
 }
