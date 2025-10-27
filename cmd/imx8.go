@@ -17,6 +17,9 @@ import (
 	"github.com/usbarmory/tamago-example/shell"
 )
 
+//go:linkname ramSize runtime.ramSize
+var ramSize uint = 0x20000000 // 512MB
+
 func init() {
 	runtime.Exit = func(_ int32) {
 		semihosting.Exit()
