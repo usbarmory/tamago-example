@@ -13,6 +13,8 @@ import (
 	"runtime"
 	_ "unsafe"
 
+	"github.com/usbarmory/tamago/soc/nxp/imx8mp"
+
 	"github.com/usbarmory/tamago-example/internal/semihosting"
 	"github.com/usbarmory/tamago-example/shell"
 )
@@ -27,18 +29,14 @@ func init() {
 }
 
 func date(epoch int64) {
-	// TODO
-	// imx8mp.ARM64.SetTime(epoch)
+	imx8mp.ARM64.SetTime(epoch)
 }
 
 func uptime() (ns int64) {
-	// TODO
-	// return imx8mp.ARM64.GetTime() - imx8mp.ARM64.TimerOffset
-	return 0
+	return imx8mp.ARM64.GetTime() - imx8mp.ARM64.TimerOffset
 }
 
 func mem(start uint, size int, w []byte) (b []byte) {
-	// TODO: temporarily map page zero if required
 	return memCopy(start, size, w)
 }
 
@@ -69,6 +67,13 @@ func storageTest() {
 }
 
 func Target() (name string, freq uint32) {
-	// TODO
-	return "(emulated)", 0
+	name = imx8mp.Model()
+
+	if !imx8mp.Native {
+		name += " (emulated)"
+	}
+
+	freq = imx8mp.ARMFreq()
+
+	return
 }
