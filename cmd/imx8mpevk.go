@@ -25,5 +25,5 @@ func rebootCmd(_ *shell.Interface, _ []string) (_ string, err error) {
 }
 
 func HasNetwork() (usb bool, eth bool) {
-	return false, false
+	return false, true
 }
