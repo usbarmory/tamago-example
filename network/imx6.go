@@ -72,6 +72,4 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **enet.ENET) {
 	}
 
 	startInterruptHandler(usb, eth)
-
-	return
 }
