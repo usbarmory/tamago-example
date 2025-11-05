@@ -32,6 +32,7 @@ execute bare metal Go code on the following platforms:
 | NXP i.MX6ULZ/i.MX6UL  | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki/Mk-II-Introduction)                                                                                                   | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
 | NXP i.MX6ULL/i.MX6UL  | [USB armory Mk II LAN](https://github.com/usbarmory/usbarmory/wiki/Mk-II-LAN)                                                                                                        | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
 | NXP i.MX6ULL/i.MX6ULZ | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk)             |
+| NXP i.MX8M Plus       | [8MPLUSLPD4-EVK](https://www.nxp.com/design/design-center/development-boards-and-designs/8MPLUSLPD4-EVK)                                                                             | [imx8mp](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx8mp)  | [imx8mpevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/imx8mpevk)                 |
 | SiFive FU540          | [QEMU sifive_u](https://www.qemu.org/docs/master/system/riscv/sifive_u.html)                                                                                                         | [fu540](https://github.com/usbarmory/tamago/tree/master/soc/sifive/fu540) | [qemu/sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u)             |
 
 > [!NOTE]
@@ -179,6 +180,22 @@ Google Compute Engine
 The `microvm` target can be executed on [Google Compute Engine](https://cloud.google.com/products/compute), see
 [tools](https://github.com/usbarmory/tamago-example/tree/master/tools) for more information.
 
+Building and executing on ARM64 targets
+=======================================
+
+| `TARGET`    | Board                                                                                                    | Executing and debugging                                                                                  | Interface      |
+|-------------|----------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|----------------|
+| `imx8mpevk` | [8MPLUSLPD4-EVK](https://www.nxp.com/design/design-center/development-boards-and-designs/8MPLUSLPD4-EVK) | [imx8mpevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/imx8mpevk#executing-and-debugging) | LAN (1st port) |
+
+> [!WARNING]
+> This package is in early development stages, only emulated runs (qemu) have been tested.
+
+Build and run the application executables as follows:
+
+```
+make qemu TARGET=imx8mpevk
+```
+
 Building and executing on ARM targets
 =====================================
 
@@ -204,7 +221,7 @@ Building and executing on RISC-V targets
 |-------------|------------------|---------------------------------------------------------------------------------------------------------|-----------------|
 | `sifive_u`  | QEMU sifive_u    | [sifive_u](https://github.com/usbarmory/tamago/tree/master/board/qemu/sifive_u#executing-and-debugging) | Serial console  |
 
-Build the application executables as follows:
+Build and run the application executables as follows:
 
 ```
 make qemu TARGET=sifive_u
