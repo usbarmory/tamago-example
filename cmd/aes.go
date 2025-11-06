@@ -82,7 +82,7 @@ func aesCmd(_ *shell.Interface, arg []string) (res string, err error) {
 			return "", DCP.Encrypt(buf, keySlot, iv)
 		}
 	default:
-		err = fmt.Errorf("unsupported hardware, use `aes %s %s soft` to disable hardware acceleration", arg[0], arg[1])
+		err = fmt.Errorf("unavailable, use `aes %s %s soft` to disable hardware acceleration", arg[0], arg[1])
 		return
 	}
 

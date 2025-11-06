@@ -93,7 +93,7 @@ check_tamago:
 
 clean:
 	@rm -fr $(APP) $(APP).bin $(APP).img $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd
-	@rm -fr cmd/IMX6UL*.yaml qemu.dtb tools/bios.bin tools/mbr.bin tools/mbr.lst
+	@rm -fr cmd/*.yaml qemu.dtb tools/bios.bin tools/mbr.bin tools/mbr.lst
 
 #### generic targets ####
 
@@ -228,9 +228,16 @@ endif
 #### ARM64 targets ####
 
 ifeq ($(TARGET),imx8mpevk)
-$(APP): check_tamago
+$(APP): check_tamago IMX8MP.yaml
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
 endif
+
+IMX8MP.yaml: check_tamago
+IMX8MP.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
+IMX8MP.yaml: CRUCIBLE_PKG=$(shell grep "github.com/usbarmory/crucible v" go.mod | awk '{print $$1"@"$$2}')
+IMX8MP.yaml:
+	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool@latest
+	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX8MP.yaml cmd/IMX8MP.yaml
 
 #### RISC-V targets ####
 

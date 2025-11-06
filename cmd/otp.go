@@ -3,12 +3,11 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build mx6ullevk || usbarmory
+//go:build imx8mpevk || mx6ullevk || usbarmory
 
 package cmd
 
 import (
-	_ "embed"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -20,7 +19,6 @@ import (
 
 	"github.com/usbarmory/tamago-example/internal/hab"
 	"github.com/usbarmory/tamago-example/shell"
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/snvs"
 )
 
@@ -42,6 +40,8 @@ will be converted to *exclusive use of your own signed firmware releases*.
 ████████████████████████████████████████████████████████████████████████████████
 `
 
+var fuseMap *fusemap.FuseMap
+
 func init() {
 	shell.Add(shell.Cmd{
 		Name:    "hab",
@@ -62,30 +62,6 @@ func init() {
 	})
 }
 
-var (
-	//go:embed IMX6UL.yaml
-	IMX6ULFusemapYAML []byte
-	//go:embed IMX6ULL.yaml
-	IMX6ULLFusemapYAML []byte
-
-	fuseMap *fusemap.FuseMap
-)
-
-func loadFuseMap() (err error) {
-	if fuseMap != nil {
-		return
-	}
-
-	switch imx6ul.Model() {
-	case "i.MX6ULL", "i.MX6ULZ":
-		fuseMap, err = fusemap.Parse(IMX6ULLFusemapYAML)
-	case "i.MX6UL":
-		fuseMap, err = fusemap.Parse(IMX6ULFusemapYAML)
-	}
-
-	return
-}
-
 func readOTP(bank int, word int) (res string, err error) {
 	var reg *fusemap.Register
 	var val []byte
@@ -94,8 +70,8 @@ func readOTP(bank int, word int) (res string, err error) {
 		return
 	}
 
-	if imx6ul.Native {
-		if val, err = otp.ReadOCOTP(bank, word, 0, 32); err != nil {
+	if OCOTP != nil {
+		if val, err = otp.ReadOCOTP(OCOTP, bank, word, 0, 32); err != nil {
 			return
 		}
 	}
@@ -124,17 +100,17 @@ func habCmd(console *shell.Interface, arg []string) (res string, err error) {
 		return "command cancelled", nil
 	}
 
-	if !imx6ul.Native {
-		return "", errors.New("unavailable under emulation")
+	if OCOTP == nil || SNVS == nil {
+		return "", errors.New("unavailable")
 	}
 
-	ssm := imx6ul.SNVS.Monitor()
+	ssm := SNVS.Monitor()
 
 	if ssm.State != snvs.SSM_STATE_NONSECURE {
 		return "", fmt.Errorf("invalid state (%#.4b)", ssm.State)
 	}
 
-	return "", hab.Activate(srk)
+	return "", hab.Activate(OCOTP, SNVS, srk)
 }
 
 func otpCmd(_ *shell.Interface, arg []string) (res string, err error) {

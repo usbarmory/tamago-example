@@ -10,11 +10,14 @@ package cmd
 import (
 	"bytes"
 	"crypto/sha256"
+	_ "embed"
 	"fmt"
 	"regexp"
 	"runtime"
 	"strconv"
 	_ "unsafe"
+
+	"github.com/usbarmory/crucible/fusemap"
 
 	"github.com/usbarmory/tamago/arm"
 	"github.com/usbarmory/tamago/dma"
@@ -39,10 +42,31 @@ const (
 var ramSize uint = 0x20000000 - dmaSize // 512MB - 10MB
 
 var (
-	DCP  = imx6ul.DCP
-	CAAM = imx6ul.CAAM
-	SNVS = imx6ul.SNVS
+	DCP   = imx6ul.DCP
+	CAAM  = imx6ul.CAAM
+	SNVS  = imx6ul.SNVS
+	OCOTP = imx6ul.OCOTP
+
+	//go:embed IMX6UL.yaml
+	IMX6ULFusemapYAML []byte
+	//go:embed IMX6ULL.yaml
+	IMX6ULLFusemapYAML []byte
 )
+
+func loadFuseMap() (err error) {
+	if fuseMap != nil {
+		return
+	}
+
+	switch imx6ul.Model() {
+	case "i.MX6ULL", "i.MX6ULZ":
+		fuseMap, err = fusemap.Parse(IMX6ULLFusemapYAML)
+	case "i.MX6UL":
+		fuseMap, err = fusemap.Parse(IMX6ULFusemapYAML)
+	}
+
+	return
+}
 
 func init() {
 	dma.Init(dmaStart, dmaSize)

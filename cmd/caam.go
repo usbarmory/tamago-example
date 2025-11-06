@@ -125,7 +125,7 @@ func testKeyDerivationCAAM(log *log.Logger) (err error) {
 	}
 
 	// if the SoC is secure booted we can only print the result
-	if SNVS.Available() {
+	if SNVS != nil && SNVS.Available() {
 		log.Printf("OTPMK derived key %x", key)
 		return
 	}
@@ -147,7 +147,7 @@ func caamTest() (tag string, res string) {
 	l.SetPrefix(log.Prefix())
 
 	if CAAM == nil {
-		l.Printf("skipping tests on unsupported hardware")
+		l.Printf("unavailable")
 		return tag, b.String()
 	}
 

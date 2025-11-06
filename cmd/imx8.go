@@ -9,9 +9,12 @@ package cmd
 
 import (
 	"bytes"
+	_ "embed"
 	"fmt"
 	"runtime"
 	_ "unsafe"
+
+	"github.com/usbarmory/crucible/fusemap"
 
 	"github.com/usbarmory/tamago/soc/nxp/dcp"
 	"github.com/usbarmory/tamago/soc/nxp/imx8mp"
@@ -27,9 +30,26 @@ var (
 	// stub
 	DCP *dcp.DCP
 
-	CAAM = imx8mp.CAAM
-	SNVS = imx8mp.SNVS
+	CAAM  = imx8mp.CAAM
+	SNVS  = imx8mp.SNVS
+	OCOTP = imx8mp.OCOTP
+
+	//go:embed IMX8MP.yaml
+	IMX8MPFusemapYAML []byte
 )
+
+func loadFuseMap() (err error) {
+	if fuseMap != nil {
+		return
+	}
+
+	switch imx8mp.Model() {
+	case "i.MX8MP":
+		fuseMap, err = fusemap.Parse(IMX8MPFusemapYAML)
+	}
+
+	return
+}
 
 func init() {
 	runtime.Exit = func(_ int32) {
@@ -67,6 +87,7 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 func cryptoTest() {
 	spawn(btcdTest)
 	spawn(kemTest)
+	spawn(caamTest)
 
 	return
 }

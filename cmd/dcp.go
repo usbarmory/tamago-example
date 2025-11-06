@@ -13,20 +13,18 @@ import (
 	"fmt"
 	"log"
 	"strings"
-
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 const testVectorDCP = "\x75\xf9\x02\x2d\x5a\x86\x7a\xd4\x30\x44\x0f\xee\xc6\x61\x1f\x0a"
 
 func init() {
-	if imx6ul.Native && imx6ul.DCP != nil {
-		imx6ul.DCP.Init()
+	if DCP != nil {
+		DCP.Init()
 	}
 }
 
 func testHashDCP(log *log.Logger) (err error) {
-	sum256, err := imx6ul.DCP.Sum256([]byte(testVectorSHAInput))
+	sum256, err := DCP.Sum256([]byte(testVectorSHAInput))
 
 	if err != nil {
 		return
@@ -46,9 +44,9 @@ func testCipherDCP(keySize int, log *log.Logger) (err error) {
 	key := []byte(testVectorKey[keySize])
 	iv := []byte(testVectorIV)
 
-	_ = imx6ul.DCP.SetKey(keySlot, key)
+	_ = DCP.SetKey(keySlot, key)
 
-	if err = imx6ul.DCP.Encrypt(buf, keySlot, iv); err != nil {
+	if err = DCP.Encrypt(buf, keySlot, iv); err != nil {
 		return
 	}
 
@@ -58,7 +56,7 @@ func testCipherDCP(keySize int, log *log.Logger) (err error) {
 
 	log.Printf("NIST aes-128 cbc encrypt %x", buf)
 
-	if err = imx6ul.DCP.Decrypt(buf, keySlot, iv); err != nil {
+	if err = DCP.Decrypt(buf, keySlot, iv); err != nil {
 		return
 	}
 
@@ -73,7 +71,7 @@ func testCipherDCP(keySize int, log *log.Logger) (err error) {
 
 func testKeyDerivationDCP(log *log.Logger) (err error) {
 	iv := make([]byte, aes.BlockSize)
-	key, err := imx6ul.DCP.DeriveKey([]byte(testDiversifier), iv, -1)
+	key, err := DCP.DeriveKey([]byte(testDiversifier), iv, -1)
 
 	if err != nil {
 		return
@@ -84,7 +82,7 @@ func testKeyDerivationDCP(log *log.Logger) (err error) {
 	}
 
 	// if the SoC is secure booted we can only print the result
-	if imx6ul.SNVS.Available() {
+	if SNVS != nil && SNVS.Available() {
 		log.Printf("OTPMK derived key %x", key)
 		return
 	}
@@ -105,8 +103,8 @@ func dcpTest() (tag string, res string) {
 	l := log.New(b, "", 0)
 	l.SetPrefix(l.Prefix())
 
-	if !(imx6ul.Native && imx6ul.DCP != nil) {
-		l.Printf("skipping tests under emulation or unsupported hardware")
+	if DCP == nil {
+		l.Printf("unavailable")
 		return tag, b.String()
 	}
 

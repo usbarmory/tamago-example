@@ -3,7 +3,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build mx6ullevk || usbarmory
+//go:build imx8mpevk || mx6ullevk || usbarmory
 
 package cmd
 
@@ -17,7 +17,6 @@ import (
 
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/soc/nxp/caam"
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 func init() {
@@ -34,8 +33,8 @@ func init() {
 func rticCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	var blocks []caam.MemoryBlock
 
-	if !(imx6ul.Native && imx6ul.CAAM != nil) {
-		return "", errors.New("unavailable under emulation or unsupported hardware")
+	if CAAM == nil {
+		return "", errors.New("unavailable")
 	}
 
 	if len(arg[0]) > 0 && len(arg[1]) > 0 {
@@ -64,11 +63,11 @@ func rticCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	textStart, textEnd := runtime.TextRegion()
 
 	blocks = append(blocks, caam.MemoryBlock{
-		Address: textStart,
-		Length:  textEnd - textStart,
+		Address: uint32(textStart),
+		Length:  uint32(textEnd - textStart),
 	})
 
-	if err = imx6ul.CAAM.EnableRTIC(blocks); err != nil {
+	if err = CAAM.EnableRTIC(blocks); err != nil {
 		return
 	}
 

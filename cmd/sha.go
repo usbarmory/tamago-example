@@ -55,7 +55,7 @@ func shaCmd(_ *shell.Interface, arg []string) (res string, err error) {
 			return
 		}
 	default:
-		err = fmt.Errorf("unsupported hardware, use `sha %s %s soft` to disable hardware acceleration", arg[0], arg[1])
+		err = fmt.Errorf("unavailable, use `sha %s %s soft` to disable hardware acceleration", arg[0], arg[1])
 		return
 	}
 
