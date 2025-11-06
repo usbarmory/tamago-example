@@ -99,7 +99,7 @@ func testKeyDerivationDCP(log *log.Logger) (err error) {
 }
 
 func dcpTest() (tag string, res string) {
-	tag = "imx6_dcp"
+	tag = "imx_dcp"
 
 	b := &strings.Builder{}
 	l := log.New(b, "", 0)

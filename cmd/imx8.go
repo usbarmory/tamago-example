@@ -13,6 +13,7 @@ import (
 	"runtime"
 	_ "unsafe"
 
+	"github.com/usbarmory/tamago/soc/nxp/dcp"
 	"github.com/usbarmory/tamago/soc/nxp/imx8mp"
 
 	"github.com/usbarmory/tamago-example/internal/semihosting"
@@ -21,6 +22,14 @@ import (
 
 //go:linkname ramSize runtime.ramSize
 var ramSize uint = 0x20000000 // 512MB
+
+var (
+	// stub
+	DCP *dcp.DCP
+
+	CAAM = imx8mp.CAAM
+	SNVS = imx8mp.SNVS
+)
 
 func init() {
 	runtime.Exit = func(_ int32) {
@@ -59,10 +68,6 @@ func cryptoTest() {
 	spawn(btcdTest)
 	spawn(kemTest)
 
-	return
-}
-
-func storageTest() {
 	return
 }
 

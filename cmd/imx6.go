@@ -38,6 +38,12 @@ const (
 //go:linkname ramSize runtime.ramSize
 var ramSize uint = 0x20000000 - dmaSize // 512MB - 10MB
 
+var (
+	DCP  = imx6ul.DCP
+	CAAM = imx6ul.CAAM
+	SNVS = imx6ul.SNVS
+)
+
 func init() {
 	dma.Init(dmaStart, dmaSize)
 
@@ -79,6 +85,10 @@ func init() {
 			HAC:               0xffffffff,
 		},
 	)
+
+	if imx6ul.CAAM != nil {
+		imx6ul.CAAM.DeriveKeyMemory, _ = dma.NewRegion(imx6ul.OCRAM_START, imx6ul.OCRAM_SIZE, false)
+	}
 }
 
 func date(epoch int64) {

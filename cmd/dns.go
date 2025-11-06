@@ -3,7 +3,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build mx6ullevk || usbarmory || cloud_hypervisor || microvm || firecracker
+//go:build imx8mpevk || mx6ullevk || usbarmory || cloud_hypervisor || microvm || firecracker
 
 package cmd
 

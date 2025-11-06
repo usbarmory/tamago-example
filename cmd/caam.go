@@ -3,7 +3,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build mx6ullevk || usbarmory
+//go:build imx8mpevk || mx6ullevk || usbarmory
 
 package cmd
 
@@ -18,21 +18,12 @@ import (
 	"strings"
 
 	"github.com/dustinxie/ecc"
-
-	"github.com/usbarmory/tamago/dma"
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 const testVectorCAAM = "\x49\x3f\xb1\xe8\x7a\x39\x3f\x47\xe8\x3a\xc8\xa2\x27\xfd\x5b\x71\x92\x87\xdb\xad\x13\x2a\x9a\x8d\x8e\xe9\xbd\x3f\x76\x16\x7f\xcb"
 
-func init() {
-	if imx6ul.CAAM != nil {
-		imx6ul.CAAM.DeriveKeyMemory, _ = dma.NewRegion(imx6ul.OCRAM_START, imx6ul.OCRAM_SIZE, false)
-	}
-}
-
 func testHashCAAM(log *log.Logger) (err error) {
-	sum256, err := imx6ul.CAAM.Sum256([]byte(testVectorSHAInput))
+	sum256, err := CAAM.Sum256([]byte(testVectorSHAInput))
 
 	if err != nil {
 		return
@@ -52,7 +43,7 @@ func testCipherCAAM(keySize int, log *log.Logger) (err error) {
 	key := []byte(testVectorKey[keySize])
 	iv := []byte(testVectorIV)
 
-	if err = imx6ul.CAAM.Encrypt(buf, key, iv); err != nil {
+	if err = CAAM.Encrypt(buf, key, iv); err != nil {
 		return
 	}
 
@@ -62,7 +53,7 @@ func testCipherCAAM(keySize int, log *log.Logger) (err error) {
 
 	log.Printf("NIST aes-%d cbc encrypt %x", keySize, buf)
 
-	if err = imx6ul.CAAM.Decrypt(buf, key, iv); err != nil {
+	if err = CAAM.Decrypt(buf, key, iv); err != nil {
 		return
 	}
 
@@ -72,7 +63,7 @@ func testCipherCAAM(keySize int, log *log.Logger) (err error) {
 
 	log.Printf("NIST aes-%d cbc decrypt %x", keySize, buf)
 
-	cmac, err := imx6ul.CAAM.SumAES([]byte(testVectorInput), key)
+	cmac, err := CAAM.SumAES([]byte(testVectorInput), key)
 
 	if err != nil {
 		return
@@ -92,7 +83,7 @@ func testSignatureCAAM(log *log.Logger) (err error) {
 	_, _ = rand.Read(hash)
 
 	priv, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	r, s, err := imx6ul.CAAM.Sign(priv, hash, nil)
+	r, s, err := CAAM.Sign(priv, hash, nil)
 
 	if err != nil {
 		log.Printf("%v", err)
@@ -106,7 +97,7 @@ func testSignatureCAAM(log *log.Logger) (err error) {
 	log.Printf("ecdsap256 matches crypto/ecdsa")
 
 	priv, _ = ecdsa.GenerateKey(ecc.P256k1(), rand.Reader)
-	r, s, err = imx6ul.CAAM.Sign(priv, hash, nil)
+	r, s, err = CAAM.Sign(priv, hash, nil)
 
 	if err != nil {
 		log.Printf("%v", err)
@@ -125,7 +116,7 @@ func testSignatureCAAM(log *log.Logger) (err error) {
 func testKeyDerivationCAAM(log *log.Logger) (err error) {
 	key := make([]byte, sha256.Size)
 
-	if err = imx6ul.CAAM.DeriveKey([]byte(testDiversifier), key); err != nil {
+	if err = CAAM.DeriveKey([]byte(testDiversifier), key); err != nil {
 		return
 	}
 
@@ -134,7 +125,7 @@ func testKeyDerivationCAAM(log *log.Logger) (err error) {
 	}
 
 	// if the SoC is secure booted we can only print the result
-	if imx6ul.SNVS.Available() {
+	if SNVS.Available() {
 		log.Printf("OTPMK derived key %x", key)
 		return
 	}
@@ -149,14 +140,14 @@ func testKeyDerivationCAAM(log *log.Logger) (err error) {
 }
 
 func caamTest() (tag string, res string) {
-	tag = "imx6_caam"
+	tag = "imx_caam"
 
 	b := &strings.Builder{}
 	l := log.New(b, "", 0)
 	l.SetPrefix(log.Prefix())
 
-	if !(imx6ul.Native && imx6ul.CAAM != nil) {
-		l.Printf("skipping tests under emulation or unsupported hardware")
+	if CAAM == nil {
+		l.Printf("skipping tests on unsupported hardware")
 		return tag, b.String()
 	}
 
