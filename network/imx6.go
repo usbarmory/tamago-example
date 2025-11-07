@@ -67,7 +67,13 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **enet.ENET) {
 	}
 
 	if hasEth {
-		eth = startEth(console)
+		eth = imx6ul.ENET2
+
+		if !imx6ul.Native {
+			eth = imx6ul.ENET1
+		}
+
+		startEth(eth, console, true)
 		*nic = eth
 	}
 
