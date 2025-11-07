@@ -52,8 +52,8 @@ func loadFuseMap() (err error) {
 		return
 	}
 
-	switch imx8mp.Model() {
-	case "i.MX8MP":
+	switch imx8mp.Family {
+	case imx8mp.IMX8MPD, imx8mp.IMX8MPQ:
 		fuseMap, err = fusemap.Parse(IMX8MPFusemapYAML)
 	}
 
