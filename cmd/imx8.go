@@ -16,15 +16,24 @@ import (
 
 	"github.com/usbarmory/crucible/fusemap"
 
+	"github.com/usbarmory/tamago/dma"
 	"github.com/usbarmory/tamago/soc/nxp/dcp"
 	"github.com/usbarmory/tamago/soc/nxp/imx8mp"
+	"github.com/usbarmory/tamago/soc/nxp/snvs"
 
 	"github.com/usbarmory/tamago-example/internal/semihosting"
 	"github.com/usbarmory/tamago-example/shell"
 )
 
+const (
+	// Override standard memory allocation as having concurrent USB and
+	// Ethernet interfaces requires more than what the iRAM can handle.
+	dmaSize  = 0xa00000 // 10MB
+	dmaStart = 0x60000000 - dmaSize
+)
+
 //go:linkname ramSize runtime.ramSize
-var ramSize uint = 0x20000000 // 512MB
+var ramSize uint = 0x20000000 - dmaSize // 512MB - 10MB
 
 var (
 	// stub
@@ -52,8 +61,33 @@ func loadFuseMap() (err error) {
 }
 
 func init() {
-	runtime.Exit = func(_ int32) {
-		semihosting.Exit()
+	dma.Init(dmaStart, dmaSize)
+
+	if !imx8mp.Native {
+		runtime.Exit = func(_ int32) {
+			semihosting.Exit()
+		}
+
+		return
+	}
+
+	// This example policy sets the maximum delay between violation
+	// detection and hard failure, on the i.MX8MP SNVS re-initialization
+	// with invalid calibration data (e.g. SNVS.Init(0)) can be used to
+	// test tamper detection.
+	imx8mp.SNVS.SetPolicy(
+		snvs.SecurityPolicy{
+			Clock:             true,
+			Temperature:       true,
+			Voltage:           true,
+			SecurityViolation: true,
+			HardFail:          true,
+			HAC:               0xffffffff,
+		},
+	)
+
+	if imx8mp.CAAM != nil {
+		imx8mp.CAAM.DeriveKeyMemory, _ = dma.NewRegion(imx8mp.OCRAM_START, imx8mp.OCRAM_SIZE, false)
 	}
 }
 
