@@ -69,7 +69,7 @@ endif
 ifeq ($(TARGET),imx8mpevk)
 TEXT_START := 0x40010000 # ramStart (defined in mem.go under tamago/soc package) + 0x10000
 GOENV := GOOS=tamago GOARCH=arm64
-QEMU ?= qemu-system-aarch64 -machine imx8mp-evk -m 512M \
+QEMU ?= qemu-system-aarch64 -machine imx8mp-evk -m 512M -smp 1 \
         -nographic -monitor none -semihosting \
         -serial $(UART1) -serial $(UART2) -net $(NET)
 endif
