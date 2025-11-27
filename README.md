@@ -180,22 +180,6 @@ Google Compute Engine
 The `microvm` target can be executed on [Google Compute Engine](https://cloud.google.com/products/compute), see
 [tools](https://github.com/usbarmory/tamago-example/tree/master/tools) for more information.
 
-Building and executing on ARM64 targets
-=======================================
-
-| `TARGET`    | Board                                                                                                    | Executing and debugging                                                                                  | Interface      |
-|-------------|----------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|----------------|
-| `imx8mpevk` | [8MPLUSLPD4-EVK](https://www.nxp.com/design/design-center/development-boards-and-designs/8MPLUSLPD4-EVK) | [imx8mpevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/imx8mpevk#executing-and-debugging) | LAN (1st port) |
-
-> [!WARNING]
-> This package is in early development stages, only emulated runs (qemu) have been tested.
-
-Build and run the application executables as follows:
-
-```
-make qemu TARGET=imx8mpevk
-```
-
 Building and executing on ARM targets
 =====================================
 
@@ -214,8 +198,24 @@ make imx TARGET=usbarmory
 The targets support native (see relevant documentation links in the table above)
 as well as emulated execution (e.g. `make qemu`).
 
-Building and executing on RISC-V targets
-========================================
+Building and executing on ARM64 targets
+=======================================
+
+| `TARGET`    | Board                                                                                                    | Executing and debugging                                                                                  | Interface      |
+|-------------|----------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|----------------|
+| `imx8mpevk` | [8MPLUSLPD4-EVK](https://www.nxp.com/design/design-center/development-boards-and-designs/8MPLUSLPD4-EVK) | [imx8mpevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/imx8mpevk#executing-and-debugging) | LAN (1st port) |
+
+> [!WARNING]
+> This package is in early development stages, only emulated runs (qemu) have been tested.
+
+Build and run the application executables as follows:
+
+```
+make qemu TARGET=imx8mpevk
+```
+
+Building and executing on RISCV64 targets
+=========================================
 
 | `TARGET`    | Board            | Executing and debugging                                                                                 | Interface       |
 |-------------|------------------|---------------------------------------------------------------------------------------------------------|-----------------|

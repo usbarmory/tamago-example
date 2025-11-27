@@ -239,7 +239,7 @@ IMX8MP.yaml:
 	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool@latest
 	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX8MP.yaml cmd/IMX8MP.yaml
 
-#### RISC-V targets ####
+#### RISCV64 targets ####
 
 ifeq ($(TARGET),$(filter $(TARGET), sifive_u))
 
