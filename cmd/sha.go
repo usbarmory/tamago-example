@@ -3,7 +3,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build mx6ullevk || usbarmory
+//go:build imx8mpevk || mx6ullevk || usbarmory
 
 package cmd
 
@@ -15,7 +15,6 @@ import (
 	"runtime"
 
 	"github.com/usbarmory/tamago-example/shell"
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 // FIPS 180-2 test vector
@@ -45,18 +44,18 @@ func shaCmd(_ *shell.Interface, arg []string) (res string, err error) {
 			runtime.Gosched()
 			return
 		}
-	case imx6ul.CAAM != nil:
+	case CAAM != nil:
 		fn = func(buf []byte) (res string, err error) {
-			_, err = imx6ul.CAAM.Sum256(buf)
+			_, err = CAAM.Sum256(buf)
 			return
 		}
-	case imx6ul.DCP != nil:
+	case DCP != nil:
 		fn = func(buf []byte) (res string, err error) {
-			_, err = imx6ul.DCP.Sum256(buf)
+			_, err = DCP.Sum256(buf)
 			return
 		}
 	default:
-		err = fmt.Errorf("unsupported hardware, use `sha %s %s soft` to disable hardware acceleration", arg[0], arg[1])
+		err = fmt.Errorf("unavailable, use `sha %s %s soft` to disable hardware acceleration", arg[0], arg[1])
 		return
 	}
 

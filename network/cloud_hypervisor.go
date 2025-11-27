@@ -52,6 +52,4 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 
 	transport.EnableInterrupt(VIRTIO_NET0_IRQ, vnet.ReceiveQueue)
 	startInterruptHandler(dev, vm.AMD64, nil)
-
-	return
 }

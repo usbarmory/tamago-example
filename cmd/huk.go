@@ -3,7 +3,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build mx6ullevk || usbarmory
+//go:build imx8mpevk || mx6ullevk || usbarmory
 
 package cmd
 
@@ -14,7 +14,6 @@ import (
 	"fmt"
 
 	"github.com/usbarmory/tamago-example/shell"
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 func init() {
@@ -28,21 +27,17 @@ func init() {
 func hukCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	var key []byte
 
-	if !imx6ul.Native {
-		return "", errors.New("unavailable under emulation")
-	}
-
 	switch {
-	case imx6ul.CAAM != nil:
+	case CAAM != nil:
 		key = make([]byte, sha256.Size)
-		err = imx6ul.CAAM.DeriveKey([]byte(testDiversifier), key)
+		err = CAAM.DeriveKey([]byte(testDiversifier), key)
 		res = "CAAM DeriveKey"
-	case imx6ul.DCP != nil:
+	case DCP != nil:
 		iv := make([]byte, aes.BlockSize)
-		key, err = imx6ul.DCP.DeriveKey([]byte(testDiversifier), iv, -1)
+		key, err = DCP.DeriveKey([]byte(testDiversifier), iv, -1)
 		res = "DCP DeriveKey"
 	default:
-		err = errors.New("unsupported hardware")
+		err = errors.New("unavailable")
 	}
 
 	if err != nil {

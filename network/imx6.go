@@ -11,11 +11,12 @@ import (
 	"log"
 	"runtime"
 
-	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/arm"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
+
+	"github.com/usbarmory/tamago-example/shell"
 )
 
 func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
@@ -67,11 +68,15 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **enet.ENET) {
 	}
 
 	if hasEth {
-		eth = startEth(console)
+		eth = imx6ul.ENET2
+
+		if !imx6ul.Native {
+			eth = imx6ul.ENET1
+		}
+
+		startEth(eth, console, true)
 		*nic = eth
 	}
 
 	startInterruptHandler(usb, eth)
-
-	return
 }

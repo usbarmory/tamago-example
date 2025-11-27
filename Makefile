@@ -52,7 +52,7 @@ QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
         -dtb $(CURDIR)/qemu.dtb -bios $(CURDIR)/tools/bios.bin
 endif
 
-ifeq ($(TARGET),$(filter $(TARGET), mx6ullevk))
+ifeq ($(TARGET),$(filter $(TARGET), imx8mpevk mx6ullevk))
 UART1 := stdio
 UART2 := null
 NET   := nic,model=imx.enet,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
@@ -64,6 +64,14 @@ UART1 := null
 UART2 := stdio
 NET   := none
 TAGS  := $(TARGET),linkramsize
+endif
+
+ifeq ($(TARGET),imx8mpevk)
+TEXT_START := 0x40010000 # ramStart (defined in mem.go under tamago/soc package) + 0x10000
+GOENV := GOOS=tamago GOARCH=arm64
+QEMU ?= qemu-system-aarch64 -machine imx8mp-evk -m 512M -smp 1 \
+        -nographic -monitor none -semihosting \
+        -serial $(UART1) -serial $(UART2) -net $(NET)
 endif
 
 ifeq ($(TARGET), $(filter $(TARGET), mx6ullevk usbarmory))
@@ -85,7 +93,7 @@ check_tamago:
 
 clean:
 	@rm -fr $(APP) $(APP).bin $(APP).img $(APP).imx $(APP)-signed.imx $(APP).csf $(APP).dcd
-	@rm -fr cmd/IMX6UL*.yaml qemu.dtb tools/bios.bin tools/mbr.bin tools/mbr.lst
+	@rm -fr cmd/*.yaml qemu.dtb tools/bios.bin tools/mbr.bin tools/mbr.lst
 
 #### generic targets ####
 
@@ -217,7 +225,21 @@ $(APP)-signed.imx: check_tamago check_hab_keys $(APP).imx
 
 endif
 
-#### RISC-V targets ####
+#### ARM64 targets ####
+
+ifeq ($(TARGET),imx8mpevk)
+$(APP): check_tamago IMX8MP.yaml
+	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}
+endif
+
+IMX8MP.yaml: check_tamago
+IMX8MP.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
+IMX8MP.yaml: CRUCIBLE_PKG=$(shell grep "github.com/usbarmory/crucible v" go.mod | awk '{print $$1"@"$$2}')
+IMX8MP.yaml:
+	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool@latest
+	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX8MP.yaml cmd/IMX8MP.yaml
+
+#### RISCV64 targets ####
 
 ifeq ($(TARGET),$(filter $(TARGET), sifive_u))
 

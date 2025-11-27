@@ -3,7 +3,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build mx6ullevk || usbarmory
+//go:build imx8mpevk || mx6ullevk || usbarmory
 
 package cmd
 
@@ -15,7 +15,6 @@ import (
 	"runtime"
 
 	"github.com/usbarmory/tamago-example/shell"
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 const keySlot = 0
@@ -72,18 +71,18 @@ func aesCmd(_ *shell.Interface, arg []string) (res string, err error) {
 			runtime.Gosched()
 			return
 		}
-	case imx6ul.CAAM != nil:
+	case CAAM != nil:
 		fn = func(buf []byte) (_ string, err error) {
-			return "", imx6ul.CAAM.Encrypt(buf, key, iv)
+			return "", CAAM.Encrypt(buf, key, iv)
 		}
-	case imx6ul.DCP != nil:
-		_ = imx6ul.DCP.SetKey(keySlot, key)
+	case DCP != nil:
+		_ = DCP.SetKey(keySlot, key)
 
 		fn = func(buf []byte) (_ string, err error) {
-			return "", imx6ul.DCP.Encrypt(buf, keySlot, iv)
+			return "", DCP.Encrypt(buf, keySlot, iv)
 		}
 	default:
-		err = fmt.Errorf("unsupported hardware, use `aes %s %s soft` to disable hardware acceleration", arg[0], arg[1])
+		err = fmt.Errorf("unavailable, use `aes %s %s soft` to disable hardware acceleration", arg[0], arg[1])
 		return
 	}
 

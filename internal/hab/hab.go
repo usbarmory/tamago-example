@@ -21,10 +21,11 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
-
 	"github.com/usbarmory/crucible/otp"
 	"github.com/usbarmory/crucible/util"
+
+	"github.com/usbarmory/tamago/soc/nxp/ocotp"
+	"github.com/usbarmory/tamago/soc/nxp/snvs"
 )
 
 // Activate enables secure boot by following the procedure described at:
@@ -36,9 +37,9 @@ import (
 // fuses verification keys hashes on the device. This means that any errors in
 // the process or loss of the signing PKI will result in a bricked device
 // incapable of executing unsigned code. This is a security feature, not a bug.
-func Activate(srk []byte) (err error) {
+func Activate(ocotp *ocotp.OCOTP, snvs *snvs.SNVS, srk []byte) (err error) {
 	switch {
-	case imx6ul.SNVS.Available():
+	case snvs != nil && snvs.Available():
 		return errors.New("HAB already enabled")
 	case len(srk) != sha256.Size:
 		return errors.New("invalid SRK")
@@ -46,88 +47,88 @@ func Activate(srk []byte) (err error) {
 		return errors.New("invalid SRK")
 	default:
 		// Enable High Assurance Boot (i.e. secure boot)
-		return hab(srk)
+		return hab(ocotp, srk)
 	}
 
 	return
 }
 
-func fuse(name string, bank int, word int, off int, size int, val []byte) error {
+func fuse(ocotp *ocotp.OCOTP, name string, bank int, word int, off int, size int, val []byte) error {
 	log.Printf("fusing %s bank:%d word:%d off:%d size:%d val:%x", name, bank, word, off, size, val)
 
-	if res, err := otp.ReadOCOTP(bank, word, off, size); err != nil {
+	if res, err := otp.ReadOCOTP(ocotp, bank, word, off, size); err != nil {
 		return fmt.Errorf("read error for %s, res:%x err:%v\n", name, res, err)
 	} else {
 		log.Printf("  pre-read val: %x", res)
 	}
 
-	if err := otp.BlowOCOTP(bank, word, off, size, val); err != nil {
+	if err := otp.BlowOCOTP(ocotp, bank, word, off, size, val); err != nil {
 		return err
 	}
 
-	if res, err := otp.ReadOCOTP(bank, word, off, size); err != nil || !bytes.Equal(val, res) {
+	if res, err := otp.ReadOCOTP(ocotp, bank, word, off, size); err != nil || !bytes.Equal(val, res) {
 		return fmt.Errorf("readback error for %s, val:%x res:%x err:%v\n", name, val, res, err)
 	}
 
 	return nil
 }
 
-func hab(srk []byte) (err error) {
+func hab(ocotp *ocotp.OCOTP, srk []byte) (err error) {
 	if len(srk) != sha256.Size {
 		return errors.New("fatal error, invalid SRK hash")
 	}
 
 	// fuse HAB public keys hash
-	if err = fuse("SRK_HASH", 3, 0, 0, 256, util.SwitchEndianness(srk)); err != nil {
+	if err = fuse(ocotp, "SRK_HASH", 3, 0, 0, 256, util.SwitchEndianness(srk)); err != nil {
 		return
 	}
 
 	// lock HAB public keys hash
-	if err = fuse("SRK_LOCK", 0, 0, 14, 1, []byte{1}); err != nil {
+	if err = fuse(ocotp, "SRK_LOCK", 0, 0, 14, 1, []byte{1}); err != nil {
 		return
 	}
 
 	// set device in Closed Configuration (IMX6ULRM Table 8-2, p245)
-	if err = fuse("SEC_CONFIG", 0, 6, 0, 2, []byte{0b11}); err != nil {
+	if err = fuse(ocotp, "SEC_CONFIG", 0, 6, 0, 2, []byte{0b11}); err != nil {
 		return
 	}
 
 	// disable NXP reserved mode (IMX6ULRM 8.2.6, p244)
-	if err = fuse("DIR_BT_DIS", 0, 6, 3, 1, []byte{1}); err != nil {
+	if err = fuse(ocotp, "DIR_BT_DIS", 0, 6, 3, 1, []byte{1}); err != nil {
 		return
 	}
 
 	// Disable debugging features (IMX6ULRM Table 5-9, p216)
 
 	// disable Secure JTAG controller
-	if err = fuse("SJC_DISABLE", 0, 6, 20, 1, []byte{1}); err != nil {
+	if err = fuse(ocotp, "SJC_DISABLE", 0, 6, 20, 1, []byte{1}); err != nil {
 		return
 	}
 
 	// disable JTAG debug mode
-	if err = fuse("JTAG_SMODE", 0, 6, 22, 2, []byte{0b11}); err != nil {
+	if err = fuse(ocotp, "JTAG_SMODE", 0, 6, 22, 2, []byte{0b11}); err != nil {
 		return
 	}
 
 	// disable HAB ability to enable JTAG
-	if err = fuse("JTAG_HEO", 0, 6, 27, 1, []byte{1}); err != nil {
+	if err = fuse(ocotp, "JTAG_HEO", 0, 6, 27, 1, []byte{1}); err != nil {
 		return
 	}
 
 	// disable tracing
-	if err = fuse("KTE", 0, 6, 26, 1, []byte{1}); err != nil {
+	if err = fuse(ocotp, "KTE", 0, 6, 26, 1, []byte{1}); err != nil {
 		return
 	}
 
 	// Further reduce the attack surface
 
 	// disable Serial Download Protocol (SDP) READ_REGISTER command (IMX6ULRM 8.9.3, p310)
-	if err = fuse("SDP_READ_DISABLE", 0, 6, 18, 1, []byte{1}); err != nil {
+	if err = fuse(ocotp, "SDP_READ_DISABLE", 0, 6, 18, 1, []byte{1}); err != nil {
 		return
 	}
 
 	// disable SDP over UART (IMX6ULRM 8.9, p305)
-	if err = fuse("UART_SERIAL_DOWNLOAD_DISABLE", 0, 7, 4, 1, []byte{1}); err != nil {
+	if err = fuse(ocotp, "UART_SERIAL_DOWNLOAD_DISABLE", 0, 7, 4, 1, []byte{1}); err != nil {
 		return
 	}
 

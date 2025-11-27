@@ -3,7 +3,7 @@
 // Use of this source code is governed by the license
 // that can be found in the LICENSE file.
 
-//go:build mx6ullevk || usbarmory
+//go:build imx8mpevk || mx6ullevk || usbarmory
 
 package cmd
 
@@ -16,7 +16,6 @@ import (
 
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/soc/nxp/caam"
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 )
 
 func init() {
@@ -44,7 +43,7 @@ func ecdsaCmd(_ *shell.Interface, arg []string) (res string, err error) {
 			_, _, err = ecdsa.Sign(rand.Reader, priv, buf)
 			return
 		}
-	case imx6ul.CAAM != nil:
+	case CAAM != nil:
 		pdb := &caam.SignPDB{}
 		defer pdb.Free()
 
@@ -53,11 +52,11 @@ func ecdsaCmd(_ *shell.Interface, arg []string) (res string, err error) {
 		}
 
 		fn = func(buf []byte) (_ string, err error) {
-			_, _, err = imx6ul.CAAM.Sign(nil, buf, pdb)
+			_, _, err = CAAM.Sign(nil, buf, pdb)
 			return
 		}
 	default:
-		err = fmt.Errorf("unsupported hardware, use `ecdsa %s soft` to disable hardware acceleration", arg[1])
+		err = fmt.Errorf("unavailable, use `ecdsa %s soft` to disable hardware acceleration", arg[1])
 		return
 	}
 
