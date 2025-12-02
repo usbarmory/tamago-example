@@ -21,7 +21,7 @@ import (
 
 func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 	imx6ul.GIC.Init(true, false)
-	imx6ul.GIC.EnableInterrupt(imx6ul.TIMER_IRQ, true)
+	imx6ul.GIC.EnableInterrupt(arm.TIMER_IRQ, true)
 
 	if usb != nil {
 		imx6ul.GIC.EnableInterrupt(usb.IRQ, true)
@@ -35,7 +35,7 @@ func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 		irq := imx6ul.GIC.GetInterrupt(true)
 
 		switch {
-		case irq == imx6ul.TIMER_IRQ:
+		case irq == arm.TIMER_IRQ:
 			imx6ul.ARM.SetAlarm(0)
 		case usb != nil && irq == usb.IRQ:
 			handleUSBInterrupt(usb)

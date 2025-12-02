@@ -278,6 +278,8 @@ github.com/usbarmory/imx-usbnet v0.0.0-20250828085206-21ec4d5ae4cd h1:5Zfv1E6tpW
 github.com/usbarmory/imx-usbnet v0.0.0-20250828085206-21ec4d5ae4cd/go.mod h1:zvzUu4SfzoCEDVnxzga81SoK3ezsW8gjxck2v1Ry1zw=
 github.com/usbarmory/tamago v1.25.5-0.20251127114913-e221f4dc77a3 h1:RivcAucO03wigH7dR0T0VCQWsNRfXHUTtYPWr2sywvg=
 github.com/usbarmory/tamago v1.25.5-0.20251127114913-e221f4dc77a3/go.mod h1:CySGMX26pVXp1CMBxA5bq52eXEWqXqr+mWcZQW2e54c=
+github.com/usbarmory/tamago v1.25.5-0.20251202093556-191d0fb7523e h1:3bJqGY0OUF6my3MTPWMZaXDwgc/GupBoLkZcsRMc050=
+github.com/usbarmory/tamago v1.25.5-0.20251202093556-191d0fb7523e/go.mod h1:CySGMX26pVXp1CMBxA5bq52eXEWqXqr+mWcZQW2e54c=
 github.com/usbarmory/virtio-net v0.0.0-20250828102850-00cf9e4c20da h1:3jvGVOZB7DF9HNdiXZRzMwm//z935AOb9Oge+emUaJg=
 github.com/usbarmory/virtio-net v0.0.0-20250828102850-00cf9e4c20da/go.mod h1:Ox6pqVZbYx8slRdVru3c7VmUkMPjWe0IhIpjWQX9DXU=
 github.com/vishvananda/netns v0.0.0-20200728191858-db3c7e526aae/go.mod h1:DD4vA1DwXk04H54A1oHXtwZmA0grkVMdPxx/VGLCah0=
