@@ -154,7 +154,7 @@ Cloud Hypervisor
 
 ```
 make example TARGET=cloud_hypervisor
-cloud-hypervisor --kernel example --cpus boot=1 --memory size=4096M --net "tap=tap0" --serial tty --console off --seccomp false
+cloud-hypervisor --kernel example --cpus boot=4 --memory size=4096M --net "tap=tap0" --serial tty --console off --seccomp false
 ```
 
 Firecracker
