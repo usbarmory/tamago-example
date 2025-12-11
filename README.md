@@ -29,6 +29,7 @@ execute bare metal Go code on the following platforms:
 | AMD/Intel 64-bit      | [Cloud Hypervisor](https://www.cloudhypervisor.org)                                                                                                                                  | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [cloud_hypervisor/vm](https://github.com/usbarmory/tamago/tree/master/board/cloud_hypervisor/vm) |
 | AMD/Intel 64-bit      | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html)                                                                                                            | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm)               |
 | AMD/Intel 64-bit      | [Firecracker microvm](https://firecracker-microvm.github.io)                                                                                                                         | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm) |
+| AMD/Intel 64-bit      | [Google Compute Engine](https://cloud.google.com/products/compute)                                                                                                                   | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [google/gcp](https://github.com/usbarmory/tamago/tree/master/board/google/gcp)                   |
 | NXP i.MX6ULZ/i.MX6UL  | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki/Mk-II-Introduction)                                                                                                   | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
 | NXP i.MX6ULL/i.MX6UL  | [USB armory Mk II LAN](https://github.com/usbarmory/usbarmory/wiki/Mk-II-LAN)                                                                                                        | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
 | NXP i.MX6ULL/i.MX6ULZ | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk)             |
@@ -142,7 +143,7 @@ Building and executing on AMD64 targets
 | `cloud_hypervisor` | [Cloud Hypervisor](https://www.cloudhypervisor.org/)                      | [cloud_hypervisor/vm](https://github.com/usbarmory/tamago/tree/master/board/cloud_hypervisor/vm#executing-and-debugging) | VirtIO networking¹ |
 | `firecracker`      | [Firecracker microvm](https://firecracker-microvm.github.io/)             | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) | VirtIO networking¹ |
 | `microvm`          | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html) | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               | VirtIO networking¹ |
-| `microvm`          | [Google Compute Engine](https://cloud.google.com/products/compute)        | [tools](https://github.com/usbarmory/tamago-example/tree/master/tools)                                                   | WiP (serial only)  |
+| `gcp`              | [Google Compute Engine](https://cloud.google.com/products/compute)        | [tools](https://github.com/usbarmory/tamago-example/tree/master/tools)                                                   | VirtIO networking  |
 
 ¹ network configuration example in  _Emulated hardware with QEMU_
 
@@ -177,7 +178,7 @@ make qemu TARGET=microvm SMP=4
 Google Compute Engine
 ---------------------
 
-The `microvm` target can be executed on [Google Compute Engine](https://cloud.google.com/products/compute), see
+The `gcp` target can be executed on [Google Compute Engine](https://cloud.google.com/products/compute), see
 [tools](https://github.com/usbarmory/tamago-example/tree/master/tools) for more information.
 
 Building and executing on ARM targets

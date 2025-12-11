@@ -10,11 +10,14 @@ TARGET ?= usbarmory
 TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
 TAGS := $(TARGET)
 
-ifeq ($(TARGET),microvm)
+ifeq ($(TARGET),$(filter $(TARGET), microvm gcp))
 
 SMP ?= $(shell nproc)
 TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
 GOENV := GOOS=tamago GOARCH=amd64
+
+ifeq ($(TARGET),microvm)
+
 QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc=on \
         -smp $(SMP) \
         -global virtio-mmio.force-legacy=false \
@@ -22,7 +25,17 @@ QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc
         -m 4G -nographic -monitor none -serial stdio \
         -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 
-# emulate cloud VM (ops onprem)
+endif
+
+ifeq ($(TARGET),gcp)
+
+QEMU ?= qemu-system-x86_64 -machine q35,pit=off,pic=off \
+        -smp $(SMP) \
+        -enable-kvm -cpu host,invtsc=on,kvmclock=on -no-reboot \
+        -m 4G -nographic -monitor none -serial stdio \
+        -device pcie-root-port,port=0x10,chassis=1,id=pci.0,bus=pcie.0,multifunction=on,addr=0x3 \
+        -device virtio-net-pci,netdev=net0,mac=9e:f0:e8:26:9a:1b,disable-modern=true -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
+
 QEMU-img ?= qemu-system-x86_64 -machine q35 -m 4G -smp $(SMP) \
             -machine accel=kvm:tcg -cpu max \
             -vga none -display none -serial stdio \
@@ -34,9 +47,10 @@ QEMU-img ?= qemu-system-x86_64 -machine q35 -m 4G -smp $(SMP) \
             -device isa-debug-exit \
             -device virtio-rng-pci \
             -device virtio-balloon \
-            -device virtio-net,bus=pci.3,addr=0x0,netdev=n0,mac=9e:f0:e8:26:9a:1b \
-            -drive file=$(APP).img,format=raw,if=none,id=hd0 \
-            -netdev user,id=n0
+            -device virtio-net-pci=netdev=net0,mac=9e:f0:e8:26:9a:1b,disable-modern=true -netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
+            -drive file=$(APP).img,format=raw,if=none,id=hd0
+
+endif
 
 endif
 
@@ -116,6 +130,10 @@ qemu-gdb: $(APP)
 	$(QEMU) -kernel $(APP) -S -s
 
 qemu-img: $(APP).img
+	@if [ "${QEMU-img}" == "" ]; then \
+		echo 'qemu-img not available for this target'; \
+		exit 1; \
+	fi
 	$(QEMU-img)
 
 qemu-img-gdb: $(APP).img
@@ -123,7 +141,7 @@ qemu-img-gdb: $(APP).img
 
 #### AMD64 targets ####
 
-ifeq ($(TARGET),$(filter $(TARGET), microvm firecracker cloud_hypervisor))
+ifeq ($(TARGET),$(filter $(TARGET), microvm firecracker cloud_hypervisor gcp))
 
 $(APP): check_tamago
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP}

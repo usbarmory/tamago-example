@@ -18,7 +18,7 @@ Upload the raw image in a bucket and create an instance:
 
 ```
 cd tamago-example
-make example TARGET=microvm img
+make example TARGET=gcp img
 cp example.img disk.raw
 tar --format=oldgnu -Sczf compressed-image.tar.gz disk.raw
 gcloud storage buckets create gs://tamago-bucket
