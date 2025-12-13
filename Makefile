@@ -34,7 +34,7 @@ QEMU ?= qemu-system-x86_64 -machine q35,pit=off,pic=off \
         -enable-kvm -cpu host,invtsc=on,kvmclock=on -no-reboot \
         -m 4G -nographic -monitor none -serial stdio \
         -device pcie-root-port,port=0x10,chassis=1,id=pci.0,bus=pcie.0,multifunction=on,addr=0x3 \
-        -device virtio-net-pci,netdev=net0,mac=9e:f0:e8:26:9a:1b,disable-modern=true -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
+        -device virtio-net-pci,netdev=net0,mac=42:01:0a:84:00:02,disable-modern=true -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 
 QEMU-img ?= qemu-system-x86_64 -machine q35 -m 4G -smp $(SMP) \
             -machine accel=kvm:tcg -cpu max \
@@ -47,7 +47,7 @@ QEMU-img ?= qemu-system-x86_64 -machine q35 -m 4G -smp $(SMP) \
             -device isa-debug-exit \
             -device virtio-rng-pci \
             -device virtio-balloon \
-            -device virtio-net-pci=netdev=net0,mac=9e:f0:e8:26:9a:1b,disable-modern=true -netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
+            -device virtio-net-pci=netdev=net0,mac=42:01:0a:84:00:02,disable-modern=true -netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
             -drive file=$(APP).img,format=raw,if=none,id=hd0
 
 endif

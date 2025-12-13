@@ -19,7 +19,7 @@ import (
 // For more advanced use cases gVisor supports sharing a single stack across
 // different NIC IDs and routing while this example simply clones interface
 // configuration and stack.
-const (
+var (
 	MAC      = "1a:55:89:a2:69:41"
 	Netmask  = "255.255.255.0"
 	IP       = "10.0.0.1"

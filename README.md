@@ -143,7 +143,7 @@ Building and executing on AMD64 targets
 | `cloud_hypervisor` | [Cloud Hypervisor](https://www.cloudhypervisor.org/)                      | [cloud_hypervisor/vm](https://github.com/usbarmory/tamago/tree/master/board/cloud_hypervisor/vm#executing-and-debugging) | VirtIO networking¹ |
 | `firecracker`      | [Firecracker microvm](https://firecracker-microvm.github.io/)             | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) | VirtIO networking¹ |
 | `microvm`          | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html) | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               | VirtIO networking¹ |
-| `gcp`              | [Google Compute Engine](https://cloud.google.com/products/compute)        | [tools](https://github.com/usbarmory/tamago-example/tree/master/tools)                                                   | VirtIO networking  |
+| `gcp`              | [Google Compute Engine](https://cloud.google.com/products/compute)        | [tools](https://github.com/usbarmory/tamago-example/tree/master/tools)                                                   | VirtIO networking¹ |
 
 ¹ network configuration example in  _Emulated hardware with QEMU_
 
@@ -180,6 +180,9 @@ Google Compute Engine
 
 The `gcp` target can be executed on [Google Compute Engine](https://cloud.google.com/products/compute), see
 [tools](https://github.com/usbarmory/tamago-example/tree/master/tools) for more information.
+
+It can also be executed in _Emulated hardware with QEMU_ but with IP address
+10.132.0.1/24, instead of 10.0.0.2/24.
 
 Building and executing on ARM targets
 =====================================
@@ -246,6 +249,9 @@ ip tuntap add dev tap0 mode tap group <your user group>
 ip addr add 10.0.0.2/24 dev tap0
 ip link set tap0 up
 ```
+
+> [!NOTE] > `TARGET=gcp` requires 10.132.0.1/24 as IP address, instead of
+> 10.0.0.2/24
 
 An emulated target can be debugged with GDB using `make qemu-gdb`, this will
 make qemu waiting for a GDB connection that can be launched as follows:

@@ -39,6 +39,10 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 		HeaderLength: 10,
 	}
 
+	MAC      = "42:01:0a:84:00:02"
+	IP       = "10.132.0.2"
+	Gateway  = "10.132.0.1"
+
 	*nic = dev
 
 	if err := startNet(console, dev); err != nil {
