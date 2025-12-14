@@ -181,8 +181,9 @@ Google Compute Engine
 The `gcp` target can be executed on [Google Compute Engine](https://cloud.google.com/products/compute), see
 [tools](https://github.com/usbarmory/tamago-example/tree/master/tools) for more information.
 
-It can also be executed in _Emulated hardware with QEMU_ but with IP address
-10.132.0.1/24, instead of 10.0.0.2/24.
+It can also be executed in _Emulated hardware with QEMU_, when using `make
+qemu` IP address 10.132.0.1/24 (VCP europe-west1) should be used on the host,
+rather than 10.0.0.2/24.
 
 Building and executing on ARM targets
 =====================================
@@ -250,8 +251,8 @@ ip addr add 10.0.0.2/24 dev tap0
 ip link set tap0 up
 ```
 
-> [!NOTE] > `TARGET=gcp` requires 10.132.0.1/24 as IP address, instead of
-> 10.0.0.2/24
+> [!NOTE] > `TARGET=gcp make qemu` requires 10.132.0.1/24 (Google VCP
+> europe-west1) as IP address, instead of 10.0.0.2/24
 
 An emulated target can be debugged with GDB using `make qemu-gdb`, this will
 make qemu waiting for a GDB connection that can be launched as follows:
