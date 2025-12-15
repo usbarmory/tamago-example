@@ -39,9 +39,10 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 		HeaderLength: 10,
 	}
 
-	MAC      = "42:01:0a:84:00:02"
-	IP       = "10.132.0.2"
-	Gateway  = "10.132.0.1"
+	// Google Virtual Private Cloud (GCP) - europe-west1
+	MAC = "42:01:0a:84:00:02"
+	IP = "10.132.0.2"
+	Gateway = "10.132.0.1"
 
 	*nic = dev
 
@@ -52,7 +53,12 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 
 	// This example illustrates IRQ handling, alternatively a poller can be
 	// used with `dev.Start(true)`.
-	dev.Start(false)
+	go func() {
+		// On GCP we must ensure the ISR is running before starting the
+		// interface.
+		gcp.AMD64.ClearInterrupt()
+		dev.Start(false)
+	}()
 
 	transport.EnableInterrupt(VIRTIO_NET0_IRQ, vnet.ReceiveQueue)
 	startInterruptHandler(dev, gcp.AMD64, gcp.IOAPIC0)
