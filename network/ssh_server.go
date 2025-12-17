@@ -105,7 +105,7 @@ func handleChannels(chans <-chan ssh.NewChannel, console *shell.Interface) {
 	}
 }
 
-func connect(conn net.Conn, console *shell.Interface, srv *ssh.ServerConfig) {
+func handleConn(conn net.Conn, console *shell.Interface, srv *ssh.ServerConfig) {
 	sshConn, chans, reqs, err := ssh.NewServerConn(conn, srv)
 
 	if err != nil {
@@ -132,7 +132,7 @@ func accept(listener net.Listener, console *shell.Interface, srv *ssh.ServerConf
 		}
 
 		conn.SetDeadline(time.Now().Add(DefaultDeadline))
-		go connect(conn, console, srv)
+		go handleConn(conn, console, srv)
 	}
 }
 
