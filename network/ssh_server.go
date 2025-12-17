@@ -113,6 +113,9 @@ func connect(conn net.Conn, console *shell.Interface, srv *ssh.ServerConfig) {
 		return
 	}
 
+	// remove timeout
+	conn.SetDeadline(time.Time{})
+
 	log.Printf("new ssh connection from %s (%s)", sshConn.RemoteAddr(), sshConn.ClientVersion())
 
 	go ssh.DiscardRequests(reqs)
