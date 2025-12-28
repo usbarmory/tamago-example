@@ -108,8 +108,8 @@ mii             <hex pa> <hex ra> (hex data)?                    # show/change e
 mmd             <hex pa> <hex devad> <hex ra> (hex data)?        # show/change eth PHY extended registers
 ntp             <host>                                           # change runtime date and time via NTP
 otp             <bank> <word>                                    # OTP fuses display
-peek            <hex offset> <size>                              # memory display (use with caution)
-poke            <hex offset> <hex value>                         # memory write   (use with caution)
+peek            <hex addr> <size>                                # memory display (use with caution)
+poke            <hex addr> <hex value>                           # memory write   (use with caution)
 rand                                                             # gather 32 random bytes
 reboot                                                           # reset device
 rtic            (<hex start> <hex end>)?                         # start RTIC on .text and optional region
@@ -118,7 +118,7 @@ stack                                                            # goroutine sta
 stackall                                                         # goroutine stack trace (all)
 tailscale       <auth key> (verbose)?                            # start network servers on Tailscale tailnet
 test                                                             # launch tests
-usdhc           <n> <hex offset> <size>                          # SD/MMC card read
+usdhc           <n> <hex addr> <size>                            # SD/MMC card read
 wormhole        (send <path>|recv <code>)                        # transfer file through magic wormhole
 ```
 
