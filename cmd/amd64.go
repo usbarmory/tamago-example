@@ -37,6 +37,15 @@ func init() {
 	})
 
 	shell.Add(shell.Cmd{
+		Name:    "msr",
+		Args:    1,
+		Pattern: regexp.MustCompile(`^msr\s+([[:xdigit:]]+)$`),
+		Syntax:  "<hex addr>",
+		Help:    "read model-specific register",
+		Fn:      msrCmd,
+	})
+
+	shell.Add(shell.Cmd{
 		Name:    "smp",
 		Args:    1,
 		Pattern: regexp.MustCompile(`^smp (\d+)$`),
@@ -101,6 +110,22 @@ func cpuidCmd(_ *shell.Interface, arg []string) (string, error) {
 
 	fmt.Fprintf(&res, "EAX      EBX      ECX      EDX\n")
 	fmt.Fprintf(&res, "%08x %08x %08x %08x\n", eax, ebx, ecx, edx)
+
+	return res.String(), nil
+}
+
+func msrCmd(_ *shell.Interface, arg []string) (string, error) {
+	var res bytes.Buffer
+
+	addr, err := strconv.ParseUint(arg[0], 16, 64)
+
+	if err != nil {
+		return "", fmt.Errorf("invalid address, %v", err)
+	}
+
+	cpu := amd64.CPU{}
+	val := cpu.MSR(addr)
+	fmt.Fprintf(&res, "%x", val)
 
 	return res.String(), nil
 }
