@@ -15,12 +15,16 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
 
 	"github.com/usbarmory/tamago-example/shell"
 )
+
+// DefaultDeadline represents the SSH server connection deadline.
+var DefaultDeadline = 30 * time.Second
 
 func handleTerminal(conn ssh.Channel, console *shell.Interface) {
 	log.SetOutput(io.MultiWriter(os.Stdout, console.Log, console.Terminal))
@@ -101,6 +105,23 @@ func handleChannels(chans <-chan ssh.NewChannel, console *shell.Interface) {
 	}
 }
 
+func handleConn(conn net.Conn, console *shell.Interface, srv *ssh.ServerConfig) {
+	sshConn, chans, reqs, err := ssh.NewServerConn(conn, srv)
+
+	if err != nil {
+		log.Printf("error accepting handshake, %v", err)
+		return
+	}
+
+	// remove timeout
+	conn.SetDeadline(time.Time{})
+
+	log.Printf("new ssh connection from %s (%s)", sshConn.RemoteAddr(), sshConn.ClientVersion())
+
+	go ssh.DiscardRequests(reqs)
+	go handleChannels(chans, console)
+}
+
 func accept(listener net.Listener, console *shell.Interface, srv *ssh.ServerConfig) {
 	for {
 		conn, err := listener.Accept()
@@ -110,17 +131,8 @@ func accept(listener net.Listener, console *shell.Interface, srv *ssh.ServerConf
 			continue
 		}
 
-		sshConn, chans, reqs, err := ssh.NewServerConn(conn, srv)
-
-		if err != nil {
-			log.Printf("error accepting handshake, %v", err)
-			continue
-		}
-
-		log.Printf("new ssh connection from %s (%s)", sshConn.RemoteAddr(), sshConn.ClientVersion())
-
-		go ssh.DiscardRequests(reqs)
-		go handleChannels(chans, console)
+		conn.SetDeadline(time.Now().Add(DefaultDeadline))
+		go handleConn(conn, console, srv)
 	}
 }
 

@@ -14,30 +14,39 @@ The following example adapts a tamago/amd64 unikernel for execution on Google
 Compute Engine, deploying with Google Cloud CLI (though tools like
 [ops](https://github.com/nanovms/ops) can also be used).
 
+First of all a unique bucket name should be picked:
+
+```
+export BUCKET=tamago-example-$(date +%s)-bucket
+```
+
 Upload the raw image in a bucket and create an instance:
 
 ```
-cd tamago-example
-make example TARGET=microvm img
+make example TARGET=gcp img
 cp example.img disk.raw
 tar --format=oldgnu -Sczf compressed-image.tar.gz disk.raw
-gcloud storage buckets create gs://tamago-bucket
-gcloud storage cp compressed-image.tar.gz gs://tamago-bucket
-gcloud compute images create tamago-example --source-uri gs://tamago-bucket/compressed-image.tar.gz --architecture=X86_64
-gcloud compute instances create tamago-example --zone=europe-west1-b --machine-type=n1-standard-2 --metadata="serial-port-enable=true" --image tamago-example
+gcloud storage buckets create gs://$BUCKET
+gcloud storage cp compressed-image.tar.gz gs://$BUCKET
+gcloud compute images create tamago-example --source-uri gs://$BUCKET/compressed-image.tar.gz --architecture=X86_64
+gcloud compute instances create tamago-example --zone=europe-west1-b --machine-type=t2d-standard-1 --metadata="serial-port-enable=1" --image tamago-example --private-network-ip 10.132.0.2
 ```
 
-Check the serial port output:
+Connect to serial port:
 
 ```
+# output: unikernels with serial output only, no console input
 gcloud compute instances get-serial-port-output tamago-example --zone=europe-west1-b --port=1
+
+# input/output: unikernels with interactive serial console
+gcloud compute connect-to-serial-port tamago-example --zone=europe-west1-b --port=1
 ```
 
-Clean up:
+Stop and delete instance:
 
 ```
-gcloud storage rm gs://tamago-bucket/compressed-image.tar.gz
-gcloud storage buckets delete gs://tamago-bucket
+gcloud storage rm gs://$BUCKET/compressed-image.tar.gz
+gcloud storage buckets delete gs://$BUCKET
 gcloud compute instances stop tamago-example --zone europe-west1-b
 gcloud compute instances delete tamago-example --zone europe-west1-b
 gcloud compute images delete tamago-example

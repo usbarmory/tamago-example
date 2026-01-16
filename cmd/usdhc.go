@@ -35,7 +35,7 @@ func init() {
 		Name:    "usdhc",
 		Args:    3,
 		Pattern: regexp.MustCompile(`^usdhc (\d) ([[:xdigit:]]+) (\d+)$`),
-		Syntax:  "<n> <hex offset> <size>",
+		Syntax:  "<n> <hex addr> <size>",
 		Help:    "SD/MMC card read",
 		Fn:      usdhcCmd,
 	})

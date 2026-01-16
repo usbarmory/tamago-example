@@ -29,6 +29,7 @@ execute bare metal Go code on the following platforms:
 | AMD/Intel 64-bit      | [Cloud Hypervisor](https://www.cloudhypervisor.org)                                                                                                                                  | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [cloud_hypervisor/vm](https://github.com/usbarmory/tamago/tree/master/board/cloud_hypervisor/vm) |
 | AMD/Intel 64-bit      | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html)                                                                                                            | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm)               |
 | AMD/Intel 64-bit      | [Firecracker microvm](https://firecracker-microvm.github.io)                                                                                                                         | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm) |
+| AMD/Intel 64-bit      | [Google Compute Engine](https://cloud.google.com/products/compute)                                                                                                                   | [amd64](https://github.com/usbarmory/tamago/tree/master/amd64)            | [google/gcp](https://github.com/usbarmory/tamago/tree/master/board/google/gcp)                   |
 | NXP i.MX6ULZ/i.MX6UL  | [USB armory Mk II](https://github.com/usbarmory/usbarmory/wiki/Mk-II-Introduction)                                                                                                   | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
 | NXP i.MX6ULL/i.MX6UL  | [USB armory Mk II LAN](https://github.com/usbarmory/usbarmory/wiki/Mk-II-LAN)                                                                                                        | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [usbarmory/mk2](https://github.com/usbarmory/tamago/tree/master/board/usbarmory)                 |
 | NXP i.MX6ULL/i.MX6ULZ | [MCIMX6ULL-EVK](https://www.nxp.com/design/development-boards/i-mx-evaluation-and-development-boards/evaluation-kit-for-the-i-mx-6ull-and-6ulz-applications-processor:MCIMX6ULL-EVK) | [imx6ul](https://github.com/usbarmory/tamago/tree/master/soc/nxp/imx6ul)  | [nxp/mx6ullevk](https://github.com/usbarmory/tamago/tree/master/board/nxp/mx6ullevk)             |
@@ -101,14 +102,14 @@ huk                                                              # CAAM/DCP hard
 i2c             <n> <hex target> <hex addr> <size>               # I²C bus read
 info                                                             # device information
 kem                                                              # benchmark post-quantum KEM
-ls              (path)?                                          # list directory contents
+ls              (<path>)?                                        # list directory contents
 led             (white|blue) (on|off)                            # LED control
 mii             <hex pa> <hex ra> (hex data)?                    # show/change eth PHY standard registers
 mmd             <hex pa> <hex devad> <hex ra> (hex data)?        # show/change eth PHY extended registers
 ntp             <host>                                           # change runtime date and time via NTP
 otp             <bank> <word>                                    # OTP fuses display
-peek            <hex offset> <size>                              # memory display (use with caution)
-poke            <hex offset> <hex value>                         # memory write   (use with caution)
+peek            <hex addr> <size>                                # memory display (use with caution)
+poke            <hex addr> <hex value>                           # memory write   (use with caution)
 rand                                                             # gather 32 random bytes
 reboot                                                           # reset device
 rtic            (<hex start> <hex end>)?                         # start RTIC on .text and optional region
@@ -117,7 +118,7 @@ stack                                                            # goroutine sta
 stackall                                                         # goroutine stack trace (all)
 tailscale       <auth key> (verbose)?                            # start network servers on Tailscale tailnet
 test                                                             # launch tests
-usdhc           <n> <hex offset> <size>                          # SD/MMC card read
+usdhc           <n> <hex addr> <size>                            # SD/MMC card read
 wormhole        (send <path>|recv <code>)                        # transfer file through magic wormhole
 ```
 
@@ -142,7 +143,7 @@ Building and executing on AMD64 targets
 | `cloud_hypervisor` | [Cloud Hypervisor](https://www.cloudhypervisor.org/)                      | [cloud_hypervisor/vm](https://github.com/usbarmory/tamago/tree/master/board/cloud_hypervisor/vm#executing-and-debugging) | VirtIO networking¹ |
 | `firecracker`      | [Firecracker microvm](https://firecracker-microvm.github.io/)             | [firecracker/microvm](https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm#executing-and-debugging) | VirtIO networking¹ |
 | `microvm`          | [QEMU microvm](https://www.qemu.org/docs/master/system/i386/microvm.html) | [qemu/microvm](https://github.com/usbarmory/tamago/tree/master/board/qemu/microvm#executing-and-debugging)               | VirtIO networking¹ |
-| `microvm`          | [Google Compute Engine](https://cloud.google.com/products/compute)        | [tools](https://github.com/usbarmory/tamago-example/tree/master/tools)                                                   | WiP (serial only)  |
+| `gcp`              | [Google Compute Engine](https://cloud.google.com/products/compute)        | [tools](https://github.com/usbarmory/tamago-example/tree/master/tools)                                                   | VirtIO networking¹ |
 
 ¹ network configuration example in  _Emulated hardware with QEMU_
 
@@ -177,8 +178,12 @@ make qemu TARGET=microvm SMP=4
 Google Compute Engine
 ---------------------
 
-The `microvm` target can be executed on [Google Compute Engine](https://cloud.google.com/products/compute), see
+The `gcp` target can be executed on [Google Compute Engine](https://cloud.google.com/products/compute), see
 [tools](https://github.com/usbarmory/tamago-example/tree/master/tools) for more information.
+
+It can also be executed in _Emulated hardware with QEMU_, when using `make
+qemu` IP address 10.132.0.1/24 (VCP europe-west1) should be used on the host,
+rather than 10.0.0.2/24.
 
 Building and executing on ARM targets
 =====================================
@@ -245,6 +250,9 @@ ip tuntap add dev tap0 mode tap group <your user group>
 ip addr add 10.0.0.2/24 dev tap0
 ip link set tap0 up
 ```
+
+> [!NOTE] > `TARGET=gcp make qemu` requires 10.132.0.1/24 (Google VCP
+> europe-west1) as IP address, instead of 10.0.0.2/24
 
 An emulated target can be debugged with GDB using `make qemu-gdb`, this will
 make qemu waiting for a GDB connection that can be launched as follows:
