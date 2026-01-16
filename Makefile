@@ -69,7 +69,11 @@ endif
 ifeq ($(TARGET),$(filter $(TARGET), imx8mpevk mx6ullevk))
 UART1 := stdio
 UART2 := null
-NET   := nic,model=imx.enet,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
+ifeq ($(shell uname -s),Darwin)
+NET   ?= nic,model=imx.enet,netdev=net0 -netdev user,id=net0,net=10.0.0.0/24,host=10.0.0.2,hostfwd=tcp:127.0.0.1:2222-10.0.0.1:22,hostfwd=tcp:127.0.0.1:8080-10.0.0.1:80,hostfwd=tcp:127.0.0.1:8443-10.0.0.1:443
+else
+NET   ?= nic,model=imx.enet,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
+endif
 TAGS  := $(TARGET),linkramsize
 endif
 
