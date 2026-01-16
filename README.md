@@ -102,7 +102,7 @@ huk                                                              # CAAM/DCP hard
 i2c             <n> <hex target> <hex addr> <size>               # I²C bus read
 info                                                             # device information
 kem                                                              # benchmark post-quantum KEM
-ls              (path)?                                          # list directory contents
+ls              (<path>)?                                        # list directory contents
 led             (white|blue) (on|off)                            # LED control
 mii             <hex pa> <hex ra> (hex data)?                    # show/change eth PHY standard registers
 mmd             <hex pa> <hex devad> <hex ra> (hex data)?        # show/change eth PHY extended registers
