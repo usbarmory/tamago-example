@@ -95,7 +95,7 @@ func init() {
 
 	shell.Add(shell.Cmd{
 		Name: "uptime",
-		Help: "show how long the system has been running",
+		Help: "show system running time",
 		Fn:   uptimeCmd,
 	})
 
