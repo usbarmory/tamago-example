@@ -204,14 +204,14 @@ IMX6UL.yaml: check_tamago
 IMX6UL.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
 IMX6UL.yaml: CRUCIBLE_PKG=$(shell grep "github.com/usbarmory/crucible v" go.mod | awk '{print $$1"@"$$2}')
 IMX6UL.yaml:
-	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool@latest
+	${TAMAGO} mod download $(CRUCIBLE_PKG)
 	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX6UL.yaml cmd/IMX6UL.yaml
 
 IMX6ULL.yaml: check_tamago
 IMX6ULL.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
 IMX6ULL.yaml: CRUCIBLE_PKG=$(shell grep "github.com/usbarmory/crucible v" go.mod | awk '{print $$1"@"$$2}')
 IMX6ULL.yaml:
-	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool@latest
+	${TAMAGO} mod download $(CRUCIBLE_PKG)
 	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX6ULL.yaml cmd/IMX6ULL.yaml
 
 $(APP).dcd: check_tamago
@@ -254,7 +254,7 @@ IMX8MP.yaml: check_tamago
 IMX8MP.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
 IMX8MP.yaml: CRUCIBLE_PKG=$(shell grep "github.com/usbarmory/crucible v" go.mod | awk '{print $$1"@"$$2}')
 IMX8MP.yaml:
-	${TAMAGO} install github.com/usbarmory/crucible/cmd/habtool@latest
+	${TAMAGO} mod download $(CRUCIBLE_PKG)
 	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX8MP.yaml cmd/IMX8MP.yaml
 
 #### RISCV64 targets ####
