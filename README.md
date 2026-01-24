@@ -88,8 +88,8 @@ bee             <hex region0> <hex region1>                      # BEE OTF AES m
 ble                                                              # BLE serial console
 build                                                            # build information
 cat             <path>                                           # show file contents
-cpuidle         (on|off)?                                        # CPU idle time management control
-date            (time in RFC339 format)?                         # show/change runtime date and time
+cpuidle         (on|off)                                         # CPU idle time management control
+date            (<time in RFC339 format>)?                       # show/change runtime date and time
 dma             (free|used)?                                     # show allocation of default DMA region
 dns             <host>                                           # resolve domain
 ecdsa           <sec> (soft)?                                    # benchmark CAAM/DCP hardware signing
