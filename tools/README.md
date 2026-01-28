@@ -1,18 +1,21 @@
 This directory contains helpers for execution of `GOOS=tamago` unikernels on
 various platforms.
 
-Boot disk image for cloud deployments
-=====================================
+Kernel image for cloud deployments
+==================================
 
 The `build_mbr.sh` scripts aids creation of raw boot disk images suitable for
 execution of tamago/amd64 unikernels on cloud VM environments.
+
+For UEFI unikernels see [go-boot](https://github.com/usbarmory/go-boot) which
+supports plain as well as confidential (AMD SEV-SNP)
+[cloud deployments](https://github.com/usbarmory/go-boot/?tab=readme-ov-file#cloud-deployments).
 
 Google Compute Engine
 ---------------------
 
 The following example adapts a tamago/amd64 unikernel for execution on Google
-Compute Engine, deploying with Google Cloud CLI (though tools like
-[ops](https://github.com/nanovms/ops) can also be used).
+Compute Engine, deploying with Google Cloud CLI.
 
 First of all a unique bucket name should be picked:
 
