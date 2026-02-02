@@ -220,7 +220,7 @@ IMX6ULL.yaml:
 
 $(APP).dcd: check_tamago
 $(APP).dcd: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
-$(APP).dcd: TAMAGO_PKG=$(shell grep "github.com/usbarmory/tamago v" go.mod | awk '{print $$1"@"$$2}')
+$(APP).dcd: TAMAGO_PKG=$(shell go list -m -f '{{.Path}}@{{.Version}}' github.com/usbarmory/tamago)
 $(APP).dcd:
 	@if test "${TARGET}" = "usbarmory"; then \
 		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/board/usbarmory/mk2/imximage.cfg $(APP).dcd; \
@@ -266,7 +266,7 @@ IMX8MP.yaml:
 ifeq ($(TARGET),$(filter $(TARGET), sifive_u))
 
 qemu.dtb: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
-qemu.dtb: TAMAGO_PKG=$(shell grep "github.com/usbarmory/tamago v" go.mod | awk '{print $$1"@"$$2}')
+qemu.dtb: TAMAGO_PKG=$(shell go list -m -f '{{.Path}}@{{.Version}}' github.com/usbarmory/tamago)
 qemu.dtb:
 	echo $(GOMODCACHE)
 	echo $(TAMAGO_PKG)
