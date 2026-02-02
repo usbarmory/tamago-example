@@ -1,0 +1,13 @@
+/example
+/example.bin
+/example.img
+/example.imx
+/example-signed.imx
+/example.csf
+/example.dcd
+/cmd/*.yaml
+/qemu.dtb
+/tools/bios.bin
+/tools/bios.cfg
+/tools/mbr.bin
+/tools/mbr.lst
