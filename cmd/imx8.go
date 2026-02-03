@@ -12,6 +12,7 @@ import (
 	_ "embed"
 	"fmt"
 	"runtime"
+	"runtime/goos"
 	_ "unsafe"
 
 	"github.com/usbarmory/crucible/fusemap"
@@ -32,7 +33,7 @@ const (
 	dmaStart = 0x60000000 - dmaSize
 )
 
-//go:linkname ramSize runtime.ramSize
+//go:linkname ramSize runtime/goos.RamSize
 var ramSize uint = 0x20000000 - dmaSize // 512MB - 10MB
 
 var (
@@ -64,7 +65,7 @@ func init() {
 	dma.Init(dmaStart, dmaSize)
 
 	if !imx8mp.Native {
-		runtime.Exit = func(_ int32) {
+		goos.Exit = func(_ int32) {
 			semihosting.Exit()
 		}
 

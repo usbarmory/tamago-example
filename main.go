@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"runtime/goos"
 
 	"github.com/usbarmory/tamago-example/cmd"
 	"github.com/usbarmory/tamago-example/internal/semihosting"
@@ -48,5 +49,5 @@ func main() {
 		semihosting.Exit()
 	}
 
-	runtime.Exit(0)
+	goos.Exit(0)
 }

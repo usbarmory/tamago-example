@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"runtime"
+	"runtime/goos"
 
 	"github.com/usbarmory/tamago/amd64"
 	"github.com/usbarmory/tamago/soc/intel/ioapic"
@@ -47,7 +47,7 @@ func startInterruptHandler(dev *vnet.Net, cpu *amd64.CPU, ioapic *ioapic.IOAPIC)
 	}
 
 	// optimize CPU idle management as IRQs are enabled
-	runtime.Idle = func(pollUntil int64) {
+	goos.Idle = func(pollUntil int64) {
 		if pollUntil == 0 {
 			return
 		}

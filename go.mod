@@ -14,11 +14,9 @@ require (
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/psanford/wormhole-william v1.0.8
 	github.com/u-root/u-root v0.15.0
-	github.com/usbarmory/armory-boot v0.0.0-20251231140651-27eb9ae1b340
-	github.com/usbarmory/crucible v0.0.0-20260105222051-0bd71c72232c
 	github.com/usbarmory/imx-enet v0.0.0-20250916125511-5a98577af2bd
 	github.com/usbarmory/imx-usbnet v0.0.0-20250916125502-9c92e5468e13
-	github.com/usbarmory/tamago v1.25.7-0.20260123180932-8004ba4a19d2
+	github.com/usbarmory/tamago v0.0.0-20260203150348-2628a9fc2b64
 	github.com/usbarmory/virtio-net v0.0.0-20250916125519-733a429bd100
 	golang.org/x/crypto v0.47.0
 	golang.org/x/crypto/x509roots/fallback v0.0.0-20260113154411-7d0074ccc6f1

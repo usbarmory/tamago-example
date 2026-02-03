@@ -9,7 +9,7 @@ package network
 
 import (
 	"log"
-	"runtime"
+	"runtime/goos"
 
 	"github.com/usbarmory/tamago/arm64"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
@@ -40,7 +40,7 @@ func startInterruptHandler(eth *enet.ENET) {
 	}
 
 	// optimize CPU idle management as IRQs are enabled
-	runtime.Idle = func(pollUntil int64) {
+	goos.Idle = func(pollUntil int64) {
 		if pollUntil == 0 {
 			return
 		}

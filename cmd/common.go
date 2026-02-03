@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"runtime"
 	"runtime/debug"
+	"runtime/goos"
 	"runtime/pprof"
 	"sort"
 	"strconv"
@@ -135,7 +136,7 @@ func haltCmd(console *shell.Interface, _ []string) (string, error) {
 
 	time.AfterFunc(
 		100*time.Millisecond,
-		func() { runtime.Exit(0) },
+		func() { goos.Exit(0) },
 	)
 
 	return "halted", io.EOF
@@ -154,14 +155,14 @@ func stackallCmd(_ *shell.Interface, _ []string) (string, error) {
 
 func cpuidleCmd(_ *shell.Interface, arg []string) (string, error) {
 	once.Do(func() {
-		idle = runtime.Idle
+		idle = goos.Idle
 	})
 
 	switch arg[0] {
 	case "on":
-		runtime.Idle = idle
+		goos.Idle = idle
 	case "off":
-		runtime.Idle = nil
+		goos.Idle = nil
 	}
 
 	return "", nil

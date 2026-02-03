@@ -9,12 +9,13 @@ APP := example
 TARGET ?= usbarmory
 TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
 TAGS := $(TARGET)
+GOOSPKG ?= github.com/usbarmory/tamago@v0.0.0-20260203150348-2628a9fc2b64
 
 ifeq ($(TARGET),$(filter $(TARGET), microvm gcp))
 
 SMP ?= $(shell nproc)
 TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
-GOENV := GOOS=tamago GOARCH=amd64
+GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARCH=amd64
 
 ifeq ($(TARGET),microvm)
 
@@ -56,11 +57,11 @@ endif
 
 ifeq ($(TARGET),$(filter $(TARGET), firecracker cloud_hypervisor))
 TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
-GOENV := GOOS=tamago GOARCH=amd64
+GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARCH=amd64
 endif
 
 ifeq ($(TARGET),sifive_u)
-GOENV := GOOS=tamago GOARCH=riscv64
+GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARCH=riscv64
 QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
         -nographic -monitor none -semihosting -serial stdio -net none \
         -dtb $(CURDIR)/qemu.dtb -bios $(CURDIR)/tools/bios.bin
@@ -86,14 +87,14 @@ endif
 
 ifeq ($(TARGET),imx8mpevk)
 TEXT_START := 0x40010000 # ramStart (defined in mem.go under tamago/soc package) + 0x10000
-GOENV := GOOS=tamago GOARCH=arm64
+GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARCH=arm64
 QEMU ?= qemu-system-aarch64 -machine imx8mp-evk -m 512M -smp 1 \
         -nographic -monitor none -semihosting \
         -serial $(UART1) -serial $(UART2) -net $(NET)
 endif
 
 ifeq ($(TARGET), $(filter $(TARGET), mx6ullevk usbarmory))
-GOENV := GOOS=tamago GOARM=7 GOARCH=arm
+GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARM=7 GOARCH=arm
 QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -nographic -monitor none -semihosting \
         -serial $(UART1) -serial $(UART2) -net $(NET)
@@ -256,7 +257,7 @@ endif
 
 IMX8MP.yaml: check_tamago
 IMX8MP.yaml: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
-IMX8MP.yaml: CRUCIBLE_PKG=$(shell grep "github.com/usbarmory/crucible v" go.mod | awk '{print $$1"@"$$2}')
+IMX8MP.yaml: CRUCIBLE_PKG=$(shell ${TAMAGO} list -m -f '{{.Path}}@{{.Version}}' github.com/usbarmory/crucible)
 IMX8MP.yaml:
 	${TAMAGO} mod download $(CRUCIBLE_PKG)
 	cp -f $(GOMODCACHE)/$(CRUCIBLE_PKG)/cmd/crucible/fusemaps/IMX8MP.yaml cmd/IMX8MP.yaml
