@@ -251,8 +251,9 @@ ip addr add 10.0.0.2/24 dev tap0
 ip link set tap0 up
 ```
 
-> [!NOTE] > `TARGET=gcp make qemu` requires 10.132.0.1/24 (Google VCP
-> europe-west1) as IP address, instead of 10.0.0.2/24
+> [!NOTE]
+> `TARGET=gcp make qemu` requires 10.132.0.1/24 (Google VCP europe-west1) as IP
+> address, instead of 10.0.0.2/24
 
 An emulated target can be debugged with GDB using `make qemu-gdb`, this will
 make qemu waiting for a GDB connection that can be launched as follows:
