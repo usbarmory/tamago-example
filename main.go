@@ -11,7 +11,6 @@ import (
 	"log"
 	"os"
 	"runtime"
-	"runtime/goos"
 
 	"github.com/usbarmory/tamago-example/cmd"
 	"github.com/usbarmory/tamago-example/internal/semihosting"
@@ -46,6 +45,4 @@ func main() {
 	if runtime.GOARCH != "amd64" {
 		semihosting.Exit()
 	}
-
-	goos.Exit(0)
 }
