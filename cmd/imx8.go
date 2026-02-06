@@ -100,10 +100,6 @@ func uptime() (ns int64) {
 	return imx8mp.ARM64.GetTime() - imx8mp.ARM64.TimerOffset
 }
 
-func mem(start uint, size int, w []byte) (b []byte) {
-	return memCopy(start, size, w)
-}
-
 func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	var res bytes.Buffer
 
