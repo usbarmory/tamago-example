@@ -102,8 +102,8 @@ huk                                                              # CAAM/DCP hard
 i2c             <n> <hex target> <hex addr> <size>               # I²C bus read
 info                                                             # device information
 kem                                                              # benchmark post-quantum KEM
-ls              (<path>)?                                        # list directory contents
 led             (white|blue) (on|off)                            # LED control
+ls              (<path>)?                                        # list directory contents
 mii             <hex pa> <hex ra> (hex data)?                    # show/change eth PHY standard registers
 mmd             <hex pa> <hex devad> <hex ra> (hex data)?        # show/change eth PHY extended registers
 ntp             <host>                                           # change runtime date and time via NTP
@@ -118,6 +118,7 @@ stack                                                            # goroutine sta
 stackall                                                         # goroutine stack trace (all)
 tailscale       <auth key> (verbose)?                            # start network servers on Tailscale tailnet
 test                                                             # launch tests
+uptime                                                           # show system running time
 usdhc           <n> <hex addr> <size>                            # SD/MMC card read
 wormhole        (send <path>|recv <code>)                        # transfer file through magic wormhole
 ```
