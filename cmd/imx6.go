@@ -123,16 +123,6 @@ func uptime() (ns int64) {
 	return imx6ul.ARM.GetTime() - imx6ul.ARM.TimerOffset
 }
 
-func mem(start uint, size int, w []byte) (b []byte) {
-	// temporarily map page zero if required
-	if z := uint32(1 << 20); uint32(start) < z {
-		imx6ul.ARM.ConfigureMMU(0, z, 0, (arm.TTE_AP_001<<10)|arm.TTE_SECTION)
-		defer imx6ul.ARM.ConfigureMMU(0, z, 0, 0)
-	}
-
-	return memCopy(start, size, w)
-}
-
 func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	var res bytes.Buffer
 
@@ -164,7 +154,13 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 		fmt.Fprintf(&res, "RTIC .........: state:%#.4b err:%v\n", cs, err)
 	}
 
-	rom := mem(romStart, romSize, nil)
+	// temporarily map page zero if required
+	if z := uint32(1 << 20); uint32(romStart) < z {
+		imx6ul.ARM.ConfigureMMU(0, z, 0, (arm.TTE_AP_001<<10)|arm.TTE_SECTION)
+		defer imx6ul.ARM.ConfigureMMU(0, z, 0, 0)
+	}
+
+	rom := memCopy(romStart, romSize, nil)
 	fmt.Fprintf(&res, "Boot ROM hash : %x\n", sha256.Sum256(rom))
 	fmt.Fprintf(&res, "Secure boot ..: %v\n", imx6ul.SNVS.Available())
 

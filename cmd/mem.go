@@ -88,7 +88,7 @@ func memReadCmd(_ *shell.Interface, arg []string) (res string, err error) {
 		return "", fmt.Errorf("size argument must be <= %d", maxBufferSize)
 	}
 
-	return hex.Dump(mem(uint(addr), int(size), nil)), nil
+	return hex.Dump(memCopy(uint(addr), int(size), nil)), nil
 }
 
 func memWriteCmd(_ *shell.Interface, arg []string) (res string, err error) {
@@ -107,7 +107,7 @@ func memWriteCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	buf := make([]byte, 4)
 	binary.BigEndian.PutUint32(buf, uint32(val))
 
-	mem(uint(addr), 4, buf)
+	memCopy(uint(addr), 4, buf)
 
 	return
 }

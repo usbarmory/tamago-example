@@ -34,10 +34,6 @@ func uptime() (ns int64) {
 	return fu540.CLINT.Nanotime() - fu540.CLINT.TimerOffset
 }
 
-func mem(start uint, size int, w []byte) (b []byte) {
-	return memCopy(start, size, w)
-}
-
 func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	var res bytes.Buffer
 
