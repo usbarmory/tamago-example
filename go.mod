@@ -98,4 +98,4 @@ require (
 	salsa.debian.org/vasudev/gospake2 v0.0.0-20210510093858-d91629950ad1 // indirect
 )
 
-replace github.com/usbarmory/tamago v1.25.6 => github.com/usbarmory/tamago v0.0.0-20260203150348-2628a9fc2b64
+replace github.com/usbarmory/tamago v1.25.6 => github.com/usbarmory/tamago v0.0.0-20260209111618-ab2cba2e92c1
