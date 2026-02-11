@@ -9,7 +9,7 @@ APP := example
 TARGET ?= usbarmory
 TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
 TAGS := $(TARGET)
-GOOSPKG ?= github.com/usbarmory/tamago@v0.0.0-20260203150348-2628a9fc2b64
+GOOSPKG ?= github.com/usbarmory/tamago
 
 ifeq ($(TARGET),$(filter $(TARGET), microvm gcp))
 

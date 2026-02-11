@@ -1,6 +1,6 @@
 module github.com/usbarmory/tamago-example
 
-go 1.25.6
+go 1.26.0
 
 require (
 	github.com/Harvey-OS/ninep v0.0.0-20200724082702-d30a6d4f9789
@@ -18,11 +18,11 @@ require (
 	github.com/usbarmory/crucible v0.0.0-20260105222051-0bd71c72232c
 	github.com/usbarmory/imx-enet v0.0.0-20250916125511-5a98577af2bd
 	github.com/usbarmory/imx-usbnet v0.0.0-20250916125502-9c92e5468e13
-	github.com/usbarmory/tamago v1.25.6
+	github.com/usbarmory/tamago v1.26.0
 	github.com/usbarmory/virtio-net v0.0.0-20250916125519-733a429bd100
-	golang.org/x/crypto v0.47.0
-	golang.org/x/crypto/x509roots/fallback v0.0.0-20260113154411-7d0074ccc6f1
-	golang.org/x/term v0.39.0
+	golang.org/x/crypto v0.48.0
+	golang.org/x/crypto/x509roots/fallback v0.0.0-20260209214922-2f26647a795e
+	golang.org/x/term v0.40.0
 	tailscale.com v1.94.1
 )
 
@@ -84,11 +84,11 @@ require (
 	go4.org/mem v0.0.0-20240501181205-ae6ca9944745 // indirect
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
 	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
-	golang.org/x/net v0.48.0 // indirect
+	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/oauth2 v0.32.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.40.0 // indirect
-	golang.org/x/text v0.33.0 // indirect
+	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/text v0.34.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
@@ -97,5 +97,3 @@ require (
 	nhooyr.io/websocket v1.8.17 // indirect
 	salsa.debian.org/vasudev/gospake2 v0.0.0-20210510093858-d91629950ad1 // indirect
 )
-
-replace github.com/usbarmory/tamago v1.25.6 => github.com/usbarmory/tamago v0.0.0-20260209111618-ab2cba2e92c1
