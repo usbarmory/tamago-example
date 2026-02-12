@@ -9,7 +9,6 @@ package cmd
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"log"
 	"runtime"
@@ -22,10 +21,19 @@ type CommonCPU interface {
 	GetTime() int64
 }
 
-var CPU CommonCPU
+var (
+	// CPU represents a common CPU interface
+	CPU CommonCPU
+	// Reboot represents the `reboot` command function.
+	Reboot func()
+)
 
 func rebootCmd(_ *shell.Interface, _ []string) (_ string, err error) {
-	return "", errors.New("unimplemented")
+	if Reboot != nil {
+		Reboot()
+	}
+
+	return
 }
 
 func date(epoch int64) {
