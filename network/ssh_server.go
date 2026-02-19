@@ -28,7 +28,7 @@ var DefaultDeadline = 30 * time.Second
 
 func handleTerminal(conn ssh.Channel, console *shell.Interface) {
 	log.SetOutput(io.MultiWriter(os.Stdout, console.Log, console.Terminal))
-	defer log.SetOutput(io.MultiWriter(os.Stdout))
+	defer log.SetOutput(os.Stdout)
 
 	console.Start(true)
 
