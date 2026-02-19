@@ -32,12 +32,12 @@ func (g *DRBG) incV() {
 func (g *DRBG) update(pd *[48]byte) {
 	var buf [48]byte
 	b, _ := aes.NewCipher(g.key[:])
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		g.incV()
 		b.Encrypt(buf[i*16:(i+1)*16], g.v[:])
 	}
 	if pd != nil {
-		for i := 0; i < 48; i++ {
+		for i := range 48 {
 			buf[i] ^= pd[i]
 		}
 	}

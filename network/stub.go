@@ -11,7 +11,7 @@ import (
 	"log"
 )
 
-func Init(_ any, _ bool, _ bool, _ interface{}) (_ any) {
+func Init(_ any, _ bool, _ bool, _ any) (_ any) {
 	log.Fatal("unsupported")
 	return
 }
