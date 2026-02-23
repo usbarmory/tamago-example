@@ -16,32 +16,37 @@ import (
 	"github.com/usbarmory/tamago-example/shell"
 )
 
-type CommonCPU interface {
-	SetTime(int64)
-	GetTime() int64
-}
-
 var (
-	// CPU represents a common CPU interface
-	CPU CommonCPU
-	// Reboot represents the `reboot` command function.
-	Reboot func()
+	SetTime func(epoch int64)
+	Reboot  func()
+	Uptime  func() (ns int64)
 )
 
 func rebootCmd(_ *shell.Interface, _ []string) (_ string, err error) {
 	if Reboot != nil {
 		Reboot()
+	} else {
+		log.Printf("unimplemented")
 	}
 
 	return
 }
 
 func date(epoch int64) {
-	CPU.SetTime(epoch)
+	if SetTime != nil {
+		SetTime(epoch)
+	} else {
+		log.Printf("unimplemented")
+	}
 }
 
 func uptime() (ns int64) {
-	log.Printf("unimplemented")
+	if Uptime != nil {
+		return Uptime()
+	} else {
+		log.Printf("unimplemented")
+	}
+
 	return 0
 }
 
