@@ -31,6 +31,8 @@
 // By default, it will export / over a TCP on port 5640 under the username
 // of "harvey".
 
+//go:build imx8mpevk || mx6ullevk || usbarmory || cloud_hypervisor || firecracker || microvm || gcp
+
 package cmd
 
 import (
