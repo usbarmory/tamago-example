@@ -44,7 +44,8 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	fmt.Fprintf(&res, "RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024))
 	fmt.Fprintf(&res, "Board ........: %s\n", boardName)
 	fmt.Fprintf(&res, "SoC ..........: %s\n", name)
-	fmt.Fprintf(&res, "Frequency ....: %v MHz\n", float32(freq)/1e6)
+	fmt.Fprintf(&res, "Extensions ...: %s\n", fu540.RV64.Features().Extensions)
+	fmt.Fprintf(&res, "Frequency ....: %v MHz\n", freq/1e6)
 
 	return res.String(), nil
 }
