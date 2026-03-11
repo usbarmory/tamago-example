@@ -106,7 +106,7 @@ func memWriteCmd(_ *shell.Interface, arg []string) (res string, err error) {
 
 	size := 4
 
-	if (addr%dma.DefaultAlignment) != 0 || (size%dma.DefaultAlignment) != 0 {
+	if (addr%dma.DefaultAlignment) != 0 {
 		return "", fmt.Errorf("only %d-bit aligned accesses are supported", dma.DefaultAlignment*8)
 	}
 
