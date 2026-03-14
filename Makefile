@@ -276,7 +276,7 @@ qemu.dtb:
 
 $(APP): check_tamago qemu.dtb
 	$(GOENV) $(TAMAGO) build $(GOFLAGS) -o ${APP} && \
-	RT0=$$(riscv64-linux-gnu-readelf -a $(APP)|grep -i 'Entry point' | cut -dx -f2) && \
+	RT0=$$(nm $(APP)|grep _rt0_riscv64_tamago | cut -d' ' -f1) && \
 	echo ".equ RT0_RISCV64_TAMAGO, 0x$$RT0" > $(CURDIR)/tools/bios.cfg && \
 	cd $(CURDIR)/tools && ./build_riscv64_bios.sh
 
