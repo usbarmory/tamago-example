@@ -27,11 +27,11 @@ func init() {
 }
 
 func date(epoch int64) {
-	fu540.CLINT.SetTimer(epoch)
+	fu540.RV64.SetTime(epoch)
 }
 
 func uptime() (ns int64) {
-	return fu540.CLINT.Nanotime() - fu540.CLINT.TimerOffset
+	return fu540.RV64.GetTime() - fu540.RV64.TimerOffset
 }
 
 func infoCmd(_ *shell.Interface, _ []string) (string, error) {
