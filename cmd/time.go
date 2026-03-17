@@ -7,8 +7,9 @@ package cmd
 
 import (
 	"fmt"
-	"math"
-	"runtime"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -38,17 +39,20 @@ func sleepTest() (tag string, res string) {
 func wakeTest() (tag string, res string) {
 	start := time.Now()
 
-	gp, _ := runtime.GetG()
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGTRAP)
+	defer signal.Stop(c)
 
 	go func() {
 		time.Sleep(sleep)
-		if !runtime.Wake(uint(gp)) {
-			panic("WakeG failed")
-		}
+		signal.Relay(syscall.SIGTRAP)
 	}()
 
-	time.Sleep(math.MaxInt64)
-	tag = fmt.Sprintf("WakeG after %s (actual %v)", sleep, time.Since(start))
+	if <-c != syscall.SIGTRAP {
+		panic("unexpected signal")
+	}
+
+	tag = fmt.Sprintf("got signal after %v", time.Since(start))
 
 	return
 }
