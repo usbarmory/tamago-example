@@ -16,7 +16,7 @@ import (
 	"runtime"
 	"runtime/goos"
 	"strconv"
-	_ "unsafe"
+	"unsafe"
 
 	"github.com/usbarmory/crucible/fusemap"
 
@@ -145,6 +145,7 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	}
 
 	ssm := imx6ul.SNVS.Monitor()
+
 	fmt.Fprintf(&res,
 		"SSM ..........: state:%#.4b clk:%v tmp:%v vcc:%v hac:%d\n",
 		ssm.State, ssm.Clock, ssm.Temperature, ssm.Voltage, ssm.HAC,
@@ -155,13 +156,16 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 		fmt.Fprintf(&res, "RTIC .........: state:%#.4b err:%v\n", cs, err)
 	}
 
-	// temporarily map page zero if required
+	// temporarily map zero page as required
 	if z := uint32(1 << 20); uint32(romStart) < z {
 		imx6ul.ARM.ConfigureMMU(0, z, 0, (arm.TTE_AP_001<<10)|arm.TTE_SECTION)
 		defer imx6ul.ARM.ConfigureMMU(0, z, 0, 0)
 	}
 
-	rom := memCopy(romStart, romSize, nil)
+	// dma package cannot be used as romStart is treated as a nil pointer
+	ptr := unsafe.Pointer(uintptr(romStart))
+	rom := (*[romSize]byte)(unsafe.Pointer(ptr))[:]
+
 	fmt.Fprintf(&res, "Boot ROM hash : %x\n", sha256.Sum256(rom))
 	fmt.Fprintf(&res, "Secure boot ..: %v\n", imx6ul.SNVS.Available())
 
