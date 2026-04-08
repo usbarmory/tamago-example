@@ -18,6 +18,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/amd64"
@@ -131,6 +132,7 @@ func smpCmd(console *shell.Interface, arg []string) (string, error) {
 	var res bytes.Buffer
 	var wg sync.WaitGroup
 	var cc sync.Map
+	var total int
 
 	n, err := strconv.Atoi(arg[0])
 
@@ -145,6 +147,8 @@ func smpCmd(console *shell.Interface, arg []string) (string, error) {
 	}
 
 	fmt.Fprintf(console.Output, "%d cores detected, launching %d goroutines from CPU%2d\n", ncpu, n, goos.ProcID())
+
+	start := time.Now()
 
 	for i := 0; i < n; i++ {
 		wg.Go(func() {
@@ -161,9 +165,9 @@ func smpCmd(console *shell.Interface, arg []string) (string, error) {
 			}
 		})
 	}
-	wg.Wait()
 
-	var total int
+	wg.Wait()
+	elapsed := time.Since(start)
 
 	cc.Range(func(cpu any, count any) bool {
 		total += count.(int)
@@ -171,7 +175,7 @@ func smpCmd(console *shell.Interface, arg []string) (string, error) {
 		return true
 	})
 
-	fmt.Fprintf(&res, "Total %3d\n", total)
+	fmt.Fprintf(&res, "Total %3d (%v)\n", total, elapsed)
 
 	return res.String(), nil
 }

@@ -41,7 +41,7 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	name, freq := Target()
 	features :=  fu540.RV64.Features()
 
-	fmt.Fprintf(&res, "Runtime ......: %s %s/%s thread %d\n", runtime.Version(), runtime.GOOS, runtime.GOARCH, features.HartID)
+	fmt.Fprintf(&res, "Runtime ......: %s %s/%s thread %d\n", runtime.Version(), runtime.GOOS, runtime.GOARCH, fu540.RV64.ID())
 	fmt.Fprintf(&res, "RAM ..........: %#08x-%#08x (%d MiB)\n", ramStart, ramEnd, (ramEnd-ramStart)/(1024*1024))
 	fmt.Fprintf(&res, "Board ........: %s\n", boardName)
 	fmt.Fprintf(&res, "SoC ..........: %s\n", name)
