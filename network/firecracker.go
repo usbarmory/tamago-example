@@ -35,9 +35,11 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 		return
 	}
 
-	// This example illustrates IRQ handling, alternatively a poller can be
-	// used with `dev.Start(true)`.
-	dev.Start(false)
+	go func() {
+		// ensure ISR is running before starting the interface
+		microvm.AMD64.ClearInterrupt()
+		dev.Start(false)
+	}()
 
 	startInterruptHandler(dev, microvm.AMD64, microvm.IOAPIC0)
 }

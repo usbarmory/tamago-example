@@ -54,8 +54,7 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 	// This example illustrates IRQ handling, alternatively a poller can be
 	// used with `dev.Start(true)`.
 	go func() {
-		// On GCP we must ensure the ISR is running before starting the
-		// interface.
+		// ensure ISR is running before starting the interface
 		gcp.AMD64.ClearInterrupt()
 		dev.Start(false)
 	}()
