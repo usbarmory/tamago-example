@@ -12,8 +12,8 @@ import (
 	"net"
 
 	imxenet "github.com/usbarmory/imx-enet"
-	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago-example/shell"
+	"github.com/usbarmory/tamago/soc/nxp/enet"
 )
 
 func handleEthernetInterrupt(eth *enet.ENET) {

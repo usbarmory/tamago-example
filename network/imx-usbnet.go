@@ -12,9 +12,9 @@ import (
 	"net"
 
 	"github.com/usbarmory/imx-usbnet"
+	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
-	"github.com/usbarmory/tamago-example/shell"
 )
 
 const HostMAC = "1a:55:89:a2:69:42"

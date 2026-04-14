@@ -10,10 +10,12 @@ package network
 import (
 	"log"
 
+	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/board/firecracker/microvm"
 	"github.com/usbarmory/tamago/kvm/virtio"
-	"github.com/usbarmory/tamago-example/shell"
-	"github.com/usbarmory/virtio-net"
+
+	"github.com/usbarmory/go-net"
+	"github.com/usbarmory/go-net/virtio"
 )
 
 func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
@@ -25,21 +27,29 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 		Transport: &virtio.MMIO{
 			Base: microvm.VIRTIO_NET0_BASE,
 		},
-		IRQ:  microvm.VIRTIO_NET0_IRQ,
+		IRQ: microvm.VIRTIO_NET0_IRQ,
+		MTU: gnet.MTU,
 	}
 
 	*nic = dev
 
-	if err := startNet(console, dev); err != nil {
-		log.Printf("could not start networking, %v", err)
+	if err := dev.Init(); err != nil {
+		log.Printf("could not initialize VirtIO device, %v", err)
+		return
+	}
+
+	iface, err := initStack(console, dev)
+
+	if err != nil {
+		log.Printf("could not start network stack, %v", err)
 		return
 	}
 
 	go func() {
 		// ensure ISR is running before starting the interface
 		microvm.AMD64.ClearInterrupt()
-		dev.Start(false)
+		dev.Start()
 	}()
 
-	startInterruptHandler(dev, microvm.AMD64, microvm.IOAPIC0)
+	startInterruptHandler(dev, iface, microvm.AMD64, microvm.IOAPIC0)
 }

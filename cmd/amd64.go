@@ -23,7 +23,8 @@ import (
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/amd64"
 	"github.com/usbarmory/tamago/amd64/lapic"
-	"github.com/usbarmory/virtio-net"
+
+	"github.com/usbarmory/go-net/virtio"
 )
 
 var NIC *vnet.Net

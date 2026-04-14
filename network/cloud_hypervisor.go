@@ -14,7 +14,9 @@ import (
 	"github.com/usbarmory/tamago/board/cloud_hypervisor/vm"
 	"github.com/usbarmory/tamago/kvm/virtio"
 	"github.com/usbarmory/tamago/soc/intel/pci"
-	"github.com/usbarmory/virtio-net"
+
+	"github.com/usbarmory/go-net"
+	"github.com/usbarmory/go-net/virtio"
 )
 
 // chosen by the application for MSI-X signaling
@@ -37,19 +39,25 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 		Transport:    transport,
 		IRQ:          VIRTIO_NET0_IRQ,
 		HeaderLength: 12,
+		MTU:          gnet.MTU,
 	}
 
 	*nic = dev
 
-	if err := startNet(console, dev); err != nil {
-		log.Printf("could not start networking, %v", err)
+	if err := dev.Init(); err != nil {
+		log.Printf("could not initialize VirtIO device, %v", err)
 		return
 	}
 
-	// This example illustrates IRQ handling, alternatively a poller can be
-	// used with `dev.Start(true)`.
-	dev.Start(false)
+	iface, err := initStack(console, dev)
+
+	if err != nil {
+		log.Printf("could not start network stack, %v", err)
+		return
+	}
+
+	dev.Start()
 
 	transport.EnableInterrupt(VIRTIO_NET0_IRQ, vnet.ReceiveQueue)
-	startInterruptHandler(dev, vm.AMD64, nil)
+	startInterruptHandler(dev, iface, vm.AMD64, nil)
 }
