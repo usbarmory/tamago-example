@@ -8,12 +8,9 @@
 package network
 
 import (
-	"fmt"
 	"log"
-	"net"
 	"runtime/goos"
 
-	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/amd64"
 	"github.com/usbarmory/tamago/soc/intel/ioapic"
 
@@ -69,44 +66,4 @@ func startInterruptHandler(dev *vnet.Net, iface *gnet.Interface, cpu *amd64.CPU,
 	}
 
 	cpu.ServiceInterrupts(isr)
-}
-
-func initStack(console *shell.Interface, dev *vnet.Net) (iface *gnet.Interface, err error) {
-	iface = &gnet.Interface{}
-
-	if err := iface.Init(dev, IP+CIDR, MAC, Gateway); err != nil {
-		return nil, fmt.Errorf("could not initialize stack, %v", err)
-	}
-
-	iface.Stack.EnableICMP()
-
-	// hook interface into Go runtime
-	net.SocketFunc = iface.Stack.Socket
-
-	if console != nil {
-		listenerSSH, err := net.Listen("tcp4", ":22")
-
-		if err != nil {
-			return nil, fmt.Errorf("could not initialize SSH listener, %v", err)
-		}
-
-		StartSSHServer(listenerSSH, console)
-	}
-
-	listenerHTTP, err := net.Listen("tcp4", ":80")
-
-	if err != nil {
-		return nil, fmt.Errorf("could not initialize HTTP listener, %v", err)
-	}
-
-	listenerHTTPS, err := net.Listen("tcp4", ":443")
-
-	if err != nil {
-		return nil, fmt.Errorf("could not initialize HTTP listener, %v", err)
-	}
-
-	StartWebServer(listenerHTTP, IP, 80, false)
-	StartWebServer(listenerHTTPS, IP, 443, true)
-
-	return
 }

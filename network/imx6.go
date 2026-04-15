@@ -16,10 +16,23 @@ import (
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
 
+	"github.com/usbarmory/go-net"
 	"github.com/usbarmory/tamago-example/shell"
 )
 
-func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
+func handleEthernetInterrupt(eth *enet.ENET, iface *gnet.Interface, buf []byte) {
+	for {
+		if n, err := eth.Receive(buf); err != nil || n == 0 {
+			return
+		}
+
+		iface.Stack.RecvInboundPacket(buf)
+	}
+}
+
+func startInterruptHandler(usb *usb.USB, eth *enet.ENET, iface *gnet.Interface) {
+	var buf []byte
+
 	imx6ul.GIC.Init(true, false)
 	imx6ul.GIC.EnableInterrupt(arm.TIMER_IRQ, true)
 
@@ -28,6 +41,7 @@ func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 	}
 
 	if eth != nil {
+		buf = make([]byte, gnet.EthernetMaximumSize + gnet.MTU)
 		imx6ul.GIC.EnableInterrupt(eth.IRQ, true)
 	}
 
@@ -40,7 +54,7 @@ func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 		case usb != nil && irq == usb.IRQ:
 			handleUSBInterrupt(usb)
 		case eth != nil && irq == eth.IRQ:
-			handleEthernetInterrupt(eth)
+			handleEthernetInterrupt(eth, iface, buf)
 		default:
 			log.Printf("internal error, unexpected IRQ %d", irq)
 		}
@@ -62,6 +76,7 @@ func startInterruptHandler(usb *usb.USB, eth *enet.ENET) {
 func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **enet.ENET) {
 	var usb *usb.USB
 	var eth *enet.ENET
+	var iface *gnet.Interface
 
 	if hasUSB {
 		usb = startUSB(console)
@@ -74,9 +89,22 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **enet.ENET) {
 			eth = imx6ul.ENET1
 		}
 
-		startEth(eth, console, true)
 		*nic = eth
+		err := eth.Init()
+
+		if err != nil {
+			log.Printf("could not initialize network device, %v", err)
+			return
+		}
+
+		if iface, err = initStack(console, eth); err != nil {
+			log.Printf("could not start network stack, %v", err)
+			return
+		}
+
+		eth.Start()
+		eth.EnableInterrupt(enet.IRQ_RXF)
 	}
 
-	startInterruptHandler(usb, eth)
+	startInterruptHandler(usb, eth, iface)
 }
