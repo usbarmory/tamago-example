@@ -35,10 +35,47 @@ var (
 	Resolver = "8.8.8.8:53"
 )
 
-func initStack(console *shell.Interface, dev gnet.NetworkDevice) (iface *gnet.Interface, err error) {
-	iface = &gnet.Interface{}
+func bindServices(stack gnet.Stack, console *shell.Interface) (err error) {
+	// hook interface into Go runtime
+	net.SetDefaultNS([]string{Resolver})
+	net.SocketFunc = stack.Socket
 
-	if err := iface.Init(dev, IP+CIDR, MAC, Gateway); err != nil {
+	if console != nil {
+		listenerSSH, err := net.Listen("tcp4", ":22")
+
+		if err != nil {
+			return fmt.Errorf("could not initialize SSH listener, %v", err)
+		}
+
+		StartSSHServer(listenerSSH, console)
+	}
+
+	listenerHTTP, err := net.Listen("tcp4", ":80")
+
+	if err != nil {
+		return fmt.Errorf("could not initialize HTTP listener, %v", err)
+	}
+
+	listenerHTTPS, err := net.Listen("tcp4", ":443")
+
+	if err != nil {
+		return fmt.Errorf("could not initialize HTTP listener, %v", err)
+	}
+
+	SetupStaticWebAssets(console.Banner)
+
+	StartWebServer(listenerHTTP, IP, 80, false)
+	StartWebServer(listenerHTTPS, IP, 443, true)
+
+	return
+}
+
+func initStack(console *shell.Interface, dev gnet.NetworkDevice, services bool) (iface *gnet.Interface, err error) {
+	iface = &gnet.Interface{
+		NetworkDevice: dev,
+	}
+
+	if err := iface.Init(IP+CIDR, MAC, Gateway); err != nil {
 		return nil, fmt.Errorf("could not initialize stack, %v", err)
 	}
 
@@ -48,34 +85,9 @@ func initStack(console *shell.Interface, dev gnet.NetworkDevice) (iface *gnet.In
 
 	iface.Stack.EnableICMP()
 
-	// hook interface into Go runtime
-	net.SetDefaultNS([]string{Resolver})
-	net.SocketFunc = iface.Stack.Socket
-
-	if console != nil {
-		listenerSSH, err := net.Listen("tcp4", ":22")
-
-		if err != nil {
-			return nil, fmt.Errorf("could not initialize SSH listener, %v", err)
-		}
-
-		StartSSHServer(listenerSSH, console)
+	if services {
+		err = bindServices(iface.Stack, console)
 	}
-
-	listenerHTTP, err := net.Listen("tcp4", ":80")
-
-	if err != nil {
-		return nil, fmt.Errorf("could not initialize HTTP listener, %v", err)
-	}
-
-	listenerHTTPS, err := net.Listen("tcp4", ":443")
-
-	if err != nil {
-		return nil, fmt.Errorf("could not initialize HTTP listener, %v", err)
-	}
-
-	StartWebServer(listenerHTTP, IP, 80, false)
-	StartWebServer(listenerHTTPS, IP, 443, true)
 
 	return
 }

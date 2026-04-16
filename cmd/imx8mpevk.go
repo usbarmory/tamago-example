@@ -24,6 +24,6 @@ func rebootCmd(_ *shell.Interface, _ []string) (_ string, err error) {
 	return "", errors.New("unimplemented")
 }
 
-func HasNetwork() (usb bool, eth bool) {
+func HasNetwork() (_ bool, eth bool) {
 	return false, true
 }

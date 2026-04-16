@@ -22,11 +22,7 @@ import (
 // chosen by the application for MSI-X signaling
 const VIRTIO_NET0_IRQ = 32
 
-func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
-	if hasUSB {
-		log.Fatalf("unsupported")
-	}
-
+func Init(console *shell.Interface, _ bool, _ bool, nic **vnet.Net) {
 	transport := &virtio.LegacyPCI{
 		Device: pci.Probe(
 			0,

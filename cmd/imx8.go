@@ -112,6 +112,10 @@ func infoCmd(_ *shell.Interface, _ []string) (string, error) {
 	fmt.Fprintf(&res, "SoC ..........: %s\n", name)
 	fmt.Fprintf(&res, "Frequency ....: %v MHz\n", float32(freq)/1e6)
 
+	if NIC != nil {
+		fmt.Fprintf(&res, "ENET%d ........: %s %d\n", NIC.Index, NIC.MAC, NIC.Stats)
+	}
+
 	return res.String(), nil
 }
 

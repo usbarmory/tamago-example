@@ -64,7 +64,7 @@ func storageTest() {
 	return
 }
 
-func HasNetwork() (usb bool, eth bool) {
+func HasNetwork() (_ bool, eth bool) {
 	return false, false
 }
 

@@ -8,7 +8,7 @@
 package network
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/board/qemu/microvm"
@@ -18,11 +18,7 @@ import (
 	"github.com/usbarmory/go-net/virtio"
 )
 
-func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
-	if hasUSB {
-		log.Fatalf("unsupported")
-	}
-
+func Init(console *shell.Interface, _ bool, _ bool, nic **vnet.Net) (err error) {
 	dev := &vnet.Net{
 		Transport: &virtio.MMIO{
 			Base: microvm.VIRTIO_NET0_BASE,
@@ -35,17 +31,17 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 	*nic = dev
 
 	if err := dev.Init(); err != nil {
-		log.Printf("could not initialize VirtIO device, %v", err)
-		return
+		return fmt.Errorf("could not initialize VirtIO device, %v", err)
 	}
 
-	iface, err := initStack(console, dev)
+	iface, err := initStack(console, dev, true)
 
 	if err != nil {
-		log.Printf("could not start network stack, %v", err)
-		return
+		return fmt.Errorf("could not start network stack, %v", err)
 	}
 
 	dev.Start()
 	startInterruptHandler(dev, iface, microvm.AMD64, microvm.IOAPIC1)
+
+	return
 }

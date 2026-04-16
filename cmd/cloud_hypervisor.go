@@ -62,6 +62,6 @@ func Target() (name string, freq uint32) {
 	return vm.AMD64.Name(), vm.AMD64.Freq()
 }
 
-func HasNetwork() (usb bool, eth bool) {
+func HasNetwork() (_ bool, eth bool) {
 	return false, true
 }

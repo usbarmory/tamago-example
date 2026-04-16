@@ -35,8 +35,9 @@ func main() {
 	}
 
 	if hasUSB, hasEth := cmd.HasNetwork(); hasUSB || hasEth {
-		network.SetupStaticWebAssets(banner)
-		network.Init(console, hasUSB, hasEth, &cmd.NIC)
+		if err := network.Init(console, hasUSB, hasEth, &cmd.NIC); err != nil {
+			log.Print(err)
+		}
 	}
 
 	console.ReadWriter = cmd.Terminal

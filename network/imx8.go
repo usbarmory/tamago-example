@@ -8,7 +8,10 @@
 package network
 
 import (
+	"errors"
+	"fmt"
 	"log"
+	"net"
 	"runtime/goos"
 
 	"github.com/usbarmory/tamago/arm64"
@@ -66,33 +69,27 @@ func startInterruptHandler(eth *enet.ENET, iface *gnet.Interface) {
 	arm64.ServiceInterrupts(isr)
 }
 
-func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **enet.ENET) {
+func Init(console *shell.Interface, _ bool, _ bool, nic **enet.ENET) (err error) {
 	var eth *enet.ENET
 	var iface *gnet.Interface
 
-	if hasUSB {
-		panic("unsupported")
+	eth = imx8mp.ENET1
+	eth.MAC, _ = net.ParseMAC(MAC)
+
+	*nic = eth
+
+	if err = eth.Init(); err != nil {
+		return fmt.Errorf("could not initialize network device, %v", err)
 	}
 
-	if hasEth {
-		eth = imx8mp.ENET1
-
-		*nic = eth
-		err := eth.Init()
-
-		if err != nil {
-			log.Printf("could not initialize network device, %v", err)
-			return
-		}
-
-		if iface, err = initStack(console, eth); err != nil {
-			log.Printf("could not start network stack, %v", err)
-			return
-		}
-
-		eth.Start()
-		eth.EnableInterrupt(enet.IRQ_RXF)
+	if iface, err = initStack(console, eth, true); err != nil {
+		return fmt.Errorf("could not start network stack, %v", err)
 	}
+
+	eth.Start()
+	eth.EnableInterrupt(enet.IRQ_RXF)
 
 	startInterruptHandler(eth, iface)
+
+	return
 }

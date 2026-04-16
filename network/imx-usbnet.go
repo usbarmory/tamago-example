@@ -8,13 +8,12 @@
 package network
 
 import (
-	"log"
 	"net"
 
-	"github.com/usbarmory/imx-usbnet"
-	"github.com/usbarmory/tamago-example/shell"
-	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
+
+	"github.com/usbarmory/go-net"
+	"github.com/usbarmory/go-net/imx-usb"
 )
 
 const HostMAC = "1a:55:89:a2:69:42"
@@ -23,59 +22,28 @@ func handleUSBInterrupt(usb *usb.USB) {
 	usb.ServiceInterrupts()
 }
 
-func startUSB(console *shell.Interface) (port *usb.USB) {
-	port = imx6ul.USB1
-
-	iface := usbnet.Interface{}
-
-	if err := iface.Init(IP, MAC, HostMAC); err != nil {
-		log.Fatalf("could not initialize USB networking, %v", err)
+func initEthernetOverUSB(port *usb.USB, stack gnet.Stack) (err error) {
+	ecm := &usbnet.ECM{
+		Stack: stack,
 	}
 
-	port.Device = iface.NIC.Device
+	ecm.HostMAC, _ = net.ParseMAC(HostMAC)
+	ecm.DeviceMAC, _ = net.ParseMAC(MAC)
 
-	iface.EnableICMP()
-
-	if console != nil {
-		listenerSSH, err := iface.ListenerTCP4(22)
-
-		if err != nil {
-			log.Fatalf("could not initialize SSH listener, %v", err)
-		}
-
-		// wait for server to start before responding to USB requests
-		StartSSHServer(listenerSSH, console)
+	if err = ecm.Init(); err != nil {
+		return
 	}
 
-	listenerHTTP, err := iface.ListenerTCP4(80)
-
-	if err != nil {
-		log.Fatalf("could not initialize HTTP listener, %v", err)
-	}
-
-	listenerHTTPS, err := iface.ListenerTCP4(443)
-
-	if err != nil {
-		log.Fatalf("could not initialize HTTP listener, %v", err)
-	}
-
-	StartWebServer(listenerHTTP, IP, 80, false)
-	StartWebServer(listenerHTTPS, IP, 443, true)
-
-	net.SocketFunc = iface.Socket
-
+	port.Device = ecm.Device
 	port.Init()
 	port.DeviceMode()
 
 	// This example illustrates IRQ handling, alternatively a poller can be
-	// used with `port.Start(device)`.
-
+	// used with:
+	//   port.Start(device)
 	port.EnableInterrupt(usb.IRQ_URI) // reset
 	port.EnableInterrupt(usb.IRQ_PCI) // port change detect
 	port.EnableInterrupt(usb.IRQ_UI)  // transfer completion
-
-	// hook interface into Go runtime
-	net.SocketFunc = iface.Socket
 
 	return
 }

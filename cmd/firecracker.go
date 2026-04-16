@@ -59,6 +59,6 @@ func Target() (name string, freq uint32) {
 	return microvm.AMD64.Name(), microvm.AMD64.Freq()
 }
 
-func HasNetwork() (usb bool, eth bool) {
+func HasNetwork() (_ bool, eth bool) {
 	return false, true
 }

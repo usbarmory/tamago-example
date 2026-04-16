@@ -33,6 +33,6 @@ func Target() (name string, freq uint32) {
 	return gcp.AMD64.Name(), gcp.AMD64.Freq()
 }
 
-func HasNetwork() (usb bool, eth bool) {
+func HasNetwork() (_ bool, eth bool) {
 	return false, true
 }

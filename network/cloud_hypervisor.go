@@ -8,6 +8,7 @@
 package network
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/usbarmory/tamago-example/shell"
@@ -22,11 +23,7 @@ import (
 // chosen by the application for MSI-X signaling
 const VIRTIO_NET0_IRQ = 32
 
-func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
-	if hasUSB {
-		log.Fatalf("unsupported")
-	}
-
+func Init(console *shell.Interface, _ bool, _ bool, nic **vnet.Net) (err error) {
 	transport := &virtio.PCI{
 		Device: pci.Probe(
 			0,
@@ -45,19 +42,19 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **vnet.Net) {
 	*nic = dev
 
 	if err := dev.Init(); err != nil {
-		log.Printf("could not initialize VirtIO device, %v", err)
-		return
+		return fmt.Errorf("could not initialize VirtIO device, %v", err)
 	}
 
-	iface, err := initStack(console, dev)
+	iface, err := initStack(console, dev, true)
 
 	if err != nil {
-		log.Printf("could not start network stack, %v", err)
-		return
+		return fmt.Errorf("could not start network stack, %v", err)
 	}
 
 	dev.Start()
 
 	transport.EnableInterrupt(VIRTIO_NET0_IRQ, vnet.ReceiveQueue)
 	startInterruptHandler(dev, iface, vm.AMD64, nil)
+
+	return
 }

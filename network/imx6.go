@@ -8,16 +8,18 @@
 package network
 
 import (
+	"fmt"
 	"log"
+	"net"
 	"runtime/goos"
 
+	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/arm"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
 
 	"github.com/usbarmory/go-net"
-	"github.com/usbarmory/tamago-example/shell"
 )
 
 func handleEthernetInterrupt(eth *enet.ENET, iface *gnet.Interface, buf []byte) {
@@ -73,13 +75,28 @@ func startInterruptHandler(usb *usb.USB, eth *enet.ENET, iface *gnet.Interface) 
 	arm.ServiceInterrupts(isr)
 }
 
-func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **enet.ENET) {
+func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **enet.ENET) (err error) {
 	var usb *usb.USB
 	var eth *enet.ENET
 	var iface *gnet.Interface
 
 	if hasUSB {
-		usb = startUSB(console)
+		usb = imx6ul.USB1
+
+		if iface, err = initStack(console, nil, !hasEth); err != nil {
+			return fmt.Errorf("could not start network stack, %v", err)
+		}
+
+		if err = initEthernetOverUSB(usb, iface.Stack); err != nil {
+			return fmt.Errorf("could not initialize Ethernet over USB, %v", err)
+		}
+
+		// With both USB and Ethernet available each port gets its own
+		// separate stack, Go runtime network is kept on the latter.
+		if hasEth {
+			l, _ := iface.Stack.(*gnet.GVisorStack).ListenerTCP4(22)
+			StartSSHServer(l, console)
+		}
 	}
 
 	if hasEth {
@@ -90,16 +107,14 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **enet.ENET) {
 		}
 
 		*nic = eth
-		err := eth.Init()
+		eth.MAC, _ = net.ParseMAC(MAC)
 
-		if err != nil {
-			log.Printf("could not initialize network device, %v", err)
-			return
+		if err = eth.Init(); err != nil {
+			return fmt.Errorf("could not initialize Ethernet, %v", err)
 		}
 
-		if iface, err = initStack(console, eth); err != nil {
-			log.Printf("could not start network stack, %v", err)
-			return
+		if iface, err = initStack(console, eth, true); err != nil {
+			return fmt.Errorf("could not start network stack, %v", err)
 		}
 
 		eth.Start()
@@ -107,4 +122,6 @@ func Init(console *shell.Interface, hasUSB bool, hasEth bool, nic **enet.ENET) {
 	}
 
 	startInterruptHandler(usb, eth, iface)
+
+	return
 }
