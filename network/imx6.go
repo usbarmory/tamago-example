@@ -29,6 +29,7 @@ func handleEthernetInterrupt(eth *enet.ENET, iface *gnet.Interface, buf []byte) 
 		}
 
 		iface.Stack.RecvInboundPacket(buf)
+		eth.ClearInterrupt(enet.IRQ_RXF)
 	}
 }
 
