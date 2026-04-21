@@ -8,7 +8,6 @@
 package network
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"net"
