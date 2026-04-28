@@ -8,7 +8,7 @@
 package network
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/board/google/gcp"
@@ -22,7 +22,7 @@ import (
 // chosen by the application for MSI-X signaling
 const VIRTIO_NET0_IRQ = 32
 
-func Init(console *shell.Interface, _ bool, _ bool, nic **vnet.Net) {
+func Init(console *shell.Interface, _ bool, _ bool, nic **vnet.Net) (err error) {
 	transport := &virtio.LegacyPCI{
 		Device: pci.Probe(
 			0,
@@ -46,15 +46,13 @@ func Init(console *shell.Interface, _ bool, _ bool, nic **vnet.Net) {
 	*nic = dev
 
 	if err := dev.Init(); err != nil {
-		log.Printf("could not initialize VirtIO device, %v", err)
-		return
+		return fmt.Errorf("could not initialize VirtIO device, %v", err)
 	}
 
-	iface, err := initStack(console, dev)
+	iface, err := initStack(console, dev, true)
 
 	if err != nil {
-		log.Printf("could not start network stack, %v", err)
-		return
+		return fmt.Errorf("could not start network stack, %v", err)
 	}
 
 	go func() {
@@ -65,4 +63,6 @@ func Init(console *shell.Interface, _ bool, _ bool, nic **vnet.Net) {
 
 	transport.EnableInterrupt(VIRTIO_NET0_IRQ, vnet.ReceiveQueue)
 	startInterruptHandler(dev, iface, gcp.AMD64, gcp.IOAPIC0)
+
+	return
 }
