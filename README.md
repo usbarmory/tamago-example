@@ -95,6 +95,7 @@ dma             (free|used)?                                     # show allocati
 dns             <host>                                           # resolve domain
 ecdsa           <sec> (soft)?                                    # benchmark CAAM/DCP hardware signing
 exit, quit                                                       # close session
+go              <expr>                                           # Go stdlib eval (go:build debug)
 hab             <srk table hash>                                 # HAB activation (use with extreme caution)
 halt                                                             # halt the machine
 freq            (198|396|528|792|900)                            # change ARM core frequency
@@ -113,6 +114,7 @@ peek            <hex addr> <size>                                # memory displa
 poke            <hex addr> <hex value>                           # memory write   (use with caution)
 rand                                                             # gather 32 random bytes
 reboot                                                           # reset device
+rpmb            <n>                                              # MMC RPMB counter read
 rtic            (<hex start> <hex end>)?                         # start RTIC on .text and optional region
 sha             <size> <sec> (soft)?                             # benchmark CAAM/DCP hardware hashing
 stack                                                            # goroutine stack trace (current)

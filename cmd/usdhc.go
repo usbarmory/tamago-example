@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/usbarmory/rpmb"
+
 	"github.com/usbarmory/tamago-example/shell"
 	"github.com/usbarmory/tamago/dma"
 	"github.com/usbarmory/tamago/soc/nxp/usdhc"
@@ -32,6 +34,15 @@ var MMC []*usdhc.USDHC
 
 func init() {
 	shell.Add(shell.Cmd{
+		Name:    "rpmb",
+		Args:    1,
+		Pattern: regexp.MustCompile(`^rpmb (\d)$`),
+		Syntax:  "<n>",
+		Help:    "MMC RPMB counter read",
+		Fn:      rpmbCmd,
+	})
+
+	shell.Add(shell.Cmd{
 		Name:    "usdhc",
 		Args:    3,
 		Pattern: regexp.MustCompile(`^usdhc (\d) ([[:xdigit:]]+) (\d+)$`),
@@ -39,6 +50,37 @@ func init() {
 		Help:    "SD/MMC card read",
 		Fn:      usdhcCmd,
 	})
+}
+
+func rpmbCmd(_ *shell.Interface, arg []string) (res string, err error) {
+	n, err := strconv.ParseUint(arg[0], 10, 8)
+
+	if err != nil {
+		return "", fmt.Errorf("invalid card index: %v", err)
+	}
+
+	if len(MMC) < int(n+1) {
+		return "", fmt.Errorf("invalid card index")
+	}
+
+	card := MMC[n]
+
+	if err = card.Detect(); err != nil {
+		return
+	}
+
+	var p *rpmb.RPMB
+	var c uint32
+
+	if p, err = rpmb.Init(card, make([]byte, 32), 0, false); err != nil {
+		return
+	}
+
+	if c, err = p.Counter(false); err != nil {
+		return
+	}
+
+	return strconv.Itoa(int(c)), err
 }
 
 func usdhcCmd(_ *shell.Interface, arg []string) (res string, err error) {

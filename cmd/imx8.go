@@ -139,7 +139,7 @@ func topCmd(console *shell.Interface, arg []string) (string, error) {
 		return "", fmt.Errorf("invalid count, %v", err)
 	}
 
-	cpu.Top(imx8mp.ARM64, 2 * time.Second, n, console.Output)
+	cpu.Top(imx8mp.ARM64, 2*time.Second, n, console.Output)
 
 	return "", nil
 }

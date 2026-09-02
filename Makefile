@@ -84,14 +84,14 @@ NET   ?= nic,model=imx.enet,netdev=net0 -netdev user,id=net0,net=10.0.0.0/24,hos
 else
 NET   ?= nic,model=imx.enet,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 endif
-TAGS  := $(TARGET),linkramsize
+TAGS  := $(TAGS),linkramsize
 endif
 
 ifeq ($(TARGET),usbarmory)
 UART1 := null
 UART2 := stdio
 NET   := none
-TAGS  := $(TARGET),linkramsize
+TAGS  := $(TAGS),linkramsize
 endif
 
 ifeq ($(TARGET),imx8mpevk)

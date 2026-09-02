@@ -207,7 +207,7 @@ func topCmd(console *shell.Interface, arg []string) (string, error) {
 		return "", fmt.Errorf("invalid count, %v", err)
 	}
 
-	cpu.Top(imx6ul.ARM, 2 * time.Second, n, console.Output)
+	cpu.Top(imx6ul.ARM, 2*time.Second, n, console.Output)
 
 	return "", nil
 }
