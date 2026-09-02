@@ -163,8 +163,9 @@ $(APP): check_tamago
 img: $(APP).img
 
 $(APP).bin: $(APP)
-	objcopy -j .text -j .rodata -j .shstrtab -j .typelink \
-	    -j .itablink -j .gopclntab -j .go.buildinfo -j .go.module -j .noptrdata -j .data \
+	objcopy -j .text -j .rodata -j .shstrtab -j .typelink -j .itablink \
+	    -j .gopclntab -j .go.type -j .go.func -j .go.buildinfo -j go.fipsinfo -j .go.module \
+	    -j .noptrdata -j .data \
 	    -j .bss --set-section-flags .bss=alloc,load,contents \
 	    -j .noptrbss --set-section-flags .noptrbss=alloc,load,contents \
 	    $(APP) -O binary $(APP).bin
@@ -203,8 +204,9 @@ check_hab_keys:
 
 $(APP).bin: CROSS_COMPILE=arm-none-eabi-
 $(APP).bin: $(APP)
-	$(CROSS_COMPILE)objcopy -j .text -j .rodata -j .shstrtab -j .typelink \
-	    -j .itablink -j .gopclntab -j .go.buildinfo -j .go.module -j .noptrdata -j .data \
+	$(CROSS_COMPILE)objcopy -j .text -j .rodata -j .shstrtab -j .typelink -j .itablink \
+	    -j .gopclntab -j .go.type -j .go.func -j .go.buildinfo -j go.fipsinfo -j .go.module \
+	    -j .noptrdata -j .data \
 	    -j .bss --set-section-flags .bss=alloc,load,contents \
 	    -j .noptrbss --set-section-flags .noptrbss=alloc,load,contents \
 	    $(APP) -O binary $(APP).bin
