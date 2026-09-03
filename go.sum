@@ -232,6 +232,8 @@ github.com/usbarmory/go-net v0.0.0-20260714134120-c2c964e7084c h1:ubYfZqO8u2mV0s
 github.com/usbarmory/go-net v0.0.0-20260714134120-c2c964e7084c/go.mod h1:nzEcbE2bexZNdjKCZaqAEr+IyPQ+WiwWGaYsAwPcwsc=
 github.com/usbarmory/rpmb v0.0.0-20250528115648-e4c4b45ca899 h1:cMmPYvUtVhg4FtplWHhhZN93SP0bXT3326SKXiA/ORQ=
 github.com/usbarmory/rpmb v0.0.0-20250528115648-e4c4b45ca899/go.mod h1:k6asGjUwhbf8FbWKbwL3nmdcz6oxzPYx3XhoMF19Is8=
+github.com/usbarmory/rpmb v0.0.0-20260903082159-7bccd4b8a49b h1:hat5kY1FixJuFeZ0ZCLE/Cv53uF2xc3YV+ZaQ1hE7AM=
+github.com/usbarmory/rpmb v0.0.0-20260903082159-7bccd4b8a49b/go.mod h1:k6asGjUwhbf8FbWKbwL3nmdcz6oxzPYx3XhoMF19Is8=
 github.com/usbarmory/tamago v1.27.1 h1:Zl4w3hu5DaogGvcLzunS4gjwNEqdjFFJedMO3pDQa5k=
 github.com/usbarmory/tamago v1.27.1/go.mod h1:nLuV/bBHbtlpWOJftse7cr219b/Z6vitr5fyv/OHkK4=
 github.com/vishvananda/netns v0.0.5 h1:DfiHV+j8bA32MFM7bfEunvT8IAqQ/NzSJHtcmW5zdEY=
