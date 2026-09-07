@@ -7,7 +7,6 @@ SHELL = /bin/bash
 
 APP := example
 TARGET ?= usbarmory
-TEXT_START := 0x80010000 # ramStart (defined in mem.go under relevant tamago/soc package) + 0x10000
 STACK ?= gvisor
 TAGS := $(TARGET)
 TAMAGO ?= $(shell go tool -n github.com/usbarmory/tamago/cmd/tamago)
@@ -16,7 +15,7 @@ GOOSPKG ?= github.com/usbarmory/tamago
 ifeq ($(TARGET),$(filter $(TARGET), microvm gcp))
 
 SMP ?= $(shell nproc)
-TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
+TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago amd64 package) + 0x10000
 GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARCH=amd64
 
 ifeq ($(TARGET),microvm)
@@ -58,11 +57,12 @@ endif
 endif
 
 ifeq ($(TARGET),$(filter $(TARGET), firecracker cloud_hypervisor))
-TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
+TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago amd64 package) + 0x10000
 GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARCH=amd64
 endif
 
 ifeq ($(TARGET),sifive_u)
+TEXT_START := 0x80010000 # ramStart (defined in mem.go under tamago fu540 package) + 0x10000
 GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARCH=riscv64
 QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
         -nographic -monitor none -semihosting -serial stdio -net none \
@@ -70,7 +70,7 @@ QEMU ?= qemu-system-riscv64 -machine sifive_u -m 512M \
 endif
 
 ifeq ($(TARGET),virt_loong64)
-TEXT_START := 0x1000000 # ramStart (defined in mem.go under tamago/amd64 package) + 0x10000
+TEXT_START := 0x1000000 # ramStart (defined in mem.go under tamago ls3a5000 package) + 0x10000
 GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARCH=loong64
 QEMU ?= qemu-system-loongarch64 -machine virt -m 256M \
         -nographic -monitor none -serial stdio -net none
@@ -95,7 +95,7 @@ TAGS  := $(TAGS),linkramsize
 endif
 
 ifeq ($(TARGET),imx8mpevk)
-TEXT_START := 0x40010000 # ramStart (defined in mem.go under tamago/soc package) + 0x10000
+TEXT_START := 0x40010000 # ramStart (defined in mem.go under tamago imx8mp package) + 0x10000
 GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARCH=arm64
 QEMU ?= qemu-system-aarch64 -machine imx8mp-evk -m 512M -smp 1 \
         -nographic -monitor none -semihosting \
@@ -103,6 +103,7 @@ QEMU ?= qemu-system-aarch64 -machine imx8mp-evk -m 512M -smp 1 \
 endif
 
 ifeq ($(TARGET), $(filter $(TARGET), mx6ullevk usbarmory))
+TEXT_START := 0x80010000 # ramStart (defined in mem.go under tamago imx6ul package) + 0x10000
 GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARM=7 GOARCH=arm
 QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -nographic -monitor none -semihosting \
