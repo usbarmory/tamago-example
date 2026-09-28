@@ -13,6 +13,7 @@ require (
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.2.0
 	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
+	github.com/jxsl13/goai v0.1.1-0.20260910233428-2bc5836f5112
 	github.com/psanford/wormhole-william v1.0.8
 	github.com/traefik/yaegi v0.16.1
 	github.com/u-root/u-root v0.16.0
@@ -20,7 +21,7 @@ require (
 	github.com/usbarmory/crucible v0.0.0-20260105222051-0bd71c72232c
 	github.com/usbarmory/go-net v0.0.0-20260714134120-c2c964e7084c
 	github.com/usbarmory/rpmb v0.0.0-20260903082159-7bccd4b8a49b
-	github.com/usbarmory/tamago v1.27.2-0.20260923104811-857b3fbd9abe
+	github.com/usbarmory/tamago v1.27.2-0.20260928083605-9d160d8a480c
 	golang.org/x/crypto v0.55.0
 	golang.org/x/crypto/x509roots/fallback v0.0.0-20260819204246-82adefa711cb
 	golang.org/x/term v0.45.0

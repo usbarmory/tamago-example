@@ -16,15 +16,16 @@ ifeq ($(TARGET),$(filter $(TARGET), microvm gcp))
 
 SMP ?= $(shell nproc)
 TEXT_START := 0x10010000 # ramStart (defined in mem.go under tamago amd64 package) + 0x10000
-GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARCH=amd64
+GOENV := GOOS=tamago GOOSPKG=${GOOSPKG} GOARCH=amd64 GOEXPERIMENT=simd
 
 ifeq ($(TARGET),microvm)
 
+TAGS := $(TAGS),linkhwinit0
 QEMU ?= qemu-system-x86_64 -machine microvm,x-option-roms=on,pit=off,pic=off,rtc=on \
         -smp $(SMP) \
         -global virtio-mmio.force-legacy=false \
         -enable-kvm -cpu host,invtsc=on,kvmclock=on -no-reboot \
-        -m 4G -nographic -monitor none -serial stdio \
+        -m 8G -nographic -monitor none -serial stdio \
         -device virtio-net-device,netdev=net0 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
 
 endif

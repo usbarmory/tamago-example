@@ -179,6 +179,10 @@ firectl --kernel example --root-drive /dev/null --tap-device tap0/06:00:AC:10:00
 QEMU
 ----
 
+> [!NOTE]
+> This target requires 8GB of RAM as it provides an example for extended memory
+> allocation to support the `gpt` command.
+
 ```
 make qemu TARGET=microvm SMP=4
 ```
