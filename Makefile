@@ -111,7 +111,7 @@ QEMU ?= qemu-system-arm -machine mcimx6ul-evk -cpu cortex-a7 -m 512M \
         -serial $(UART1) -serial $(UART2) -net $(NET)
 endif
 
-GOFLAGS := -tags ${TAGS},${STACK},native -trimpath -ldflags "-T $(TEXT_START) -R 0x1000"
+GOFLAGS := -tags ${TAGS},${STACK},native -trimpath -ldflags "-s -w -T $(TEXT_START) -R 0x1000"
 
 .PHONY: clean qemu qemu-gdb
 
