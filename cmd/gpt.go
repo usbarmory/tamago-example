@@ -24,10 +24,15 @@ import (
 	"github.com/jxsl13/goai/format/gguf"
 	"github.com/jxsl13/goai/nlp"
 
+	"github.com/usbarmory/tamago/amd64"
+	"github.com/usbarmory/tamago/board/qemu/microvm"
+
 	"github.com/usbarmory/tamago-example/shell"
 )
 
 const (
+	ramStart    = 0x1_0000_0000
+	ramSize     = 4 << 30 // 4 GiB
 	modelURL    = "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q8_0.gguf"
 	eos         = "<|"
 	tokens      = 128
@@ -38,8 +43,11 @@ const (
 
 //go:linkname moveHeap runtime/goos.Hwinit0
 func moveHeap() {
-	goos.RamStart = 0x1_0000_0000
-	goos.RamSize = 4 << 30
+	microvm.AMD64.ConfigurePDPT(ramStart, ramStart + ramSize, amd64.MemoryRegion)
+
+	goos.RamStart = ramStart
+	goos.RamSize = ramSize
+
 	goos.Bloc = uintptr(goos.RamStart)
 	goos.BlocMax = uintptr(goos.RamStart + goos.RamSize)
 }
