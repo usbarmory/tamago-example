@@ -129,9 +129,8 @@ func ask(question string) (answer string, err error) {
 	}
 
 	elapsed := time.Since(start)
-	log.Printf("%d tok in %v (%.2f tok/s)", len(out), elapsed, float64(len(out))/elapsed.Seconds())
-
-	answer = tokenizer.Decode(out)
+	answer = fmt.Sprintf("%d tok in %v (%.2f tok/s)\n", len(out), elapsed, float64(len(out))/elapsed.Seconds())
+	answer += tokenizer.Decode(out)
 
 	if i := strings.Index(answer, eos); i > 0 {
 		answer = answer[:i]
