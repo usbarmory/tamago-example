@@ -21,7 +21,7 @@ require (
 	github.com/usbarmory/crucible v0.0.0-20260105222051-0bd71c72232c
 	github.com/usbarmory/go-net v0.0.0-20260714134120-c2c964e7084c
 	github.com/usbarmory/rpmb v0.0.0-20260903082159-7bccd4b8a49b
-	github.com/usbarmory/tamago v1.27.2-0.20260928114127-c0e32baf3974
+	github.com/usbarmory/tamago v1.27.2-0.20261001194413-b33956e7955c
 	golang.org/x/crypto v0.55.0
 	golang.org/x/crypto/x509roots/fallback v0.0.0-20260819204246-82adefa711cb
 	golang.org/x/term v0.45.0
