@@ -35,11 +35,7 @@ func Load(a, b Sample) float64 {
 		return 0
 	}
 
-	idle := b.Idle - a.Idle
-
-	if idle < 0 {
-		idle = 0
-	}
+	idle := max(b.Idle-a.Idle, 0)
 
 	if idle > elapsed {
 		idle = elapsed
