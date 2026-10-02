@@ -105,6 +105,7 @@ i2c             <n> <hex target> <hex addr> <size>               # I²C bus read
 info                                                             # device information
 kem                                                              # benchmark post-quantum KEM
 led             (white|blue) (on|off)                            # LED control
+linux           <zImage> <dtb> <initrd>                          # boot Linux kernel zImage
 ls              (<path>)?                                        # list directory contents
 mii             <hex pa> <hex ra> (hex data)?                    # show/change eth PHY standard registers
 mmd             <hex pa> <hex devad> <hex ra> (hex data)?        # show/change eth PHY extended registers

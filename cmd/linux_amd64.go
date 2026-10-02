@@ -60,8 +60,9 @@ func init() {
 	})
 }
 
-// For a full bare metal Go bootloader implementation see
-// https://github.com/usbarmory/go-boot
+// For a full UEFI bare metal Go bootloader implementation see [go-boot].
+//
+// [go-boot]: https://github.com/usbarmory/go-boot
 func linuxCmd(_ *shell.Interface, arg []string) (res string, err error) {
 	var bzImage []byte
 	var mem *dma.Region
