@@ -99,10 +99,6 @@ func init() {
 			HAC:               0xffffffff,
 		},
 	)
-
-	if imx8mp.CAAM != nil {
-		imx8mp.CAAM.DeriveKeyMemory, _ = dma.NewRegion(imx8mp.OCRAM_START, imx8mp.OCRAM_SIZE, false)
-	}
 }
 
 func date(epoch int64) {

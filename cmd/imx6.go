@@ -121,10 +121,6 @@ func init() {
 			HAC:               0xffffffff,
 		},
 	)
-
-	if imx6ul.CAAM != nil {
-		imx6ul.CAAM.DeriveKeyMemory, _ = dma.NewRegion(imx6ul.OCRAM_START, imx6ul.OCRAM_SIZE, false)
-	}
 }
 
 func date(epoch int64) {
