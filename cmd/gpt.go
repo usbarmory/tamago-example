@@ -33,13 +33,15 @@ import (
 const (
 	ramStart    = 0x1_0000_0000
 	ramSize     = 4 << 30 // 4 GiB
-	modelURL    = "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q8_0.gguf"
-	eos         = "<|"
-	tokens      = 128
+	modelURL    = "https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q8_0.gguf"
+	eos         = "<|im_end|>"
+	tokens      = 256
 	seed        = 42
-	temperature = 0.8
-	probability = 0.95
+	temperature = 0.7
+	probability = 0.8
 )
+
+const promptTemplate = "<|im_start|>user\n%s<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
 
 //go:linkname moveHeap runtime/goos.Hwinit0
 func moveHeap() {
@@ -55,6 +57,7 @@ func moveHeap() {
 var (
 	model     *nlp.QuantLlama
 	tokenizer *nlp.BPETokenizer
+	eosID     int
 )
 
 func init() {
@@ -103,38 +106,53 @@ func loadModel() (err error) {
 	}
 
 	log.Printf("parsing model")
-	if model, err = nlp.QuantQwen2FromGGUF(rf.Metadata, rf.Tensors); err != nil {
+	m, err := nlp.QuantQwen3FromGGUF(rf.Metadata, rf.Tensors)
+	if err != nil {
 		return
 	}
 
 	log.Printf("parsing tokenizer")
-	if tokenizer, err = nlp.BPEFromGGUF(rf.Metadata); err != nil {
+	tok, err := nlp.BPEFromGGUF(rf.Metadata)
+	if err != nil {
 		return
 	}
+
+	ids := tok.EncodeSpecial(eos)
+	if len(ids) != 1 {
+		return fmt.Errorf("tokenizer: %q is not a single special token (got %v)", eos, ids)
+	}
+
+	model, tokenizer, eosID = m, tok, ids[0]
 
 	return
 }
 
 func ask(question string) (answer string, err error) {
+	prompt := tokenizer.EncodeSpecial(fmt.Sprintf(promptTemplate, question))
+
 	start := time.Now()
 
 	out, err := model.Generate(
-		tokenizer.Encode(fmt.Sprintf("Q: %s?\nA:", question)),
+		prompt,
 		tokens,
 		nlp.NewSampler(seed, nlp.WithTemperature(temperature), nlp.WithTopP(probability)),
+		nlp.WithEOS(eosID),
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	elapsed := time.Since(start)
-	answer = fmt.Sprintf("%d tok in %v (%.2f tok/s)\n", len(out), elapsed, float64(len(out))/elapsed.Seconds())
-	answer += tokenizer.Decode(out)
 
-	if i := strings.Index(answer, eos); i > 0 {
-		answer = answer[:i]
+	gen := out[len(prompt):]
+
+	if n := len(gen); n > 0 && gen[n-1] == eosID {
+		gen = gen[:n-1]
 	}
+
+	answer = fmt.Sprintf("%d tok in %v (%.2f tok/s)\n", len(gen), elapsed, float64(len(gen))/elapsed.Seconds())
+	answer += strings.TrimSpace(tokenizer.Decode(gen))
 
 	return
 }
