@@ -14,6 +14,7 @@ import (
 	"runtime/goos"
 
 	"github.com/usbarmory/tamago/arm64"
+	"github.com/usbarmory/tamago/arm64/gic"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago/soc/nxp/imx8mp"
 
@@ -50,6 +51,8 @@ func startInterruptHandler(eth *enet.ENET, iface *gnet.Interface) {
 			imx8mp.ARM64.SetAlarm(0)
 		case eth != nil && irq == eth.IRQ:
 			handleEthernetInterrupt(eth, iface, buf)
+		case irq == gic.Spurious:
+			print("spurious IRQ\n")
 		default:
 			log.Printf("internal error, unexpected IRQ %d", irq)
 		}

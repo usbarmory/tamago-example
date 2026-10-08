@@ -14,6 +14,7 @@ import (
 	"runtime/goos"
 
 	"github.com/usbarmory/tamago/arm"
+	"github.com/usbarmory/tamago/arm/gic"
 	"github.com/usbarmory/tamago/soc/nxp/enet"
 	"github.com/usbarmory/tamago/soc/nxp/imx6ul"
 	"github.com/usbarmory/tamago/soc/nxp/usb"
@@ -57,6 +58,8 @@ func startInterruptHandler(usb *usb.USB, eth *enet.ENET, iface *gnet.Interface) 
 			handleUSBInterrupt(usb)
 		case eth != nil && irq == eth.IRQ:
 			handleEthernetInterrupt(eth, iface, buf)
+		case irq == gic.Spurious:
+			print("spurious IRQ\n")
 		default:
 			log.Printf("internal error, unexpected IRQ %d", irq)
 		}
