@@ -8,8 +8,9 @@
 package cmd
 
 import (
-	"bufio"
+	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"regexp"
@@ -19,10 +20,8 @@ import (
 	"time"
 	_ "unsafe"
 
-	_ "github.com/jxsl13/goai/backend/cpu"
-	_ "github.com/jxsl13/goai/backend/ref"
-	"github.com/jxsl13/goai/format/gguf"
-	"github.com/jxsl13/goai/nlp"
+	"github.com/townsendmerino/goinfer/decoder"
+	gitok "github.com/townsendmerino/goinfer/tokenizer"
 
 	"github.com/usbarmory/tamago/amd64"
 	"github.com/usbarmory/tamago/board/qemu/microvm"
@@ -34,6 +33,7 @@ const (
 	ramStart    = 0x1_0000_0000
 	ramSize     = 4 << 30 // 4 GiB
 	modelURL    = "https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q8_0.gguf"
+	quant       = "int8"
 	eos         = "<|im_end|>"
 	tokens      = 256
 	seed        = 42
@@ -55,8 +55,8 @@ func moveHeap() {
 }
 
 var (
-	model     *nlp.QuantLlama
-	tokenizer *nlp.BPETokenizer
+	model     *decoder.Model
+	tokenizer *gitok.Tokenizer
 	eosID     int
 )
 
@@ -85,6 +85,7 @@ func download(url string) (resp *http.Response, err error) {
 
 func loadModel() (err error) {
 	var resp *http.Response
+	var raw []byte
 
 	if model != nil {
 		return
@@ -96,63 +97,82 @@ func loadModel() (err error) {
 	}
 	defer resp.Body.Close()
 
-	modelBuf := bufio.NewReaderSize(resp.Body, 1<<20)
-
-	log.Printf("loading model")
-	rf, err := gguf.ReadRaw(modelBuf)
+	// goinfer parses GGUF from memory, pre-size the buffer to avoid
+	// io.ReadAll growth transiently doubling the allocation
+	if n := resp.ContentLength; n > 0 {
+		raw = make([]byte, n)
+		_, err = io.ReadFull(resp.Body, raw)
+	} else {
+		raw, err = io.ReadAll(resp.Body)
+	}
 
 	if err != nil {
 		return
 	}
 
-	log.Printf("parsing model")
-	m, err := nlp.QuantQwen3FromGGUF(rf.Metadata, rf.Tensors)
+	log.Printf("loading model")
+	m, err := decoder.LoadGGUFBytes(raw, decoder.Options{Backend: "cpu", Quant: quant})
+
 	if err != nil {
 		return
 	}
 
 	log.Printf("parsing tokenizer")
-	tok, err := nlp.BPEFromGGUF(rf.Metadata)
+	tok, err := gitok.LoadGGUFBytes(raw)
+
 	if err != nil {
+		m.Close()
 		return
 	}
 
-	ids := tok.EncodeSpecial(eos)
-	if len(ids) != 1 {
-		return fmt.Errorf("tokenizer: %q is not a single special token (got %v)", eos, ids)
+	id, ok := tok.TokenID(eos)
+
+	if !ok {
+		m.Close()
+		return fmt.Errorf("tokenizer: missing %q token", eos)
 	}
 
-	model, tokenizer, eosID = m, tok, ids[0]
+	model, tokenizer, eosID = m, tok, id
 
 	return
 }
 
 func ask(question string) (answer string, err error) {
-	prompt := tokenizer.EncodeSpecial(fmt.Sprintf(promptTemplate, question))
-
-	start := time.Now()
-
-	out, err := model.Generate(
-		prompt,
-		tokens,
-		nlp.NewSampler(seed, nlp.WithTemperature(temperature), nlp.WithTopP(probability)),
-		nlp.WithEOS(eosID),
-	)
+	prompt, err := tokenizer.Encode(fmt.Sprintf(promptTemplate, question), false)
 
 	if err != nil {
 		return
 	}
 
-	elapsed := time.Since(start)
+	start := time.Now()
 
-	gen := out[len(prompt):]
+	ch, gen := model.Generate(context.Background(), prompt, tokens, decoder.SamplingParams{
+		Temperature: temperature,
+		TopP:        probability,
+		Seed:        seed,
+		StopIDs:     []int{eosID},
+	})
 
-	if n := len(gen); n > 0 && gen[n-1] == eosID {
-		gen = gen[:n-1]
+	var out []int
+
+	for id := range ch {
+		out = append(out, id)
 	}
 
-	answer = fmt.Sprintf("%d tok in %v (%.2f tok/s)\n", len(gen), elapsed, float64(len(gen))/elapsed.Seconds())
-	answer += strings.TrimSpace(tokenizer.Decode(gen))
+	if err = gen.Err(); err != nil {
+		return
+	}
+
+	elapsed := time.Since(start)
+
+	text, err := tokenizer.Decode(out)
+
+	if err != nil {
+		return
+	}
+
+	answer = fmt.Sprintf("%d tok in %v (%.2f tok/s)\n", len(out), elapsed, float64(len(out))/elapsed.Seconds())
+	answer += strings.TrimSpace(text)
 
 	return
 }

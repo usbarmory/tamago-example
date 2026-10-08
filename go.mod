@@ -13,8 +13,8 @@ require (
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.2.0
 	github.com/dustinxie/ecc v0.0.0-20210511000915-959544187564
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/jxsl13/goai v0.1.1-0.20260910233428-2bc5836f5112
 	github.com/psanford/wormhole-william v1.0.8
+	github.com/townsendmerino/goinfer v0.22.0
 	github.com/traefik/yaegi v0.16.1
 	github.com/u-root/u-root v0.16.0
 	github.com/usbarmory/armory-boot v0.0.0-20261005082251-106981ae2f92
@@ -66,6 +66,7 @@ require (
 	github.com/tailscale/web-client-prebuilt v0.0.0-20250124233751-d4cd19a26976 // indirect
 	github.com/tailscale/wireguard-go v0.0.0-20260715223240-2e01ba5b00f0 // indirect
 	github.com/therootcompany/xz v1.0.1 // indirect
+	github.com/townsendmerino/aikit v1.57.0 // indirect
 	github.com/u-root/uio v0.0.0-20240224005618-d2acac8f3701 // indirect
 	github.com/ulikunitz/xz v0.5.15 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
