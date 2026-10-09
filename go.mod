@@ -1,6 +1,6 @@
 module github.com/usbarmory/tamago-example
 
-go 1.27.1
+go 1.27.2
 
 tool github.com/usbarmory/tamago/cmd/tamago
 
@@ -19,9 +19,9 @@ require (
 	github.com/u-root/u-root v0.16.0
 	github.com/usbarmory/armory-boot v0.0.0-20261005082251-106981ae2f92
 	github.com/usbarmory/crucible v0.0.0-20260105222051-0bd71c72232c
-	github.com/usbarmory/go-net v0.0.0-20260714134120-c2c964e7084c
+	github.com/usbarmory/go-net v0.0.0-20260924083839-356cbf14db9e
 	github.com/usbarmory/rpmb v0.0.0-20260903082159-7bccd4b8a49b
-	github.com/usbarmory/tamago v1.27.2-0.20261008073616-026243ef1d58
+	github.com/usbarmory/tamago v1.27.2
 	golang.org/x/crypto v0.56.0
 	golang.org/x/crypto/x509roots/fallback v0.0.0-20260819204246-82adefa711cb
 	golang.org/x/term v0.45.0
@@ -58,7 +58,7 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.26 // indirect
 	github.com/pires/go-proxyproto v0.8.1 // indirect
 	github.com/safchain/ethtool v0.3.0 // indirect
-	github.com/soypat/lneto v0.2.0 // indirect
+	github.com/soypat/lneto v0.3.2 // indirect
 	github.com/tailscale/certstore v0.1.1-0.20260409135935-3638fb84b77d // indirect
 	github.com/tailscale/go-winio v0.0.0-20231025203758-c4f33415bf55 // indirect
 	github.com/tailscale/hujson v0.0.0-20260302212456-ecc657c15afd // indirect
