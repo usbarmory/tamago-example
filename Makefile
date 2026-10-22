@@ -37,7 +37,10 @@ QEMU ?= qemu-system-x86_64 -machine q35,pit=off,pic=off \
         -enable-kvm -cpu host,invtsc=on,kvmclock=on -no-reboot \
         -m 4G -nographic -monitor none -serial stdio \
         -device pcie-root-port,port=0x10,chassis=1,id=pci.0,bus=pcie.0,multifunction=on,addr=0x3 \
-        -device virtio-net-pci,netdev=net0,mac=42:01:0a:84:00:02,disable-modern=true -netdev tap,id=net0,ifname=tap0,script=no,downscript=no
+        -device virtio-net-pci,netdev=net0,mac=42:01:0a:84:00:02,disable-modern=true -netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
+        -drive if=none,id=nvm0,driver=null-co,size=16M,read-zeroes=on,snapshot=on \
+        -device nvme,id=nvme-ctrl0,serial=nvme0serial \
+        -device nvme-ns,drive=nvm0,bus=nvme-ctrl0,nsid=1,logical_block_size=4096,physical_block_size=4096
 
 QEMU-img ?= qemu-system-x86_64 -machine q35 -m 4G -smp $(SMP) \
             -machine accel=kvm:tcg -cpu max \
