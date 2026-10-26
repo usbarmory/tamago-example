@@ -78,7 +78,7 @@ func init() {
 		Name:    "top",
 		Args:    1,
 		Pattern: regexp.MustCompile(`^top (\d+)$`),
-		Syntax:  "top <samples>",
+		Syntax:  "<samples>",
 		Help:    "show CPU usage",
 		Fn:      topCmd,
 	})

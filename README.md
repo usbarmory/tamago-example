@@ -122,7 +122,7 @@ stack                                                            # goroutine sta
 stackall                                                         # goroutine stack trace (all)
 tailscale       <auth key> (verbose)?                            # start network servers on Tailscale tailnet
 test                                                             # launch tests
-top             top <samples>                                    # show CPU usage
+top             <samples>                                        # show CPU usage
 uptime                                                           # show system running time
 usdhc           <n> <hex addr> <size>                            # SD/MMC card read
 wormhole        (send <path>|recv <code>)                        # transfer file through magic wormhole
