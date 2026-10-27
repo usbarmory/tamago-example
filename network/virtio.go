@@ -39,15 +39,23 @@ func startInterruptHandler(dev *vnet.Net, iface *gnet.Interface, cpu *amd64.CPU,
 	size := dev.HeaderLength + gnet.EthernetMaximumSize + gnet.MTU
 	buf := make([]byte, size)
 
+	// VirtIO devices keep their interrupt asserted until acknowledged (see
+	// virtio.MMIO.ClearInterrupt), this is not required here as the IOAPIC
+	// pin is edge-triggered and supported VMMs signal each event, while
+	// virtio-pci targets use MSI-X.
+
 	isr := func(irq int) {
 		switch irq {
 		case vector:
+			print(".")
 			for {
-				if n, err := dev.ReceiveWithHeader(buf); err != nil || n == 0 {
+				n, err := dev.ReceiveWithHeader(buf)
+
+				if err != nil || n == 0 {
 					return
 				}
 
-				iface.Stack.RecvInboundPacket(buf[dev.HeaderLength:])
+				iface.Stack.RecvInboundPacket(buf[dev.HeaderLength:n])
 			}
 		default:
 			log.Printf("internal error, unexpected IRQ %d", irq)
