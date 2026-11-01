@@ -47,7 +47,6 @@ func startInterruptHandler(dev *vnet.Net, iface *gnet.Interface, cpu *amd64.CPU,
 	isr := func(irq int) {
 		switch irq {
 		case vector:
-			print(".")
 			for {
 				n, err := dev.ReceiveWithHeader(buf)
 
