@@ -58,7 +58,7 @@ func lspciCmd(_ *shell.Interface, arg []string) (string, error) {
 	return res.String(), nil
 }
 
-func Target() (name string, freq uint32) {
+func Target() (name string, freq uint64) {
 	return vm.AMD64.Name(), vm.AMD64.Freq()
 }
 

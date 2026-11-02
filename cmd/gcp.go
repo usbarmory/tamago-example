@@ -29,7 +29,7 @@ func uptime() (ns int64) {
 	return gcp.AMD64.GetTime() - gcp.AMD64.TimerOffset
 }
 
-func Target() (name string, freq uint32) {
+func Target() (name string, freq uint64) {
 	return gcp.AMD64.Name(), gcp.AMD64.Freq()
 }
 

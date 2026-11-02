@@ -55,7 +55,7 @@ func uptime() (ns int64) {
 	return microvm.AMD64.GetTime() - microvm.AMD64.TimerOffset
 }
 
-func Target() (name string, freq uint32) {
+func Target() (name string, freq uint64) {
 	return microvm.AMD64.Name(), microvm.AMD64.Freq()
 }
 
