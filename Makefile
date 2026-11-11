@@ -43,7 +43,7 @@ QEMU ?= qemu-system-x86_64 -machine q35,pit=off,pic=off \
         -device nvme-ns,drive=nvm0,bus=nvme-ctrl0,nsid=1,logical_block_size=4096,physical_block_size=4096
 
 QEMU-img ?= qemu-system-x86_64 -machine q35 -m 4G -smp $(SMP) \
-            -machine accel=kvm:tcg -cpu max \
+            -machine accel=kvm:tcg -cpu max,invtsc=on \
             -vga none -display none -serial stdio \
             -device pcie-root-port,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x3 \
             -device pcie-root-port,port=0x11,chassis=2,id=pci.2,bus=pcie.0,addr=0x3.0x1 \
